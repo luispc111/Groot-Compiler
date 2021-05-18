@@ -1,0 +1,59 @@
+Programa ranger;
+
+Clase Mascota {
+};
+
+Clase Gatito < hereda Mascota > ; {
+  atributos
+    edad : entero;
+
+  metodos
+    entero funcion cuantasPatas() {
+      regresa (patas);
+    }
+};
+
+variables
+  x, y, z : entero;
+  a, b, c, d, e, f, g : flotante;
+  character : char;
+  garfield : Gatito;
+
+void funcion decirHola()
+  variables
+    anio : entero;
+  {
+    si (a == 15) entonces {
+      a = 4.5;
+        b[0] = arr[3];
+        c[1,4] = cant; 
+    }
+    sino {
+        anio = garfield.edad;
+        patas = garfield.cuantasPatas();
+    }
+}
+
+principal(){
+  lee(id);
+  x = y;
+  a = 39*5+8/(13 * 7) > cantidad & (40)*(5+2+2+2)>variablechida;
+  b = (40 * -5 + 8) + 7;
+  c = a--8;
+  dVar = (5+(7+c*(a))%(b));
+  decirHola();
+
+  si (x == y) entonces {
+    lee(a);
+    escribe("Pruebas");
+  }
+
+  mientras (5 < contador) hacer {
+    contador = contador + 1 - arr[1]; 
+    mat[(4),(5+2-dameedad())] = contador;
+  }
+
+  desde i = 0 hasta (contador%2) hacer {
+    decirHola();
+  }
+}
