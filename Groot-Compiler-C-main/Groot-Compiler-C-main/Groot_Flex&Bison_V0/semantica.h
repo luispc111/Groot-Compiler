@@ -6,7 +6,6 @@
 #define ARRAY_TYPE 4
 #define FUNCTION_TYPE 5
 #define VOID_TYPE 6
-#define CLASS_TYPE 7
 
 /* Tipos de operador */
 #define NONE 0		// Solo para checar 

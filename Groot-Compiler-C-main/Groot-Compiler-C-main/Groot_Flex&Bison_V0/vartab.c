@@ -153,7 +153,7 @@ void set_type(char *name, int st_tipo, int inf_type){ // Para declaraciones
 	/* Convierte su tipo al que debe ser */
 	l->st_tipo = st_tipo;	
 	
-	/* Si es un array , clase o funcion */
+	/* Si es un array o funcion */
 	if(inf_type != UNDEF){
 		l->inf_type = inf_type;
 	}	
@@ -168,14 +168,14 @@ int get_type(char *name){ // Obten el tipo de una variable
 	if(l->st_tipo == INT_TYPE || l->st_tipo == FLOAT_TYPE || l->st_tipo == CHAR_TYPE){
 		return l->st_tipo;
 	}
-	/* Si es un array, funcion o clase */
+	/* Si es un array o funcion */
 	else{
 		return l->inf_type;
 	}
 }
 
 /* Sube el nivel del scope (esto para cuando entremos a
- bloques condicionales, no condicionales, funciones o Clases */
+ bloques condicionales, no condicionales o funciones */
 
 void incr_scope(){
   cur_scope++;

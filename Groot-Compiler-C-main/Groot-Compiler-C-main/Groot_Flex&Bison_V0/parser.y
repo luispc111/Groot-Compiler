@@ -71,7 +71,6 @@
 %token <val> FLOTANTE 
 %token <val> CHAR
 %token <symtab_item> ID
-%token <symtab_item> CLASSID
 
 %token <val> ENTEROVAR
 %token <val> FLOTANTEVAR
@@ -116,10 +115,6 @@
 
 %token <val> PROGRAM 
 %token <val> PRINCIPAL
-%token <val> CLASE
-%token <val> HEREDA
-%token <val> ATRIBUTOS
-%token <val> METODOS
 %token <val> VARIABLES
 %token <val> VOID 
 %token <val> FUNCION
@@ -158,26 +153,15 @@
 
 %% 
 
-program: PROGRAM ID PNTOCOMA classes var funciones PRINCIPAL PARI PARD bloque { printf("Código Apropiado \n"); } 
+program: PROGRAM ID PNTOCOMA var funciones PRINCIPAL PARI PARD bloque { printf("Código Apropiado \n"); } 
         ;
-
-classes: /* empty */
-        | class classes
-        ;
-
-class: { printf("Se crea clase \n"); } CLASE CLASSID classu BRI atributos metodos BRD PNTOCOMA 
-     ;
-
-classu: /* empty */
-       | MENORQUE HEREDA CLASSID MAYORQUE PNTOCOMA  { printf("  Existe herencia \n"); } 
-       ;
 
 variables: VARIABLES variablesu {
          printf("Seccion de variables \n"); 
 } 
           ;
 
-variablesu: ID {/* declare = 0; */} variablesd DOBLEPUNTO tipodeclarar {/* declare = 1; */} PNTOCOMA variablest { printf("  Declaracion de variables \n"); 
+variablesu: ID {/* declare = 0; */} variablesd DOBLEPUNTO tipovar {/* declare = 1; */} PNTOCOMA variablest { printf("  Declaracion de variables \n"); 
  	{ /*
                 sum_a_nombres($1);
 		int i;
@@ -211,16 +195,6 @@ var: /* empty */
     | variables
     ;
 
-
-atributos: /* empty */
-          | ATRIBUTOS variablesu
-          ;
-
-metodos: /* empty */
-        | { printf("  Declaracion de métodos \n"); }  METODOS funcion funciones 
-        ;
-
-
 funcion: { incr_scope(); } funcionu FUNCION ID PARI params PARD var bloque
          ;
 
@@ -237,10 +211,6 @@ tipovar: ENTERO  {/* $$= INT_TYPE; */}
         | FLOTANTE {/* $$ = FLOAT_TYPE; */}
         | CHAR {/* $$ = CHAR_TYPE; */ }
         ;
-
-tipodeclarar: tipovar
-            | CLASSID
-            ;
 
 params: /* empty */
        | param

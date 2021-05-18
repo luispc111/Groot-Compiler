@@ -47,7 +47,6 @@ FLOTANTEVAR [-]?{DIGITO}+([.]?{DIGITO}+)?
 CHAR \'([^\\"|^\\'])\'
 LETRERO \"([^\\"|^\\'])*\"
 ID ([a-z][a-zA-Z0-9]*)
-CLASSID ([A-Z][a-zA-Z0-9]*)
 
 /*** REGLAS ***/
 
@@ -55,10 +54,6 @@ CLASSID ([A-Z][a-zA-Z0-9]*)
 
 "Programa"    {return(PROGRAM);}
 "principal"   {return(PRINCIPAL);}
-"Clase"       {return(CLASE);}
-"hereda"      {return(HEREDA);}
-"atributos"   {return(ATRIBUTOS);}
-"metodos"     {return(METODOS);}
 "variables"   {return(VARIABLES);}
 "void"        {return(VOID);}
 "funcion"     {return(FUNCION);}
@@ -87,10 +82,6 @@ CLASSID ([A-Z][a-zA-Z0-9]*)
 {FLOTANTEVAR} { yylval.val.fval = atof(yytext); return (FLOTANTEVAR);}
 {CHAR}      { yylval.val.cval   = yytext[0];    return (CHAR); }
 {LETRERO}   {return(LETRERO);}
-
-{CLASSID}   {
-	          // Verificar los atributos en el parser de la clase
-				return(CLASSID); }
 
 "%%".*        {printf("Comerse el comentario en la linea %d ", linea);}
 
