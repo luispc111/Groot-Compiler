@@ -324,7 +324,10 @@ def p_escritura(p):
 
 def p_decision(p):
     '''
-    decision : SI L_PAR hiper_exp R_PAR ENTONCES bloque SINO bloque empty
+    decision : SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty
+
+    decisionU : SINO bloque empty
+              | empty
     '''
 
 def p_condicional(p):
@@ -424,7 +427,7 @@ def p_operadorR(p):
 
 # EXPRESIONES
 
-def hiper_exp():
+def p_hiper_exp(p):
     '''
     hiper_exp : super_exp hiper_expU
 
@@ -432,7 +435,7 @@ def hiper_exp():
                | empty
     '''
 
-def super_exp():
+def p_super_exp(p):
     '''
     super_exp : exp super_expU
 
@@ -440,7 +443,7 @@ def super_exp():
                | empty
     '''
 
-def exp():
+def p_exp(p):
     '''
     exp : termino expU
 
@@ -448,7 +451,7 @@ def exp():
          | empty
     '''
 
-def termino():
+def p_termino(p):
     '''
     termino : factor terminoU
 
@@ -456,7 +459,7 @@ def termino():
              | empty
     '''
 
-def factor():
+def p_factor(p):
     '''
     factor : varcte empty
            | llamada empty

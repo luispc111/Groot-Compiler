@@ -11,33 +11,30 @@ Void Funcion decirHola()
   {
     Si (a == 15) Entonces {
       a = 4.5;
-        b[0] = arr[3];
-        c[1,4] = cant; 
     }
     Sino {
     }
 }
 
-principal(){
-  lee(id);
+Principal(){
+  Leer(id);
   x = y;
   b = (40 * -5 + 8) + 7;
   c = a - -8;
   decirHola();
 
-  si (x == y) entonces {
-    lee(a);
-    escribe("Pruebas");
+  Si (x == y) Entonces {
+    Leer(a);
+    Escribir("Este es un letrero");
   }
 
-  mientras (5 < contador) hacer {
-    contador = contador + 1 - arr[1]; 
-    mat[(4),(5+2-dameedad())] = contador;
+  Mientras ( 5 < contador ) Hacer {
+    contador = contador + 1; 
   }
 
-  desde i = 0 hasta (contador + 2) hacer {
+  Desde (i = 0) Hasta (contador + 2) Hacer {
     decirHola();
+    Color(i);
     Circulo(5);
-    Color(10 + 20);
   }
 }
