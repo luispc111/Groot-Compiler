@@ -1,20 +1,20 @@
-Programa ranger;
+Programa groot;
 
-variables
-  x, y, z : entero;
-  a, b, c, d, e, f, g : flotante;
-  character : char;
+Variables
+  x : Entero;
+  a, b, c, d, e, f, g : Flotante;
+  miChar : Caracter;
 
-void funcion decirHola()
-  variables
-    anio : entero;
+Void Funcion decirHola()
+  Variables
+    anio : Entero;
   {
-    si (a == 15) entonces {
+    Si (a == 15) Entonces {
       a = 4.5;
         b[0] = arr[3];
         c[1,4] = cant; 
     }
-    sino {
+    Sino {
     }
 }
 
@@ -23,7 +23,6 @@ principal(){
   x = y;
   b = (40 * -5 + 8) + 7;
   c = a - -8;
-  dVar = (5+(7+c*(a))%(b));
   decirHola();
 
   si (x == y) entonces {
@@ -36,7 +35,9 @@ principal(){
     mat[(4),(5+2-dameedad())] = contador;
   }
 
-  desde i = 0 hasta (contador%2) hacer {
+  desde i = 0 hasta (contador + 2) hacer {
     decirHola();
+    Circulo(5);
+    Color(10 + 20);
   }
 }
