@@ -18,7 +18,6 @@ Void Funcion decirHola()
 
 Entero Funcion miFuncion2()
   {
-    
   }
 
 Principal(){
@@ -39,6 +38,7 @@ Principal(){
 
   Desde (i = 0) Hasta (contador + 2) Hacer {
     decirHola();
+    miFuncion2();
     Color(i);
     Circulo(5);
   }

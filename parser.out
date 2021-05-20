@@ -52,7 +52,7 @@ Rule 40    estatuto -> no_condicional empty
 Rule 41    estatuto -> funciones_especiales PUNTOYCOMA empty
 Rule 42    estatuto -> empty
 Rule 43    asignacion -> ID IGUAL hiper_exp empty
-Rule 44    llamada -> ID L_PAR mandar_parametros R_PAR empty
+Rule 44    llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty
 Rule 45    retorno -> REGRESA L_PAR ID R_PAR empty
 Rule 46    lectura -> LEER L_PAR ID R_PAR empty
 Rule 47    escritura -> ESCRIBIR L_PAR escrituraD R_PAR empty
@@ -116,6 +116,7 @@ Rule 104   neu_programa -> <empty>
 Rule 105   neu_addFuncion -> <empty>
 Rule 106   neu_addVariable -> <empty>
 Rule 107   neu_addVariableAStack -> <empty>
+Rule 108   neu_llamada -> <empty>
 
 Terminals, with rules where they appear
 
@@ -209,6 +210,7 @@ mandar_parametrosD   : 24
 neu_addFuncion       : 10
 neu_addVariable      : 7
 neu_addVariableAStack : 6
+neu_llamada          : 44
 neu_programa         : 1
 no_condicional       : 40
 operadorA            : 91
@@ -675,7 +677,7 @@ state 44
     (42) estatuto -> . empty
     (103) empty -> .
     (43) asignacion -> . ID IGUAL hiper_exp empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
     (45) retorno -> . REGRESA L_PAR ID R_PAR empty
     (46) lectura -> . LEER L_PAR ID R_PAR empty
     (47) escritura -> . ESCRIBIR L_PAR escrituraD R_PAR empty
@@ -867,7 +869,7 @@ state 50
     (41) estatuto -> . funciones_especiales PUNTOYCOMA empty
     (42) estatuto -> . empty
     (43) asignacion -> . ID IGUAL hiper_exp empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
     (45) retorno -> . REGRESA L_PAR ID R_PAR empty
     (46) lectura -> . LEER L_PAR ID R_PAR empty
     (47) escritura -> . ESCRIBIR L_PAR escrituraD R_PAR empty
@@ -1083,7 +1085,7 @@ state 59
 state 60
 
     (43) asignacion -> ID . IGUAL hiper_exp empty
-    (44) llamada -> ID . L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> ID . L_PAR mandar_parametros R_PAR neu_llamada empty
 
     IGUAL           shift and go to state 100
     L_PAR           shift and go to state 101
@@ -1608,7 +1610,7 @@ state 100
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -1626,7 +1628,7 @@ state 100
 
 state 101
 
-    (44) llamada -> ID L_PAR . mandar_parametros R_PAR empty
+    (44) llamada -> ID L_PAR . mandar_parametros R_PAR neu_llamada empty
     (24) mandar_parametros -> . ID mandar_parametrosD empty
     (25) mandar_parametros -> . empty
     (103) empty -> .
@@ -1667,7 +1669,7 @@ state 104
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     LETRERO         shift and go to state 154
     L_PAR           shift and go to state 143
@@ -1699,7 +1701,7 @@ state 105
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -1729,7 +1731,7 @@ state 106
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -1824,7 +1826,7 @@ state 116
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -1854,7 +1856,7 @@ state 117
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -1884,7 +1886,7 @@ state 118
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -1914,7 +1916,7 @@ state 119
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -1944,7 +1946,7 @@ state 120
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -1974,7 +1976,7 @@ state 121
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -2004,7 +2006,7 @@ state 122
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -2034,7 +2036,7 @@ state 123
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -2261,7 +2263,7 @@ state 134
 state 135
 
     (99) varcte -> ID . empty
-    (44) llamada -> ID . L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> ID . L_PAR mandar_parametros R_PAR neu_llamada empty
     (103) empty -> .
 
     L_PAR           shift and go to state 101
@@ -2464,7 +2466,7 @@ state 143
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -2567,7 +2569,7 @@ state 147
 
 state 148
 
-    (44) llamada -> ID L_PAR mandar_parametros . R_PAR empty
+    (44) llamada -> ID L_PAR mandar_parametros . R_PAR neu_llamada empty
 
     R_PAR           shift and go to state 204
 
@@ -2778,7 +2780,7 @@ state 172
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -2854,7 +2856,7 @@ state 177
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -2988,7 +2990,7 @@ state 186
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -3077,7 +3079,7 @@ state 191
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -3284,27 +3286,27 @@ state 203
 
 state 204
 
-    (44) llamada -> ID L_PAR mandar_parametros R_PAR . empty
-    (103) empty -> .
+    (44) llamada -> ID L_PAR mandar_parametros R_PAR . neu_llamada empty
+    (108) neu_llamada -> .
 
-    PUNTOYCOMA      reduce using rule 103 (empty -> .)
-    MULT            reduce using rule 103 (empty -> .)
-    DIV             reduce using rule 103 (empty -> .)
-    MAS             reduce using rule 103 (empty -> .)
-    MENOS           reduce using rule 103 (empty -> .)
-    MENORQUE        reduce using rule 103 (empty -> .)
-    MAYORQUE        reduce using rule 103 (empty -> .)
-    MENORIGUALQUE   reduce using rule 103 (empty -> .)
-    MAYORIGUALQUE   reduce using rule 103 (empty -> .)
-    IGUALQUE        reduce using rule 103 (empty -> .)
-    DIFQUE          reduce using rule 103 (empty -> .)
-    OR              reduce using rule 103 (empty -> .)
-    AND             reduce using rule 103 (empty -> .)
-    R_PAR           reduce using rule 103 (empty -> .)
-    COMA            reduce using rule 103 (empty -> .)
-    HACER           reduce using rule 103 (empty -> .)
+    PUNTOYCOMA      reduce using rule 108 (neu_llamada -> .)
+    MULT            reduce using rule 108 (neu_llamada -> .)
+    DIV             reduce using rule 108 (neu_llamada -> .)
+    MAS             reduce using rule 108 (neu_llamada -> .)
+    MENOS           reduce using rule 108 (neu_llamada -> .)
+    MENORQUE        reduce using rule 108 (neu_llamada -> .)
+    MAYORQUE        reduce using rule 108 (neu_llamada -> .)
+    MENORIGUALQUE   reduce using rule 108 (neu_llamada -> .)
+    MAYORIGUALQUE   reduce using rule 108 (neu_llamada -> .)
+    IGUALQUE        reduce using rule 108 (neu_llamada -> .)
+    DIFQUE          reduce using rule 108 (neu_llamada -> .)
+    OR              reduce using rule 108 (neu_llamada -> .)
+    AND             reduce using rule 108 (neu_llamada -> .)
+    R_PAR           reduce using rule 108 (neu_llamada -> .)
+    COMA            reduce using rule 108 (neu_llamada -> .)
+    HACER           reduce using rule 108 (neu_llamada -> .)
 
-    empty                          shift and go to state 244
+    neu_llamada                    shift and go to state 244
 
 state 205
 
@@ -3409,7 +3411,7 @@ state 216
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -3439,7 +3441,7 @@ state 217
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -3775,25 +3777,27 @@ state 243
 
 state 244
 
-    (44) llamada -> ID L_PAR mandar_parametros R_PAR empty .
+    (44) llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada . empty
+    (103) empty -> .
 
-    PUNTOYCOMA      reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    MULT            reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    DIV             reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    MAS             reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    MENOS           reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    MENORQUE        reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    MAYORQUE        reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    MENORIGUALQUE   reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    MAYORIGUALQUE   reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    IGUALQUE        reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    DIFQUE          reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    OR              reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    AND             reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    R_PAR           reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    COMA            reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
-    HACER           reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR empty .)
+    PUNTOYCOMA      reduce using rule 103 (empty -> .)
+    MULT            reduce using rule 103 (empty -> .)
+    DIV             reduce using rule 103 (empty -> .)
+    MAS             reduce using rule 103 (empty -> .)
+    MENOS           reduce using rule 103 (empty -> .)
+    MENORQUE        reduce using rule 103 (empty -> .)
+    MAYORQUE        reduce using rule 103 (empty -> .)
+    MENORIGUALQUE   reduce using rule 103 (empty -> .)
+    MAYORIGUALQUE   reduce using rule 103 (empty -> .)
+    IGUALQUE        reduce using rule 103 (empty -> .)
+    DIFQUE          reduce using rule 103 (empty -> .)
+    OR              reduce using rule 103 (empty -> .)
+    AND             reduce using rule 103 (empty -> .)
+    R_PAR           reduce using rule 103 (empty -> .)
+    COMA            reduce using rule 103 (empty -> .)
+    HACER           reduce using rule 103 (empty -> .)
 
+    empty                          shift and go to state 268
 
 state 245
 
@@ -3823,7 +3827,7 @@ state 248
 
     L_LLAVE         shift and go to state 44
 
-    bloque                         shift and go to state 268
+    bloque                         shift and go to state 269
 
 state 249
 
@@ -3832,7 +3836,7 @@ state 249
 
     L_LLAVE         shift and go to state 44
 
-    bloque                         shift and go to state 269
+    bloque                         shift and go to state 270
 
 state 250
 
@@ -3848,7 +3852,7 @@ state 250
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -3856,7 +3860,7 @@ state 250
     FLOTANTEVAL     shift and go to state 145
     CARACTERVAL     shift and go to state 146
 
-    hiper_exp                      shift and go to state 270
+    hiper_exp                      shift and go to state 271
     super_exp                      shift and go to state 137
     exp                            shift and go to state 138
     termino                        shift and go to state 139
@@ -3889,14 +3893,14 @@ state 254
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp . COMA hiper_exp COMA hiper_exp R_PAR empty
 
-    COMA            shift and go to state 271
+    COMA            shift and go to state 272
 
 
 state 255
 
     (68) puntoxy -> PUNTOXY L_PAR hiper_exp COMA hiper_exp . R_PAR empty
 
-    R_PAR           shift and go to state 272
+    R_PAR           shift and go to state 273
 
 
 state 256
@@ -3934,7 +3938,7 @@ state 260
 
     R_PAR           reduce using rule 103 (empty -> .)
 
-    empty                          shift and go to state 273
+    empty                          shift and go to state 274
 
 state 261
 
@@ -4014,12 +4018,34 @@ state 267
 
 state 268
 
+    (44) llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .
+
+    PUNTOYCOMA      reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    MULT            reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    DIV             reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    MAS             reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    MENOS           reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    MENORQUE        reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    MAYORQUE        reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    MENORIGUALQUE   reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    MAYORIGUALQUE   reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    IGUALQUE        reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    DIFQUE          reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    OR              reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    AND             reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    R_PAR           reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    COMA            reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+    HACER           reduce using rule 44 (llamada -> ID L_PAR mandar_parametros R_PAR neu_llamada empty .)
+
+
+state 269
+
     (50) decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque . decisionU empty
     (51) decisionU -> . SINO bloque empty
     (52) decisionU -> . empty
     (103) empty -> .
 
-    SINO            shift and go to state 276
+    SINO            shift and go to state 277
     ID              reduce using rule 103 (empty -> .)
     REGRESA         reduce using rule 103 (empty -> .)
     LEER            reduce using rule 103 (empty -> .)
@@ -4038,10 +4064,10 @@ state 268
     PUNTOYCOMA      reduce using rule 103 (empty -> .)
     R_LLAVE         reduce using rule 103 (empty -> .)
 
-    decisionU                      shift and go to state 274
-    empty                          shift and go to state 275
+    decisionU                      shift and go to state 275
+    empty                          shift and go to state 276
 
-state 269
+state 270
 
     (53) condicional -> MIENTRAS L_PAR hiper_exp R_PAR HACER bloque . empty
     (103) empty -> .
@@ -4064,16 +4090,16 @@ state 269
     PUNTOYCOMA      reduce using rule 103 (empty -> .)
     R_LLAVE         reduce using rule 103 (empty -> .)
 
-    empty                          shift and go to state 277
+    empty                          shift and go to state 278
 
-state 270
+state 271
 
     (54) no_condicional -> DESDE L_PAR asignacion R_PAR HASTA hiper_exp . HACER bloque empty
 
-    HACER           shift and go to state 278
+    HACER           shift and go to state 279
 
 
-state 271
+state 272
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA . hiper_exp COMA hiper_exp R_PAR empty
     (84) hiper_exp -> . super_exp hiper_expU
@@ -4087,7 +4113,7 @@ state 271
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -4095,7 +4121,7 @@ state 271
     FLOTANTEVAL     shift and go to state 145
     CARACTERVAL     shift and go to state 146
 
-    hiper_exp                      shift and go to state 279
+    hiper_exp                      shift and go to state 280
     super_exp                      shift and go to state 137
     exp                            shift and go to state 138
     termino                        shift and go to state 139
@@ -4103,23 +4129,23 @@ state 271
     varcte                         shift and go to state 141
     llamada                        shift and go to state 142
 
-state 272
+state 273
 
     (68) puntoxy -> PUNTOXY L_PAR hiper_exp COMA hiper_exp R_PAR . empty
     (103) empty -> .
 
     PUNTOYCOMA      reduce using rule 103 (empty -> .)
 
-    empty                          shift and go to state 280
+    empty                          shift and go to state 281
 
-state 273
+state 274
 
     (22) recibir_parametrosD -> COMA recibir_parametros empty .
 
     R_PAR           reduce using rule 22 (recibir_parametrosD -> COMA recibir_parametros empty .)
 
 
-state 274
+state 275
 
     (50) decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU . empty
     (103) empty -> .
@@ -4142,9 +4168,9 @@ state 274
     PUNTOYCOMA      reduce using rule 103 (empty -> .)
     R_LLAVE         reduce using rule 103 (empty -> .)
 
-    empty                          shift and go to state 281
+    empty                          shift and go to state 282
 
-state 275
+state 276
 
     (52) decisionU -> empty .
 
@@ -4167,16 +4193,16 @@ state 275
     R_LLAVE         reduce using rule 52 (decisionU -> empty .)
 
 
-state 276
+state 277
 
     (51) decisionU -> SINO . bloque empty
     (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
 
     L_LLAVE         shift and go to state 44
 
-    bloque                         shift and go to state 282
+    bloque                         shift and go to state 283
 
-state 277
+state 278
 
     (53) condicional -> MIENTRAS L_PAR hiper_exp R_PAR HACER bloque empty .
 
@@ -4199,30 +4225,30 @@ state 277
     R_LLAVE         reduce using rule 53 (condicional -> MIENTRAS L_PAR hiper_exp R_PAR HACER bloque empty .)
 
 
-state 278
+state 279
 
     (54) no_condicional -> DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER . bloque empty
     (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
 
     L_LLAVE         shift and go to state 44
 
-    bloque                         shift and go to state 283
+    bloque                         shift and go to state 284
 
-state 279
+state 280
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp . COMA hiper_exp R_PAR empty
 
-    COMA            shift and go to state 284
+    COMA            shift and go to state 285
 
 
-state 280
+state 281
 
     (68) puntoxy -> PUNTOXY L_PAR hiper_exp COMA hiper_exp R_PAR empty .
 
     PUNTOYCOMA      reduce using rule 68 (puntoxy -> PUNTOXY L_PAR hiper_exp COMA hiper_exp R_PAR empty .)
 
 
-state 281
+state 282
 
     (50) decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .
 
@@ -4245,34 +4271,9 @@ state 281
     R_LLAVE         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
 
 
-state 282
-
-    (51) decisionU -> SINO bloque . empty
-    (103) empty -> .
-
-    ID              reduce using rule 103 (empty -> .)
-    REGRESA         reduce using rule 103 (empty -> .)
-    LEER            reduce using rule 103 (empty -> .)
-    ESCRIBIR        reduce using rule 103 (empty -> .)
-    SI              reduce using rule 103 (empty -> .)
-    MIENTRAS        reduce using rule 103 (empty -> .)
-    DESDE           reduce using rule 103 (empty -> .)
-    CIRCULO         reduce using rule 103 (empty -> .)
-    COLOR           reduce using rule 103 (empty -> .)
-    GROSOR          reduce using rule 103 (empty -> .)
-    LINEA           reduce using rule 103 (empty -> .)
-    PUNTOXY         reduce using rule 103 (empty -> .)
-    ARCO            reduce using rule 103 (empty -> .)
-    PENUP           reduce using rule 103 (empty -> .)
-    PENDOWN         reduce using rule 103 (empty -> .)
-    PUNTOYCOMA      reduce using rule 103 (empty -> .)
-    R_LLAVE         reduce using rule 103 (empty -> .)
-
-    empty                          shift and go to state 285
-
 state 283
 
-    (54) no_condicional -> DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER bloque . empty
+    (51) decisionU -> SINO bloque . empty
     (103) empty -> .
 
     ID              reduce using rule 103 (empty -> .)
@@ -4297,6 +4298,31 @@ state 283
 
 state 284
 
+    (54) no_condicional -> DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER bloque . empty
+    (103) empty -> .
+
+    ID              reduce using rule 103 (empty -> .)
+    REGRESA         reduce using rule 103 (empty -> .)
+    LEER            reduce using rule 103 (empty -> .)
+    ESCRIBIR        reduce using rule 103 (empty -> .)
+    SI              reduce using rule 103 (empty -> .)
+    MIENTRAS        reduce using rule 103 (empty -> .)
+    DESDE           reduce using rule 103 (empty -> .)
+    CIRCULO         reduce using rule 103 (empty -> .)
+    COLOR           reduce using rule 103 (empty -> .)
+    GROSOR          reduce using rule 103 (empty -> .)
+    LINEA           reduce using rule 103 (empty -> .)
+    PUNTOXY         reduce using rule 103 (empty -> .)
+    ARCO            reduce using rule 103 (empty -> .)
+    PENUP           reduce using rule 103 (empty -> .)
+    PENDOWN         reduce using rule 103 (empty -> .)
+    PUNTOYCOMA      reduce using rule 103 (empty -> .)
+    R_LLAVE         reduce using rule 103 (empty -> .)
+
+    empty                          shift and go to state 287
+
+state 285
+
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA . hiper_exp R_PAR empty
     (84) hiper_exp -> . super_exp hiper_expU
     (87) super_exp -> . exp super_expU
@@ -4309,7 +4335,7 @@ state 284
     (100) varcte -> . ENTEROVAL empty
     (101) varcte -> . FLOTANTEVAL empty
     (102) varcte -> . CARACTERVAL empty
-    (44) llamada -> . ID L_PAR mandar_parametros R_PAR empty
+    (44) llamada -> . ID L_PAR mandar_parametros R_PAR neu_llamada empty
 
     L_PAR           shift and go to state 143
     ID              shift and go to state 135
@@ -4317,7 +4343,7 @@ state 284
     FLOTANTEVAL     shift and go to state 145
     CARACTERVAL     shift and go to state 146
 
-    hiper_exp                      shift and go to state 287
+    hiper_exp                      shift and go to state 288
     super_exp                      shift and go to state 137
     exp                            shift and go to state 138
     termino                        shift and go to state 139
@@ -4325,7 +4351,7 @@ state 284
     varcte                         shift and go to state 141
     llamada                        shift and go to state 142
 
-state 285
+state 286
 
     (51) decisionU -> SINO bloque empty .
 
@@ -4348,7 +4374,7 @@ state 285
     R_LLAVE         reduce using rule 51 (decisionU -> SINO bloque empty .)
 
 
-state 286
+state 287
 
     (54) no_condicional -> DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER bloque empty .
 
@@ -4371,23 +4397,23 @@ state 286
     R_LLAVE         reduce using rule 54 (no_condicional -> DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER bloque empty .)
 
 
-state 287
+state 288
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA hiper_exp . R_PAR empty
 
-    R_PAR           shift and go to state 288
+    R_PAR           shift and go to state 289
 
 
-state 288
+state 289
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA hiper_exp R_PAR . empty
     (103) empty -> .
 
     PUNTOYCOMA      reduce using rule 103 (empty -> .)
 
-    empty                          shift and go to state 289
+    empty                          shift and go to state 290
 
-state 289
+state 290
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA hiper_exp R_PAR empty .
 

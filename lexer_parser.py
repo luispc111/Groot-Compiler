@@ -33,6 +33,8 @@ tabla_variables = {}
 # Arreglo que se llenará con objetos tipo Cuadruplo
 cuadruplos = []
 
+errores = []
+
 ############### LEXER ###############
 
 # TOKENS
@@ -329,8 +331,9 @@ def p_asignacion(p):
 
 def p_llamada(p):
     '''
-    llamada : ID L_PAR mandar_parametros R_PAR empty
+    llamada : ID L_PAR mandar_parametros R_PAR neu_llamada empty
     '''
+    p[0] = None
 
 def p_retorno(p):
     '''
@@ -551,6 +554,16 @@ def p_neu_addVariableAStack(p):
     currVarName = p[-1]
     varsStack.append(currVarName)
 
+# INSTRUCCIONES
+
+# Punto Neuralgico - Llamada
+def p_neu_llamada(p):
+    'neu_llamada : '
+    if p[-4] in tabla_variables.keys():
+        cuadruplos.append(Cuadruplo('ERA', None, None, p[-4]))
+    else:
+        errores.append(str(lexer.lineno) + " - No se declaró la función " + p[-4])
+
 parser = yacc.yacc()
 
 try:
@@ -558,12 +571,17 @@ try:
     with open(text, 'r') as file:
         parser.parse(file.read())
 
-        print("\nTABLA DE VARIABLES ->")
-        print(tabla_variables)
+        if errores:
+            print("\n! " + str(len(errores)) + " ERROR(ES) ->")
+            for item in errores:
+                print("! Linea " + item)
+        else:
+            print("\nTABLA DE VARIABLES ->")
+            print(tabla_variables)
 
-        print("\nCUADRUPLOS ->")
-        for item in cuadruplos:
-            print(item.getCuadruplo())
+            print("\nCUADRUPLOS ->")
+            for item in cuadruplos:
+                print(item.getCuadruplo())
 
 except EOFError:
     print("Error")
