@@ -16,6 +16,11 @@ Void Funcion decirHola()
     }
 }
 
+Entero Funcion miFuncion2()
+  {
+    
+  }
+
 Principal(){
   Leer(id);
   x = y;

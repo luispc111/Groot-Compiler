@@ -4,9 +4,21 @@
 # GROOT LANGUAGE
 # LEXER / PARSER
 
+# IMPORTS
+
 import ply.lex as lex
 import ply.yacc as yacc
 import sys
+
+############### GLOBAL VARIABLES ###############
+
+progName = ''
+
+currFuncName = ''
+currFuncType = ''
+
+currVarName = ''
+currVarType = ''
 
 ############### LEXER ###############
 
@@ -60,15 +72,14 @@ tokens = [
     'DIV',          # /
     'AND',          # &
     'OR',           # |
-    'MENORQUE',        # <
-    'MAYORQUE',        # >
-    'MENORIGUALQUE',     # <=
-    'MAYORIGUALQUE',     # >=
+    'MENORQUE',     # <
+    'MAYORQUE',     # >
+    'MENORIGUALQUE',    # <=
+    'MAYORIGUALQUE',    # >=
     'DIFQUE',       # !=
-    'IGUALQUE',      # ==
+    'IGUALQUE',     # ==
 
     # Tokens complejos
-    #'DIGITO',
     'ENTEROVAL',
     'FLOTANTEVAL',
     'CARACTERVAL',
@@ -150,7 +161,6 @@ t_DIFQUE = r'\!\='
 t_IGUALQUE = r'\=\='
 
 # Tokens complejos
-#t_DIGITO = r'[0-9]'
 t_ENTEROVAL  = r'[-]?[0-9]+'
 t_FLOTANTEVAL = r'[-]?[0-9]+([.][0-9]+)'
 t_CARACTERVAL = r'(\'[^\']\')'
@@ -164,13 +174,13 @@ t_VOID = r'Void'
 
 # Funciones especiales
 t_CIRCULO = r'Circulo'  # (radio)
-t_COLOR = r'Color'      # (r,g,b)
-t_GROSOR = r'Grosor'    # (pixeles)
+t_COLOR = r'Color'      # (i)
+t_GROSOR = r'Grosor'    # (i)
 t_LINEA = r'Linea'      # (x1,y1,x2,y2)
 t_PUNTOXY = r'PuntoXY'  # (x,y)
-t_ARCO = r'Arco'
-t_PENUP = r'PenUp'
-t_PENDOWN = r'PenDown'
+t_ARCO = r'Arco'        # (i)
+t_PENUP = r'PenUp'      # ()
+t_PENDOWN = r'PenDown'  # ()
 
 t_ID = r'([a-z][a-zA-Z0-9]*)'
 
@@ -192,7 +202,7 @@ def t_error(t):
 
 lexer = lex.lex()
 
-#Funcion para probar el escaner lexico 
+# Funcion para probar el escaner lexico 
 # def pruebaLex():
 #     #lexer.input("Programa Variables Funcion Principal Regresa Leer Escribir Si Hacer Sino Mientras Hacer Desde Hasta ; , : . { } ( ) [ ] = + - * / < > <= >= != == 1 101 10.5 'a' \"Hola\" Entero Flotante Caracter Void Circulo Color Grosor Linea PuntoXY Arco PenUp PenDown cantCrayones")
 #     lexer.input("PROGRAMA groot;")
@@ -208,8 +218,9 @@ lexer = lex.lex()
 
 def p_programa(p):
     '''
-    program : PROGRAMA ID PUNTOYCOMA variables funciones PRINCIPAL L_PAR R_PAR bloque empty
+    program : PROGRAMA ID np_programa PUNTOYCOMA variables funciones PRINCIPAL L_PAR R_PAR bloque empty
     '''
+    p[0] = None
 
 def p_variales(p):
     '''
@@ -220,19 +231,21 @@ def p_variales(p):
                | empty
     
     variablesD : ID COMA variablesD
-               | ID DOSPUNTOS tipo_var PUNTOYCOMA variablesU
+               | ID DOSPUNTOS tipo_var np_addVariable PUNTOYCOMA variablesU
     '''
+    p[0] = None
 
 def p_funciones(p):
     '''
     funciones : funcionesU
               | empty
     
-    funcionesU : tipo_funcion FUNCION ID L_PAR recibir_parametros R_PAR variables bloque funcionesD
+    funcionesU : tipo_funcion FUNCION ID np_addFuncion L_PAR recibir_parametros R_PAR variables bloque funcionesD
     
     funcionesD : funciones
                | empty
     '''
+    p[0] = None
 
 def p_tipo_funcion(p):
     '''
@@ -241,6 +254,7 @@ def p_tipo_funcion(p):
                  | CARACTER empty
                  | VOID empty
     '''
+    p[0] = p[1]
 
 def p_tipo_var(p):
     '''
@@ -248,6 +262,7 @@ def p_tipo_var(p):
              | FLOTANTE empty
              | CARACTER empty
     '''
+    p[0] = p[1]
 
 def p_recibir_parametros(p):
     '''
@@ -484,11 +499,36 @@ def p_empty(p):
     empty : 
     '''
 
+############### PUNTOS NEURALGICOS ###############
+
+# Punto Neuralgico - Guarda el nombre dle programa
+def p_np_programa(p):
+    'np_programa : '
+    global progName
+    progName = p[-1]
+    print("NOMBRE DEL PROGRAMA: " + progName)
+
+# Punto Neuralgico - Añade funciones al directorio de funciones
+def p_np_addFuncion(p):
+    'np_addFuncion : '
+    global currFuncName, currFuncType, progName
+    currFuncName = p[-1]
+    currFuncType = p[-3]
+    print("FUNCION: " + currFuncName + " DE TIPO " + currFuncType)
+
+# Punto Neuralgico - Añade variables a la tabla de variables
+def p_np_addVariable(p):
+    'np_addVariable : '
+    global currVarName, currVarType, progName
+    currVarType = p[-1]
+    #currVarName = p[-1]
+    print("VAR TIPO: " + currVarType)
+
 parser = yacc.yacc()
 
 try:
-        text = input('Prueba.txt: ')
-        with open(text, 'r') as file:
-            parser.parse(file.read())
+    text = input('Nombre de archivo txt: ')
+    with open(text, 'r') as file:
+        parser.parse(file.read())
 except EOFError:
     print("Error")
