@@ -12,7 +12,8 @@ import sys
 
 from collections import deque
 
-import CuboSemantico
+from CuboSemantico import *
+from Cuadruplo import *
 
 ############### GLOBAL VARIABLES ###############
 
@@ -26,7 +27,11 @@ currVarType = ''
 
 varsStack = deque()
 
+# Diccionario que contendra las variables (y funciones) junto con sus tipos
 tabla_variables = {}
+
+# Arreglo que se llenará con objetos tipo Cuadruplo
+cuadruplos = []
 
 ############### LEXER ###############
 
@@ -509,13 +514,15 @@ def p_empty(p):
 
 ############### PUNTOS NEURALGICOS ###############
 
-# Punto Neuralgico - Guarda el nombre dle programa
+# Punto Neuralgico - Guarda el nombre del programa
 def p_neu_programa(p):
     'neu_programa : '
     global progName, currFuncName
     progName = p[-1]
     currFuncName = p[-1]
+
     tabla_variables[progName] = {'tipo': progName, 'variables': {}}
+    cuadruplos.append(Cuadruplo('GOTO', None, None, progName))
 
 # Punto Neuralgico - Añade funciones al directorio de funciones
 def p_neu_addFuncion(p):
@@ -536,7 +543,6 @@ def p_neu_addVariable(p):
     while varsStack:
         tabla_variables[currFuncName]['variables'][varsStack[0]] = {'tipo': currVarType}
         varsStack.popleft()
-
     tabla_variables[currFuncName]['variables'][currVarName] = {'tipo': currVarType}  
 
 def p_neu_addVariableAStack(p):
@@ -545,13 +551,19 @@ def p_neu_addVariableAStack(p):
     currVarName = p[-1]
     varsStack.append(currVarName)
 
-
 parser = yacc.yacc()
 
 try:
     text = input('Nombre de archivo txt: ')
     with open(text, 'r') as file:
         parser.parse(file.read())
+
+        print("\nTABLA DE VARIABLES ->")
         print(tabla_variables)
+
+        print("\nCUADRUPLOS ->")
+        for item in cuadruplos:
+            print(item.getCuadruplo())
+
 except EOFError:
     print("Error")

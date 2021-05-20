@@ -2,7 +2,7 @@ Programa groot;
 
 Variables
   x : Entero;
-  a, b, c, d, e, f, g : Flotante;
+  a, b, c : Flotante;
   miChar : Caracter;
 
 Void Funcion decirHola()
