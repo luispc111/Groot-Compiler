@@ -212,8 +212,8 @@ lexer = lex.lex()
 
 # Funcion para probar el escaner lexico 
 # def pruebaLex():
-#     #lexer.input("Programa Variables Funcion Principal Regresa Leer Escribir Si Hacer Sino Mientras Hacer Desde Hasta ; , : . { } ( ) [ ] = + - * / < > <= >= != == 1 101 10.5 'a' \"Hola\" Entero Flotante Caracter Void Circulo Color Grosor Linea PuntoXY Arco PenUp PenDown cantCrayones")
-#     lexer.input("PROGRAMA groot;")
+#     lexer.input("Programa Variables Funcion Principal Regresa Leer Escribir Si Hacer Sino Mientras Hacer Desde Hasta ; , : . { } ( ) [ ] = + - * / < > <= >= != == 1 101 10.5 'a' \"Hola\" Entero Flotante Caracter Void Circulo Color Grosor Linea PuntoXY Arco PenUp PenDown cantCrayones")
+#     #lexer.input("PROGRAMA groot;")
 #     while True:
 #         tok = lexer.token()
 #         if not tok:

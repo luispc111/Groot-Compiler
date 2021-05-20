@@ -2,6 +2,7 @@ class CuboSemantico:
 
   # Hace retorno del tipo resultante de la operación entre 2 tipos
   def getTipoCubo(tipo1, tipo2, operador):
+  
     # ENTERO
     if tipo1 == "ENTERO":
       if tipo2 == "ENTERO":
@@ -37,6 +38,6 @@ class CuboSemantico:
     return "ERROR"
 
 # Pruebas
-# print(CuadroSemantico.getTipoCubo("ENTERO", "FLOTANTE", "+"))
-# print(CuadroSemantico.getTipoCubo("FLOTANTE", "ENTERO", "<"))
-# print(CuadroSemantico.getTipoCubo("CARACTER", "CARACTER", "!="))
+# print(CuboSemantico.getTipoCubo("ENTERO", "FLOTANTE", "+"))
+# print(CuboSemantico.getTipoCubo("FLOTANTE", "ENTERO", "<"))
+# print(CuboSemantico.getTipoCubo("CARACTER", "CARACTER", "!="))
