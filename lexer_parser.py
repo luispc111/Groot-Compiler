@@ -10,6 +10,10 @@ import ply.lex as lex
 import ply.yacc as yacc
 import sys
 
+from collections import deque
+
+import CuboSemantico
+
 ############### GLOBAL VARIABLES ###############
 
 progName = ''
@@ -19,6 +23,10 @@ currFuncType = ''
 
 currVarName = ''
 currVarType = ''
+
+varsStack = deque()
+
+tabla_variables = {}
 
 ############### LEXER ###############
 
@@ -218,7 +226,7 @@ lexer = lex.lex()
 
 def p_programa(p):
     '''
-    program : PROGRAMA ID np_programa PUNTOYCOMA variables funciones PRINCIPAL L_PAR R_PAR bloque empty
+    program : PROGRAMA ID neu_programa PUNTOYCOMA variables funciones PRINCIPAL L_PAR R_PAR bloque empty
     '''
     p[0] = None
 
@@ -229,9 +237,9 @@ def p_variales(p):
 
     variablesU : variablesD
                | empty
-    
-    variablesD : ID COMA variablesD
-               | ID DOSPUNTOS tipo_var np_addVariable PUNTOYCOMA variablesU
+
+    variablesD : ID neu_addVariableAStack COMA variablesD
+               | ID DOSPUNTOS tipo_var neu_addVariable PUNTOYCOMA variablesU
     '''
     p[0] = None
 
@@ -240,7 +248,7 @@ def p_funciones(p):
     funciones : funcionesU
               | empty
     
-    funcionesU : tipo_funcion FUNCION ID np_addFuncion L_PAR recibir_parametros R_PAR variables bloque funcionesD
+    funcionesU : tipo_funcion FUNCION ID neu_addFuncion L_PAR recibir_parametros R_PAR variables bloque funcionesD
     
     funcionesD : funciones
                | empty
@@ -502,27 +510,41 @@ def p_empty(p):
 ############### PUNTOS NEURALGICOS ###############
 
 # Punto Neuralgico - Guarda el nombre dle programa
-def p_np_programa(p):
-    'np_programa : '
-    global progName
+def p_neu_programa(p):
+    'neu_programa : '
+    global progName, currFuncName
     progName = p[-1]
-    print("NOMBRE DEL PROGRAMA: " + progName)
+    currFuncName = p[-1]
+    tabla_variables[progName] = {'tipo': progName, 'variables': {}}
 
 # Punto Neuralgico - Añade funciones al directorio de funciones
-def p_np_addFuncion(p):
-    'np_addFuncion : '
+def p_neu_addFuncion(p):
+    'neu_addFuncion : '
     global currFuncName, currFuncType, progName
     currFuncName = p[-1]
     currFuncType = p[-3]
-    print("FUNCION: " + currFuncName + " DE TIPO " + currFuncType)
+
+    tabla_variables[currFuncName] = {'tipo': currFuncType, 'variables': {}}
 
 # Punto Neuralgico - Añade variables a la tabla de variables
-def p_np_addVariable(p):
-    'np_addVariable : '
-    global currVarName, currVarType, progName
+def p_neu_addVariable(p):
+    'neu_addVariable : '
+    global currFuncName, currVarName, currVarType, progName
     currVarType = p[-1]
-    #currVarName = p[-1]
-    print("VAR TIPO: " + currVarType)
+    currVarName = p[-3]
+
+    while varsStack:
+        tabla_variables[currFuncName]['variables'][varsStack[0]] = {'tipo': currVarType}
+        varsStack.popleft()
+
+    tabla_variables[currFuncName]['variables'][currVarName] = {'tipo': currVarType}  
+
+def p_neu_addVariableAStack(p):
+    'neu_addVariableAStack : '
+    global varsStack
+    currVarName = p[-1]
+    varsStack.append(currVarName)
+
 
 parser = yacc.yacc()
 
@@ -530,5 +552,6 @@ try:
     text = input('Nombre de archivo txt: ')
     with open(text, 'r') as file:
         parser.parse(file.read())
+        print(tabla_variables)
 except EOFError:
     print("Error")
