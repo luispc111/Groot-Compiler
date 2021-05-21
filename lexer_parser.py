@@ -25,7 +25,25 @@ currFuncType = ''
 currVarName = ''
 currVarType = ''
 
+# Memorias
+
+memoriaGEntero = 1000
+memoriaGFlotante = 2000
+memoriaGCaracter = 3000
+
+memoriaLEntero = 4000
+memoriaLFlotante = 5000
+memoriaLCaracter = 6000
+
+memoriaCEntero = 7000
+memoriaCFlotante = 8000
+memoriaCCaracter = 9000
+
 varsStack = deque()
+
+pilaOperadores = deque()
+pilaTerminos = deque()
+pilaTipos = deque()
 
 # Diccionario que contendra las variables (y funciones) junto con sus tipos
 tabla_variables = {}
@@ -33,6 +51,7 @@ tabla_variables = {}
 # Arreglo que se llenará con objetos tipo Cuadruplo
 cuadruplos = []
 
+# Arreglo que se llenará con los errores
 errores = []
 
 ############### LEXER ###############
@@ -233,7 +252,7 @@ lexer = lex.lex()
 
 def p_programa(p):
     '''
-    program : PROGRAMA ID neu_programa PUNTOYCOMA variables funciones PRINCIPAL L_PAR R_PAR bloque empty
+    program : PROGRAMA ID neu_programa PUNTOYCOMA variables funciones PRINCIPAL neu_principal L_PAR R_PAR bloque empty
     '''
     p[0] = None
 
@@ -326,12 +345,13 @@ def p_estatuto(p):
 
 def p_asignacion(p):
     '''
-    asignacion : ID IGUAL hiper_exp empty
+    asignacion : ID neu_addID IGUAL neu_addOperador hiper_exp empty
     '''
+    p[0] = None
 
 def p_llamada(p):
     '''
-    llamada : ID L_PAR mandar_parametros R_PAR neu_llamada empty
+    llamada : ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
     '''
     p[0] = None
 
@@ -430,30 +450,30 @@ def p_pendown(p):
 
 def p_operadorA(p): 
     '''
-    operadorA : MAS empty
-              | MENOS empty
+    operadorA : MAS neu_addOperador empty
+              | MENOS neu_addOperador empty
     '''
 
 def p_operadorT(p): 
     '''
-    operadorT : MULT empty
-              | DIV empty
+    operadorT : MULT neu_addOperador empty
+              | DIV neu_addOperador empty
     '''
 
 def p_operadorL(p): 
     '''
-    operadorL : OR empty
-              | AND empty
+    operadorL : OR neu_addOperador empty
+              | AND neu_addOperador empty
     '''
 
 def p_operadorR(p): 
     '''
-    operadorR : MENORQUE empty
-              | MAYORQUE empty
-              | MENORIGUALQUE empty
-              | MAYORIGUALQUE empty
-              | IGUALQUE empty
-              | DIFQUE empty
+    operadorR : MENORQUE neu_addOperador empty
+              | MAYORQUE neu_addOperador empty
+              | MENORIGUALQUE neu_addOperador empty
+              | MAYORIGUALQUE neu_addOperador empty
+              | IGUALQUE neu_addOperador empty
+              | DIFQUE neu_addOperador empty
     '''
 
 # EXPRESIONES
@@ -462,7 +482,7 @@ def p_hiper_exp(p):
     '''
     hiper_exp : super_exp hiper_expU
 
-    hiper_expU : operadorL hiper_exp empty 
+    hiper_expU : operadorL neu_addOperador hiper_exp empty 
                | empty
     '''
 
@@ -470,23 +490,23 @@ def p_super_exp(p):
     '''
     super_exp : exp super_expU
 
-    super_expU : operadorR exp empty 
+    super_expU : operadorR neu_addOperador exp empty 
                | empty
     '''
 
 def p_exp(p):
     '''
-    exp : termino expU
+    exp : termino neu_hacerExp expU
 
-    expU : operadorA exp
+    expU : operadorA neu_addOperador exp
          | empty
     '''
 
 def p_termino(p):
     '''
-    termino : factor terminoU
+    termino : factor neu_hacerTermino terminoU
 
-    terminoU : operadorT termino
+    terminoU : operadorT neu_addOperador termino 
              | empty
     '''
 
@@ -497,15 +517,14 @@ def p_factor(p):
            | L_PAR hiper_exp R_PAR empty
     '''
 
-# VARCTE / ERROR / EMPTY
-
 def p_varcte(p):
     '''
-    varcte  : ID empty
-            | ENTEROVAL empty
-            | FLOTANTEVAL empty
-            | CARACTERVAL empty
+    varcte  : ID neu_addID empty
+            | ENTEROVAL neu_addTermino neu_addTipoEntero empty
+            | FLOTANTEVAL neu_addTermino neu_addTipoFlotante empty
+            | CARACTERVAL neu_addTermino neu_addTipoCaracter empty
     '''
+# ERROR / EMPTY
 
 def p_error(p):
     print("Syntax error found at line %d." % (lexer.lineno))
@@ -517,7 +536,9 @@ def p_empty(p):
 
 ############### PUNTOS NEURALGICOS ###############
 
-# Punto Neuralgico - Guarda el nombre del programa
+# PUNTOS PARA INDICAR CUANDO EMPIEZA EL PROGRAMA, LAS FUNCIONES Y PRINCIPAL
+
+# Punto Neuralgico - Inicia el programa
 def p_neu_programa(p):
     'neu_programa : '
     global progName, currFuncName
@@ -527,14 +548,33 @@ def p_neu_programa(p):
     tabla_variables[progName] = {'tipo': progName, 'variables': {}}
     cuadruplos.append(Cuadruplo('GOTO', None, None, progName))
 
-# Punto Neuralgico - Añade funciones al directorio de funciones
+# Punto Neuralgico - Al iniciar una nueva función
 def p_neu_addFuncion(p):
     'neu_addFuncion : '
-    global currFuncName, currFuncType, progName
+    global currFuncName, currFuncType, progName, memoriaLEntero, memoriaLFlotante, memoriaLCaracter
+    
+    # Asignar el nombre de la función y su tipo a las variables globales
     currFuncName = p[-1]
     currFuncType = p[-3]
 
-    tabla_variables[currFuncName] = {'tipo': currFuncType, 'variables': {}}
+    # Se crea la función en la tabla de variables si no hay otra con el mismo nombre
+    if currFuncName not in tabla_variables.keys():
+        tabla_variables[currFuncName] = {'tipo': currFuncType, 'variables': {}}
+
+        # Resetear la memoria local para funciones
+        memoriaLEntero = 4000
+        memoriaLFlotante = 5000
+        memoriaLCaracter = 6000
+    else:
+        errores.append(str(lexer.lineno) + " - La función " + currFuncName + " ya se declaró con anterioridad")
+
+# Punto Neuralgico - Al inicial principal()
+def p_neu_principal(p):
+    'neu_principal : '
+    global progName, currFuncName
+    currFuncName = progName
+
+# AÑADIR VARIABLES
 
 # Punto Neuralgico - Añade variables a la tabla de variables
 def p_neu_addVariable(p):
@@ -543,10 +583,21 @@ def p_neu_addVariable(p):
     currVarType = p[-1]
     currVarName = p[-3]
 
+    # Meter las variables acumuladas, es decir "a" y "b" en "a, b, c : Entero" 
     while varsStack:
-        tabla_variables[currFuncName]['variables'][varsStack[0]] = {'tipo': currVarType}
-        varsStack.popleft()
-    tabla_variables[currFuncName]['variables'][currVarName] = {'tipo': currVarType}  
+        if varsStack[0] not in tabla_variables[currFuncName]['variables'].keys() and varsStack[0] not in tabla_variables[progName]['variables'].keys():
+            memoria = p_getMemoria(currVarType)
+            tabla_variables[currFuncName]['variables'][varsStack[0]] = {'tipo': currVarType, 'memoria': memoria}
+            varsStack.popleft()
+        else:
+            errores.append(str(lexer.lineno) + " - La variable " + varsStack[0] + " ya se declaró anteriormente")
+
+    # Meter la variable más cercana al tipo, es decir "c" en "a, b, c : Entero"
+    if currVarName not in tabla_variables[currFuncName]['variables'].keys() and currVarName not in tabla_variables[progName]['variables'].keys():
+        memoria = p_getMemoria(currVarType)
+        tabla_variables[currFuncName]['variables'][currVarName] = {'tipo': currVarType, 'memoria': memoria}
+    else:
+        errores.append(str(lexer.lineno) + " - La variable " + currVarName + " ya se declaró anteriormente")  
 
 def p_neu_addVariableAStack(p):
     'neu_addVariableAStack : '
@@ -554,17 +605,194 @@ def p_neu_addVariableAStack(p):
     currVarName = p[-1]
     varsStack.append(currVarName)
 
+
+
+
+
+def p_neu_addID(p):
+    'neu_addID : '
+    global currFuncName
+    if p[-1] in tabla_variables[currFuncName]['variables'].keys():
+        pilaTerminos.append(p[-1])
+        pilaTipos.append(tabla_variables[currFuncName]['variables'][p[-1]]['tipo'])
+    elif p[-1] in tabla_variables[progName]['variables'].keys():
+        pilaTerminos.append(p[-1])
+        pilaTipos.append(tabla_variables[progName]['variables'][p[-1]]['tipo'])
+    else:
+        errores.append(str(lexer.lineno) + " - No se declaró la variable " + p[-1])
+
+def p_neu_addTermino(p):
+    'neu_addTermino : '
+    pilaTerminos.append(p[-1])
+
+# AÑADIR TIPOS DE CONSTANTES A LA PILA DE OPERADORES
+def p_neu_addTipoEntero(p):
+    'neu_addTipoEntero : '
+    pilaTipos.append('Entero')
+
+def p_neu_addTipoFlotante(p):
+    'neu_addTipoFlotante : '
+    pilaTipos.append('Flotante')
+
+def p_neu_addTipoCaracter(p):
+    'neu_addTipoCaracter : '
+    pilaTipos.append('Caracter')
+
+
 # INSTRUCCIONES
 
-# Punto Neuralgico - Llamada
-def p_neu_llamada(p):
-    'neu_llamada : '
-    if p[-4] in tabla_variables.keys():
-        cuadruplos.append(Cuadruplo('ERA', None, None, p[-4]))
+# Punto Neuralgico - Llamada ERA
+def p_neu_llamada_era(p):
+    'neu_llamada_era : '
+    if p[-1] in tabla_variables.keys():
+        cuadruplos.append(Cuadruplo('ERA', None, None, p[-1]))
     else:
-        errores.append(str(lexer.lineno) + " - No se declaró la función " + p[-4])
+        errores.append(str(lexer.lineno) + " - No se declaró la función " + p[-1])
+        
+# Punto Neuralgico - Llamada GOSUB
+def p_neu_llamada_gosub(p):
+    'neu_llamada_gosub : '
+    cuadruplos.append(Cuadruplo('GOSUB', None, None, p[-5]))
+
+# Punto Neuralgico - ...
+def p_neu_addOperador(p):
+    'neu_addOperador : '
+    pilaOperadores.append(p[-1])
+
+# OBTENER MEMORIA
+
+def p_getMemoria(tipo):
+    if currFuncName == progName:
+        return p_getGMemoria(tipo)
+    else:
+        return p_getLMemoria(tipo)
+
+# Global
+def p_getGMemoria(tipo):
+    'getGMemoria : '
+    global memoriaGEntero, memoriaGFlotante, memoriaGCaracter
+    if tipo == 'Entero':
+        if memoriaGEntero < 2000:
+            memoriaGEntero = memoriaGEntero + 1
+            return memoriaGEntero
+        else:
+            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
+    elif tipo == 'Flotante':
+        if memoriaGFlotante < 3000:
+            memoriaGFlotante = memoriaGFlotante + 1
+            return memoriaGFlotante
+        else:
+            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
+    elif tipo == 'Caracter':
+        if memoriaGCaracter < 4000:
+            memoriaGCaracter = memoriaGCaracter + 1
+            return memoriaGCaracter
+        else:
+            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
+
+# Local
+def p_getLMemoria(tipo):
+    'getLMemoria : '
+    global memoriaLEntero, memoriaLFlotante, memoriaLCaracter
+    if tipo == 'Entero':
+        if memoriaLEntero < 5000:
+            memoriaLEntero = memoriaLEntero + 1
+            return memoriaLEntero
+        else:
+            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
+    elif tipo == 'Flotante':
+        if memoriaLFlotante < 6000:
+            memoriaLFlotante = memoriaLFlotante + 1
+            return memoriaLFlotante
+        else:
+            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
+    elif tipo == 'Caracter':
+        if memoriaLCaracter < 7000:
+            memoriaLCaracter = memoriaLCaracter + 1
+            return memoriaLCaracter
+        else:
+            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
+
+# Constante
+def p_getCMemoria(tipo):
+    'getCMemoria : '
+    global memoriaCEntero, memoriaCFlotante, memoriaCCaracter
+    if tipo == 'Entero':
+        if memoriaCEntero < 2000:
+            memoriaCEntero = memoriaCEntero + 1
+            return memoriaCEntero
+        else:
+            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
+    elif tipo == 'Flotante':
+        if memoriaCFlotante < 3000:
+            memoriaCFlotante = memoriaCFlotante + 1
+            return memoriaCFlotante
+        else:
+            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
+    elif tipo == 'Caracter':
+        if memoriaCCaracter < 4000:
+            memoriaCCaracter = memoriaCCaracter + 1
+            return memoriaCCaracter
+        else:
+            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
+
+def p_neu_hacerTermino(p):
+    'neu_hacerTermino : '
+    global pilaOperadores, pilaTerminos, currFuncName
+    if(pilaOperadores[-1] == '*' or pilaOperadores[-1] == '/'):
+        ladoDer = pilaTerminos.pop()
+        ladoIzq = pilaTerminos.pop()
+        ladoDerTipo = pilaTipos.pop()
+        ladoIzqTipo = pilaTipos.pop()
+        operador = pilaOperadores.pop()
+
+        tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
+        if currFuncName == progName:
+            memoriaResultado = p_getGMemoria(tipoResultado) 
+        else:
+            memoriaResultado = p_getLMemoria(tipoResultado)
+
+        if tipoResultado != 'ERROR':
+            cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
+            pilaTerminos.append(memoriaResultado)
+        else:
+            errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+
+def p_neu_hacerExp(p):
+    'neu_hacerExp : '
+    global pilaOperadores, pilaTerminos, currFuncName
+    if(pilaOperadores[-1] == '+' or pilaOperadores[-1] == '-'):
+        ladoDer = pilaTerminos.pop()
+        ladoIzq = pilaTerminos.pop()
+        ladoDerTipo = pilaTipos.pop()
+        ladoIzqTipo = pilaTipos.pop()
+        operador = pilaOperadores.pop()
+
+        tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
+        if currFuncName == progName:
+            memoriaResultado = p_getGMemoria(tipoResultado) 
+        else:
+            memoriaResultado = p_getLMemoria(tipoResultado)
+        
+        if tipoResultado != 'ERROR':
+            cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
+            pilaTerminos.append(memoriaResultado)
+        else:
+            errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+
+# def p_neu_asignacion(p):
+#     'neu_asignacion : '
+    
+#     igual = pilaOperadores.pop()
+#     der = pilaTerminos.pop()
+#     izq = pilaTerminos.pop()
+#     print("CUADRUPLOS DE ASIGN")
+#     print(str(igual) + " " + str(der) + " _ " + str(izq))
+#     cuadruplos.append(Cuadruplo(igual, der, None, izq))
 
 parser = yacc.yacc()
+
+############### EJECUCIÓN ###############
 
 try:
     text = input('Nombre de archivo txt: ')

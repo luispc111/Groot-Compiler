@@ -2,44 +2,29 @@ Programa groot;
 
 Variables
   x : Entero;
+  i : Entero;
   a, b, c : Flotante;
-  miChar : Caracter;
+  contador : Caracter;
 
 Void Funcion decirHola()
-  Variables
-    anio : Entero;
-  {
-    Si (a == 15) Entonces {
-      a = 4.5;
-    }
-    Sino {
-    }
+Variables
+  subVar : Entero;
+{
 }
 
 Entero Funcion miFuncion2()
-  {
-  }
+Variables
+  subVar2 : Entero;
+{
+}
 
 Principal(){
   Leer(id);
-  x = y;
-  b = (40 * -5 + 8) + 7;
-  c = a - -8;
+  c = a;
   decirHola();
-
-  Si (x == y) Entonces {
-    Leer(a);
-    Escribir("Este es un letrero");
-  }
-
-  Mientras ( 5 < contador ) Hacer {
-    contador = contador + 1; 
-  }
 
   Desde (i = 0) Hasta (contador + 2) Hacer {
     decirHola();
     miFuncion2();
-    Color(i);
-    Circulo(5);
   }
 }
