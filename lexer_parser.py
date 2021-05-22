@@ -592,6 +592,7 @@ def p_neu_principal(p):
     'neu_principal : '
     global progName, currFuncName
     currFuncName = progName
+    cuadruplos[0].res = len(cuadruplos)
 
 # AÑADIR VARIABLES
 
