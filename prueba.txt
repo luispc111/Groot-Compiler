@@ -4,7 +4,7 @@ Variables
   x : Entero;
   i : Entero;
   a, b, c : Flotante;
-  contador : Caracter;
+  letra : Caracter;
 
 Void Funcion decirHola()
 Variables
@@ -16,11 +16,11 @@ Entero Funcion miFuncion2()
 Variables
   subVar2 : Entero;
 {
-  c = i < i;
 }
 
 Principal(){
   Leer(a);
-  c = a * a + b * c - x;
+  a = 5 - 17.5;
+  letra = 'b';
   decirHola();
 }

@@ -45,8 +45,9 @@ pilaOperadores = deque()
 pilaTerminos = deque()
 pilaTipos = deque()
 
-# Diccionario que contendra las variables (y funciones) junto con sus tipos
+# Diccionario que contendra las variables (y funciones) y las constantes junto con sus tipos
 tabla_variables = {}
+tabla_constantes = {'Entero': {}, 'Flotante': {}, 'Caracter': {}}
 
 # Arreglo que se llenará con objetos tipo Cuadruplo
 cuadruplos = []
@@ -274,7 +275,7 @@ def p_funciones(p):
     funciones : funcionesU
               | empty
     
-    funcionesU : tipo_funcion FUNCION ID neu_addFuncion L_PAR recibir_parametros R_PAR variables bloque funcionesD
+    funcionesU : tipo_funcion FUNCION ID neu_addFuncion L_PAR recibir_parametros R_PAR variables bloque neu_endFuncion funcionesD
     
     funcionesD : funciones
                | empty
@@ -527,10 +528,12 @@ def p_factor(p):
 def p_varcte(p):
     '''
     varcte  : ID neu_addID empty
-            | ENTEROVAL neu_addTermino neu_addTipoEntero empty
-            | FLOTANTEVAL neu_addTermino neu_addTipoFlotante empty
-            | CARACTERVAL neu_addTermino neu_addTipoCaracter empty
+            | ENTEROVAL neu_addConstanteEntero empty
+            | FLOTANTEVAL neu_addConstanteFlotante empty
+            | CARACTERVAL neu_addConstanteCaracter empty
     '''
+    p[0] = None
+
 # ERROR / EMPTY
 
 def p_error(p):
@@ -555,7 +558,7 @@ def p_neu_programa(p):
     tabla_variables[progName] = {'tipo': progName, 'variables': {}}
     cuadruplos.append(Cuadruplo('GOTO', None, None, progName))
 
-# Punto Neuralgico - Al iniciar una nueva función
+# Punto Neuralgico - Al iniciar una función
 def p_neu_addFuncion(p):
     'neu_addFuncion : '
     global currFuncName, currFuncType, progName, memoriaLEntero, memoriaLFlotante, memoriaLCaracter
@@ -574,6 +577,11 @@ def p_neu_addFuncion(p):
         memoriaLCaracter = 6000
     else:
         errores.append(str(lexer.lineno) + " - La función " + currFuncName + " ya se declaró con anterioridad")
+
+# Punto Neuralgico - Al terminar una función
+def p_neu_endFuncion(p):
+    'neu_endFuncion : '
+    cuadruplos.append(Cuadruplo('ENDFUNC', None, None, None))
 
 # Punto Neuralgico - Al inicial principal()
 def p_neu_principal(p):
@@ -625,23 +633,37 @@ def p_neu_addID(p):
     else:
         errores.append(str(lexer.lineno) + " - No se declaró la variable " + p[-1])
 
+# Añado una constante ENTERO a la tabla de constantes
+def p_neu_addConstanteEntero(p):
+    'neu_addConstanteEntero : '
+    if p[-1] not in tabla_constantes['Entero'].keys():
+        memoria = p_getCMemoria('Entero')
+        tabla_constantes['Entero'][p[-1]] = {'tipo': 'Entero', 'memoria': memoria}
+    pilaTerminos.append(tabla_constantes['Entero'][p[-1]]['memoria'])
+    pilaTipos.append('Entero')
+
+# Añado una constante FLOTANTE a la tabla de constantes
+def p_neu_addConstanteFlotante(p):
+    'neu_addConstanteFlotante : '
+    if p[-1] not in tabla_constantes['Flotante'].keys():
+        memoria = p_getCMemoria('Flotante')
+        tabla_constantes['Flotante'][p[-1]] = {'tipo': 'Flotante', 'memoria': memoria}
+    pilaTerminos.append(tabla_constantes['Flotante'][p[-1]]['memoria'])
+    pilaTipos.append('Flotante')
+
+# Añado una constante CARACTER a la tabla de constantes
+def p_neu_addConstanteCaracter(p):
+    'neu_addConstanteCaracter : '
+    if p[-1] not in tabla_constantes['Caracter'].keys():
+        memoria = p_getCMemoria('Caracter')
+        tabla_constantes['Caracter'][p[-1]] = {'tipo': 'Caracter', 'memoria': memoria}
+    pilaTerminos.append(tabla_constantes['Caracter'][p[-1]]['memoria'])
+    pilaTipos.append('Caracter')
+
+
 def p_neu_addTermino(p):
     'neu_addTermino : '
     pilaTerminos.append(tabla_variables[currFuncName]['variables'][p[-1]]['memoria'])
-
-# AÑADIR TIPOS DE CONSTANTES A LA PILA DE OPERADORES
-def p_neu_addTipoEntero(p):
-    'neu_addTipoEntero : '
-    pilaTipos.append('Entero')
-
-def p_neu_addTipoFlotante(p):
-    'neu_addTipoFlotante : '
-    pilaTipos.append('Flotante')
-
-def p_neu_addTipoCaracter(p):
-    'neu_addTipoCaracter : '
-    pilaTipos.append('Caracter')
-
 
 # INSTRUCCIONES
 
@@ -722,26 +744,25 @@ def p_getCMemoria(tipo):
     'getCMemoria : '
     global memoriaCEntero, memoriaCFlotante, memoriaCCaracter
     if tipo == 'Entero':
-        if memoriaCEntero < 2000:
+        if memoriaCEntero < 8000:
             memoriaCEntero = memoriaCEntero + 1
             return memoriaCEntero
         else:
             errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
     elif tipo == 'Flotante':
-        if memoriaCFlotante < 3000:
+        if memoriaCFlotante < 9000:
             memoriaCFlotante = memoriaCFlotante + 1
             return memoriaCFlotante
         else:
             errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
     elif tipo == 'Caracter':
-        if memoriaCCaracter < 4000:
+        if memoriaCCaracter < 10000:
             memoriaCCaracter = memoriaCCaracter + 1
             return memoriaCCaracter
         else:
             errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
 
-
-# REALIZAR EXPRESIONES
+# REALIZAR OPERACIONES
 
 # * /
 def p_neu_hacerTermino(p):
@@ -753,7 +774,6 @@ def p_neu_hacerTermino(p):
         ladoDerTipo = pilaTipos.pop()
         ladoIzqTipo = pilaTipos.pop()
         operador = pilaOperadores.pop()
-        print("multiplicación..." + operador)
 
         tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
         if currFuncName == progName:
@@ -887,6 +907,9 @@ try:
         else:
             print("\nTABLA DE VARIABLES ->")
             print(tabla_variables)
+
+            print("\nTABLA DE CONSTANTES ->")
+            print(tabla_constantes)
 
             print("\nCUADRUPLOS ->")
             for item in cuadruplos:
