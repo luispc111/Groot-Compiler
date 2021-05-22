@@ -345,7 +345,7 @@ def p_estatuto(p):
 
 def p_asignacion(p):
     '''
-    asignacion : ID neu_addID IGUAL neu_addOperador hiper_exp empty
+    asignacion : ID neu_addID IGUAL neu_addOperador hiper_exp neu_asignacion empty
     '''
     p[0] = None
 
@@ -453,18 +453,21 @@ def p_operadorA(p):
     operadorA : MAS neu_addOperador empty
               | MENOS neu_addOperador empty
     '''
+    p[0] = None
 
 def p_operadorT(p): 
     '''
     operadorT : MULT neu_addOperador empty
               | DIV neu_addOperador empty
     '''
+    p[0] = None
 
 def p_operadorL(p): 
     '''
     operadorL : OR neu_addOperador empty
               | AND neu_addOperador empty
     '''
+    p[0] = None
 
 def p_operadorR(p): 
     '''
@@ -475,22 +478,23 @@ def p_operadorR(p):
               | IGUALQUE neu_addOperador empty
               | DIFQUE neu_addOperador empty
     '''
+    p[0] = None
 
 # EXPRESIONES
 
 def p_hiper_exp(p):
     '''
-    hiper_exp : super_exp hiper_expU
+    hiper_exp : super_exp neu_hacerHiperExp hiper_expU
 
-    hiper_expU : operadorL neu_addOperador hiper_exp empty 
+    hiper_expU : operadorL hiper_exp empty 
                | empty
     '''
 
 def p_super_exp(p):
     '''
-    super_exp : exp super_expU
+    super_exp : exp neu_hacerSuperExp super_expU
 
-    super_expU : operadorR neu_addOperador exp empty 
+    super_expU : operadorR exp empty 
                | empty
     '''
 
@@ -498,7 +502,7 @@ def p_exp(p):
     '''
     exp : termino neu_hacerExp expU
 
-    expU : operadorA neu_addOperador exp
+    expU : operadorA exp
          | empty
     '''
 
@@ -506,7 +510,7 @@ def p_termino(p):
     '''
     termino : factor neu_hacerTermino terminoU
 
-    terminoU : operadorT neu_addOperador termino 
+    terminoU : operadorT termino 
              | empty
     '''
 
@@ -586,7 +590,7 @@ def p_neu_addVariable(p):
     # Meter las variables acumuladas, es decir "a" y "b" en "a, b, c : Entero" 
     while varsStack:
         if varsStack[0] not in tabla_variables[currFuncName]['variables'].keys() and varsStack[0] not in tabla_variables[progName]['variables'].keys():
-            memoria = p_getMemoria(currVarType)
+            memoria = p_getMemoriaForID(currVarType)
             tabla_variables[currFuncName]['variables'][varsStack[0]] = {'tipo': currVarType, 'memoria': memoria}
             varsStack.popleft()
         else:
@@ -594,7 +598,7 @@ def p_neu_addVariable(p):
 
     # Meter la variable más cercana al tipo, es decir "c" en "a, b, c : Entero"
     if currVarName not in tabla_variables[currFuncName]['variables'].keys() and currVarName not in tabla_variables[progName]['variables'].keys():
-        memoria = p_getMemoria(currVarType)
+        memoria = p_getMemoriaForID(currVarType)
         tabla_variables[currFuncName]['variables'][currVarName] = {'tipo': currVarType, 'memoria': memoria}
     else:
         errores.append(str(lexer.lineno) + " - La variable " + currVarName + " ya se declaró anteriormente")  
@@ -605,25 +609,23 @@ def p_neu_addVariableAStack(p):
     currVarName = p[-1]
     varsStack.append(currVarName)
 
-
-
-
-
+# Añado un ID a mi pila de terminos y su tipo a la pila de tipos (SE USA PARA EXPRESIONES)
 def p_neu_addID(p):
     'neu_addID : '
     global currFuncName
+    print("Y EL TERMINO ES... " + p[-1])
     if p[-1] in tabla_variables[currFuncName]['variables'].keys():
-        pilaTerminos.append(p[-1])
+        pilaTerminos.append(tabla_variables[currFuncName]['variables'][p[-1]]['memoria'])
         pilaTipos.append(tabla_variables[currFuncName]['variables'][p[-1]]['tipo'])
     elif p[-1] in tabla_variables[progName]['variables'].keys():
-        pilaTerminos.append(p[-1])
+        pilaTerminos.append(tabla_variables[progName]['variables'][p[-1]]['memoria'])
         pilaTipos.append(tabla_variables[progName]['variables'][p[-1]]['tipo'])
     else:
         errores.append(str(lexer.lineno) + " - No se declaró la variable " + p[-1])
 
 def p_neu_addTermino(p):
     'neu_addTermino : '
-    pilaTerminos.append(p[-1])
+    pilaTerminos.append(tabla_variables[currFuncName]['variables'][p[-1]]['memoria'])
 
 # AÑADIR TIPOS DE CONSTANTES A LA PILA DE OPERADORES
 def p_neu_addTipoEntero(p):
@@ -661,7 +663,7 @@ def p_neu_addOperador(p):
 
 # OBTENER MEMORIA
 
-def p_getMemoria(tipo):
+def p_getMemoriaForID(tipo):
     if currFuncName == progName:
         return p_getGMemoria(tipo)
     else:
@@ -736,6 +738,10 @@ def p_getCMemoria(tipo):
         else:
             errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
 
+
+# REALIZAR EXPRESIONES
+
+# * /
 def p_neu_hacerTermino(p):
     'neu_hacerTermino : '
     global pilaOperadores, pilaTerminos, currFuncName
@@ -745,6 +751,7 @@ def p_neu_hacerTermino(p):
         ladoDerTipo = pilaTipos.pop()
         ladoIzqTipo = pilaTipos.pop()
         operador = pilaOperadores.pop()
+        print("multiplicación..." + operador)
 
         tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
         if currFuncName == progName:
@@ -752,12 +759,14 @@ def p_neu_hacerTermino(p):
         else:
             memoriaResultado = p_getLMemoria(tipoResultado)
 
-        if tipoResultado != 'ERROR':
+        if tipoResultado != 'Error':
             cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
             pilaTerminos.append(memoriaResultado)
+            pilaTipos.append(tipoResultado)
         else:
             errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
 
+# + -
 def p_neu_hacerExp(p):
     'neu_hacerExp : '
     global pilaOperadores, pilaTerminos, currFuncName
@@ -774,21 +783,70 @@ def p_neu_hacerExp(p):
         else:
             memoriaResultado = p_getLMemoria(tipoResultado)
         
-        if tipoResultado != 'ERROR':
+        if tipoResultado != 'Error':
             cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
             pilaTerminos.append(memoriaResultado)
+            pilaTipos.append(tipoResultado)
         else:
             errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
 
-# def p_neu_asignacion(p):
-#     'neu_asignacion : '
+# < > >= >= != ==
+def p_neu_hacerSuperExp(p):
+    'neu_hacerSuperExp : '
+    global pilaOperadores, pilaTerminos, currFuncName
+    if(pilaOperadores[-1] == '<' or pilaOperadores[-1] == '>' or pilaOperadores[-1] == '<=' or pilaOperadores[-1] == '>=' or pilaOperadores[-1] == '!=' or pilaOperadores[-1] == '=='):
+        ladoDer = pilaTerminos.pop()
+        ladoIzq = pilaTerminos.pop()
+        ladoDerTipo = pilaTipos.pop()
+        ladoIzqTipo = pilaTipos.pop()
+        operador = pilaOperadores.pop()
+
+        tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
+        if currFuncName == progName:
+            memoriaResultado = p_getGMemoria(tipoResultado) 
+        else:
+            memoriaResultado = p_getLMemoria(tipoResultado)
+        
+        if tipoResultado != 'Error':
+            cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
+            pilaTerminos.append(memoriaResultado)
+            pilaTipos.append(tipoResultado)
+        else:
+            errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+
+# & |
+def p_neu_hacerHiperExp(p):
+    'neu_hacerHiperExp : '
+    global pilaOperadores, pilaTerminos, currFuncName
+    if(pilaOperadores[-1] == '&' or pilaOperadores[-1] == '|'):
+        ladoDer = pilaTerminos.pop()
+        ladoIzq = pilaTerminos.pop()
+        ladoDerTipo = pilaTipos.pop()
+        ladoIzqTipo = pilaTipos.pop()
+        operador = pilaOperadores.pop()
+
+        tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
+        if currFuncName == progName:
+            memoriaResultado = p_getGMemoria(tipoResultado) 
+        else:
+            memoriaResultado = p_getLMemoria(tipoResultado)
+        
+        if tipoResultado != 'Error':
+            cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
+            pilaTerminos.append(memoriaResultado)
+            pilaTipos.append(tipoResultado)
+        else:
+            errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+
+def p_neu_asignacion(p):
+    'neu_asignacion : '
     
-#     igual = pilaOperadores.pop()
-#     der = pilaTerminos.pop()
-#     izq = pilaTerminos.pop()
-#     print("CUADRUPLOS DE ASIGN")
-#     print(str(igual) + " " + str(der) + " _ " + str(izq))
-#     cuadruplos.append(Cuadruplo(igual, der, None, izq))
+    igual = pilaOperadores.pop()
+    der = pilaTerminos.pop()
+    izq = pilaTerminos.pop()
+    #print("CUADRUPLOS DE ASIGN")
+    #print(str(igual) + " " + str(der) + " _ " + str(izq))
+    cuadruplos.append(Cuadruplo(igual, izq, None, der))
 
 parser = yacc.yacc()
 

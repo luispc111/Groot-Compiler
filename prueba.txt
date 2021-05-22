@@ -16,15 +16,11 @@ Entero Funcion miFuncion2()
 Variables
   subVar2 : Entero;
 {
+  c = a * a + subVar2;
 }
 
 Principal(){
   Leer(id);
-  c = a;
+  c = a * a + b * c - x;
   decirHola();
-
-  Desde (i = 0) Hasta (contador + 2) Hacer {
-    decirHola();
-    miFuncion2();
-  }
 }
