@@ -322,12 +322,13 @@ def p_bloque(p):
     '''
     bloque : L_LLAVE bloqueU R_LLAVE empty
 
-    bloqueU : estatuto bloqueD empty
+    bloqueU : estatuto bloqueD neu_vaciarPilas empty
             | empty
 
     bloqueD : bloqueU empty
             | empty
     '''
+    p[0] = None
 
 def p_estatuto(p):
     '''
@@ -362,8 +363,9 @@ def p_retorno(p):
 
 def p_lectura(p):
     '''
-    lectura : LEER L_PAR ID R_PAR empty
+    lectura : LEER L_PAR ID neu_lectura R_PAR empty
     '''
+    p[0] = None
 
 def p_escritura(p):
     '''
@@ -372,6 +374,7 @@ def p_escritura(p):
     escrituraD : hiper_exp empty
                | LETRERO empty
     '''
+    p[0] = None
 
 def p_decision(p):
     '''
@@ -839,13 +842,34 @@ def p_neu_hacerHiperExp(p):
 
 def p_neu_asignacion(p):
     'neu_asignacion : '
-    
     igual = pilaOperadores.pop()
     der = pilaTerminos.pop()
     izq = pilaTerminos.pop()
-    #print("CUADRUPLOS DE ASIGN")
-    #print(str(igual) + " " + str(der) + " _ " + str(izq))
     cuadruplos.append(Cuadruplo(igual, izq, None, der))
+
+def p_neu_lectura(p):
+    'neu_lectura : '
+    global currFuncName
+    if p[-1] in tabla_variables[currFuncName]['variables'].keys():
+        cuadruplos.append(Cuadruplo('READ', None, None, tabla_variables[currFuncName]['variables'][p[-1]]['memoria']))
+    else:
+        errores.append(str(lexer.lineno) + " - Se debe declarar la variable " + p[-1] + " antes de utilizarla")
+
+# def p_neu_escritura(p):
+#     'neu_escritura : '
+#     global currFuncName
+#     print("---------------------" + str(p[-1]))
+#     if p[-1] in tabla_variables[currFuncName]['variables'].keys():
+#         cuadruplos.append(Cuadruplo('WRITE', None, None, tabla_variables[currFuncName]['variables'][p[-1]]['memoria']))
+#     else:
+#         errores.append(str(lexer.lineno) + " - Se debe declarar la variable " + p[-1] + " antes de utilizarla")
+
+def p_neu_vaciarPilas(p):
+    'neu_vaciarPilas : '
+    global pilaTerminos, pilaOperadores, pilaTipos
+    pilaTerminos.clear()
+    pilaOperadores.clear()
+    pilaTipos.clear()
 
 parser = yacc.yacc()
 
