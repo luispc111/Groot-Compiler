@@ -494,7 +494,7 @@ def p_super_exp(p):
     '''
     super_exp : exp neu_hacerSuperExp super_expU
 
-    super_expU : operadorR exp empty 
+    super_expU : operadorR super_exp empty 
                | empty
     '''
 
@@ -613,7 +613,6 @@ def p_neu_addVariableAStack(p):
 def p_neu_addID(p):
     'neu_addID : '
     global currFuncName
-    print("Y EL TERMINO ES... " + p[-1])
     if p[-1] in tabla_variables[currFuncName]['variables'].keys():
         pilaTerminos.append(tabla_variables[currFuncName]['variables'][p[-1]]['memoria'])
         pilaTipos.append(tabla_variables[currFuncName]['variables'][p[-1]]['tipo'])

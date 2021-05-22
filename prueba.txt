@@ -16,7 +16,7 @@ Entero Funcion miFuncion2()
 Variables
   subVar2 : Entero;
 {
-  c = a * a + subVar2;
+  c = i < i;
 }
 
 Principal(){
