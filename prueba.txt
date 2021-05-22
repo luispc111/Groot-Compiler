@@ -20,9 +20,20 @@ Variables
 
 Principal(){
   Leer(a);
-  Escribir(a);
+
+  Si (5 < 4) Entonces
+  {
+    Escribir(a);
+    Escribir(a);
+  }
+  Sino {
+    Escribir(b);
+    Escribir(b);
+  }
+
   Escribir(100 + 100);
   Escribir('x');
+
   a = 5 - 17.5 + b / 14;
   letra = 'b';
   decirHola();

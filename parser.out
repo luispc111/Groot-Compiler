@@ -58,8 +58,8 @@ Rule 46    lectura -> LEER L_PAR ID neu_lectura R_PAR empty
 Rule 47    escritura -> ESCRIBIR L_PAR escrituraD R_PAR empty
 Rule 48    escrituraD -> hiper_exp neu_escritura empty
 Rule 49    escrituraD -> LETRERO empty
-Rule 50    decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty
-Rule 51    decisionU -> SINO bloque empty
+Rule 50    decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
+Rule 51    decisionU -> SINO neu_iniciarDecisionElse bloque empty
 Rule 52    decisionU -> empty
 Rule 53    condicional -> MIENTRAS L_PAR hiper_exp R_PAR HACER bloque empty
 Rule 54    no_condicional -> DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER bloque empty
@@ -136,7 +136,10 @@ Rule 124   neu_hacerHiperExp -> <empty>
 Rule 125   neu_asignacion -> <empty>
 Rule 126   neu_lectura -> <empty>
 Rule 127   neu_escritura -> <empty>
-Rule 128   neu_vaciarPilas -> <empty>
+Rule 128   neu_iniciarDecision -> <empty>
+Rule 129   neu_iniciarDecisionElse -> <empty>
+Rule 130   neu_endDecision -> <empty>
+Rule 131   neu_vaciarPilas -> <empty>
 
 Terminals, with rules where they appear
 
@@ -240,12 +243,15 @@ neu_addTermino       :
 neu_addVariable      : 7
 neu_addVariableAStack : 6
 neu_asignacion       : 43
+neu_endDecision      : 50
 neu_endFuncion       : 10
 neu_escritura        : 48
 neu_hacerExp         : 90
 neu_hacerHiperExp    : 84
 neu_hacerSuperExp    : 87
 neu_hacerTermino     : 93
+neu_iniciarDecision  : 50
+neu_iniciarDecisionElse : 51
 neu_lectura          : 46
 neu_llamada_era      : 44
 neu_llamada_gosub    : 44
@@ -764,7 +770,7 @@ state 47
     (45) retorno -> . REGRESA L_PAR ID R_PAR empty
     (46) lectura -> . LEER L_PAR ID neu_lectura R_PAR empty
     (47) escritura -> . ESCRIBIR L_PAR escrituraD R_PAR empty
-    (50) decision -> . SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty
+    (50) decision -> . SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
     (53) condicional -> . MIENTRAS L_PAR hiper_exp R_PAR HACER bloque empty
     (54) no_condicional -> . DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER bloque empty
     (55) funciones_especiales -> . circulo empty
@@ -955,7 +961,7 @@ state 55
     (45) retorno -> . REGRESA L_PAR ID R_PAR empty
     (46) lectura -> . LEER L_PAR ID neu_lectura R_PAR empty
     (47) escritura -> . ESCRIBIR L_PAR escrituraD R_PAR empty
-    (50) decision -> . SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty
+    (50) decision -> . SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
     (53) condicional -> . MIENTRAS L_PAR hiper_exp R_PAR HACER bloque empty
     (54) no_condicional -> . DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER bloque empty
     (55) funciones_especiales -> . circulo empty
@@ -1200,7 +1206,7 @@ state 68
 
 state 69
 
-    (50) decision -> SI . L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty
+    (50) decision -> SI . L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
 
     L_PAR           shift and go to state 108
 
@@ -1384,7 +1390,6 @@ state 90
     CARACTER        reduce using rule 103 (empty -> .)
     VOID            reduce using rule 103 (empty -> .)
     PRINCIPAL       reduce using rule 103 (empty -> .)
-    SINO            reduce using rule 103 (empty -> .)
     ID              reduce using rule 103 (empty -> .)
     REGRESA         reduce using rule 103 (empty -> .)
     LEER            reduce using rule 103 (empty -> .)
@@ -1402,15 +1407,16 @@ state 90
     PENDOWN         reduce using rule 103 (empty -> .)
     PUNTOYCOMA      reduce using rule 103 (empty -> .)
     R_LLAVE         reduce using rule 103 (empty -> .)
+    SINO            reduce using rule 103 (empty -> .)
 
     empty                          shift and go to state 129
 
 state 91
 
     (29) bloqueU -> estatuto bloqueD . neu_vaciarPilas empty
-    (128) neu_vaciarPilas -> .
+    (131) neu_vaciarPilas -> .
 
-    R_LLAVE         reduce using rule 128 (neu_vaciarPilas -> .)
+    R_LLAVE         reduce using rule 131 (neu_vaciarPilas -> .)
 
     neu_vaciarPilas                shift and go to state 130
 
@@ -1739,7 +1745,7 @@ state 107
 
 state 108
 
-    (50) decision -> SI L_PAR . hiper_exp R_PAR ENTONCES bloque decisionU empty
+    (50) decision -> SI L_PAR . hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
     (84) hiper_exp -> . super_exp neu_hacerHiperExp hiper_expU
     (87) super_exp -> . exp neu_hacerSuperExp super_expU
     (90) exp -> . termino neu_hacerExp expU
@@ -2134,7 +2140,6 @@ state 129
     CARACTER        reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
     VOID            reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
     PRINCIPAL       reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
-    SINO            reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
     ID              reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
     REGRESA         reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
     LEER            reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
@@ -2152,6 +2157,7 @@ state 129
     PENDOWN         reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
     PUNTOYCOMA      reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
     R_LLAVE         reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
+    SINO            reduce using rule 28 (bloque -> L_LLAVE bloqueU R_LLAVE empty .)
 
 
 state 130
@@ -2635,7 +2641,7 @@ state 155
 
 state 156
 
-    (50) decision -> SI L_PAR hiper_exp . R_PAR ENTONCES bloque decisionU empty
+    (50) decision -> SI L_PAR hiper_exp . R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
 
     R_PAR           shift and go to state 193
 
@@ -3123,10 +3129,12 @@ state 192
 
 state 193
 
-    (50) decision -> SI L_PAR hiper_exp R_PAR . ENTONCES bloque decisionU empty
+    (50) decision -> SI L_PAR hiper_exp R_PAR . neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
+    (128) neu_iniciarDecision -> .
 
-    ENTONCES        shift and go to state 245
+    ENTONCES        reduce using rule 128 (neu_iniciarDecision -> .)
 
+    neu_iniciarDecision            shift and go to state 245
 
 state 194
 
@@ -3889,12 +3897,10 @@ state 244
 
 state 245
 
-    (50) decision -> SI L_PAR hiper_exp R_PAR ENTONCES . bloque decisionU empty
-    (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
+    (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision . ENTONCES bloque decisionU neu_endDecision empty
 
-    L_LLAVE         shift and go to state 47
+    ENTONCES        shift and go to state 282
 
-    bloque                         shift and go to state 282
 
 state 246
 
@@ -4324,32 +4330,12 @@ state 281
 
 state 282
 
-    (50) decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque . decisionU empty
-    (51) decisionU -> . SINO bloque empty
-    (52) decisionU -> . empty
-    (103) empty -> .
+    (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES . bloque decisionU neu_endDecision empty
+    (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
 
-    SINO            shift and go to state 306
-    ID              reduce using rule 103 (empty -> .)
-    REGRESA         reduce using rule 103 (empty -> .)
-    LEER            reduce using rule 103 (empty -> .)
-    ESCRIBIR        reduce using rule 103 (empty -> .)
-    SI              reduce using rule 103 (empty -> .)
-    MIENTRAS        reduce using rule 103 (empty -> .)
-    DESDE           reduce using rule 103 (empty -> .)
-    CIRCULO         reduce using rule 103 (empty -> .)
-    COLOR           reduce using rule 103 (empty -> .)
-    GROSOR          reduce using rule 103 (empty -> .)
-    LINEA           reduce using rule 103 (empty -> .)
-    PUNTOXY         reduce using rule 103 (empty -> .)
-    ARCO            reduce using rule 103 (empty -> .)
-    PENUP           reduce using rule 103 (empty -> .)
-    PENDOWN         reduce using rule 103 (empty -> .)
-    PUNTOYCOMA      reduce using rule 103 (empty -> .)
-    R_LLAVE         reduce using rule 103 (empty -> .)
+    L_LLAVE         shift and go to state 47
 
-    decisionU                      shift and go to state 304
-    empty                          shift and go to state 305
+    bloque                         shift and go to state 304
 
 state 283
 
@@ -4374,13 +4360,13 @@ state 283
     PUNTOYCOMA      reduce using rule 103 (empty -> .)
     R_LLAVE         reduce using rule 103 (empty -> .)
 
-    empty                          shift and go to state 307
+    empty                          shift and go to state 305
 
 state 284
 
     (54) no_condicional -> DESDE L_PAR asignacion R_PAR HASTA hiper_exp . HACER bloque empty
 
-    HACER           shift and go to state 308
+    HACER           shift and go to state 306
 
 
 state 285
@@ -4405,7 +4391,7 @@ state 285
     FLOTANTEVAL     shift and go to state 154
     CARACTERVAL     shift and go to state 155
 
-    hiper_exp                      shift and go to state 309
+    hiper_exp                      shift and go to state 307
     super_exp                      shift and go to state 146
     exp                            shift and go to state 147
     termino                        shift and go to state 148
@@ -4420,7 +4406,7 @@ state 286
 
     PUNTOYCOMA      reduce using rule 103 (empty -> .)
 
-    empty                          shift and go to state 310
+    empty                          shift and go to state 308
 
 state 287
 
@@ -4615,9 +4601,12 @@ state 303
 
 state 304
 
-    (50) decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU . empty
+    (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque . decisionU neu_endDecision empty
+    (51) decisionU -> . SINO neu_iniciarDecisionElse bloque empty
+    (52) decisionU -> . empty
     (103) empty -> .
 
+    SINO            shift and go to state 311
     ID              reduce using rule 103 (empty -> .)
     REGRESA         reduce using rule 103 (empty -> .)
     LEER            reduce using rule 103 (empty -> .)
@@ -4636,41 +4625,10 @@ state 304
     PUNTOYCOMA      reduce using rule 103 (empty -> .)
     R_LLAVE         reduce using rule 103 (empty -> .)
 
-    empty                          shift and go to state 311
+    decisionU                      shift and go to state 309
+    empty                          shift and go to state 310
 
 state 305
-
-    (52) decisionU -> empty .
-
-    ID              reduce using rule 52 (decisionU -> empty .)
-    REGRESA         reduce using rule 52 (decisionU -> empty .)
-    LEER            reduce using rule 52 (decisionU -> empty .)
-    ESCRIBIR        reduce using rule 52 (decisionU -> empty .)
-    SI              reduce using rule 52 (decisionU -> empty .)
-    MIENTRAS        reduce using rule 52 (decisionU -> empty .)
-    DESDE           reduce using rule 52 (decisionU -> empty .)
-    CIRCULO         reduce using rule 52 (decisionU -> empty .)
-    COLOR           reduce using rule 52 (decisionU -> empty .)
-    GROSOR          reduce using rule 52 (decisionU -> empty .)
-    LINEA           reduce using rule 52 (decisionU -> empty .)
-    PUNTOXY         reduce using rule 52 (decisionU -> empty .)
-    ARCO            reduce using rule 52 (decisionU -> empty .)
-    PENUP           reduce using rule 52 (decisionU -> empty .)
-    PENDOWN         reduce using rule 52 (decisionU -> empty .)
-    PUNTOYCOMA      reduce using rule 52 (decisionU -> empty .)
-    R_LLAVE         reduce using rule 52 (decisionU -> empty .)
-
-
-state 306
-
-    (51) decisionU -> SINO . bloque empty
-    (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
-
-    L_LLAVE         shift and go to state 47
-
-    bloque                         shift and go to state 312
-
-state 307
 
     (53) condicional -> MIENTRAS L_PAR hiper_exp R_PAR HACER bloque empty .
 
@@ -4693,78 +4651,87 @@ state 307
     R_LLAVE         reduce using rule 53 (condicional -> MIENTRAS L_PAR hiper_exp R_PAR HACER bloque empty .)
 
 
-state 308
+state 306
 
     (54) no_condicional -> DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER . bloque empty
     (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
 
     L_LLAVE         shift and go to state 47
 
-    bloque                         shift and go to state 313
+    bloque                         shift and go to state 312
 
-state 309
+state 307
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp . COMA hiper_exp R_PAR empty
 
-    COMA            shift and go to state 314
+    COMA            shift and go to state 313
 
 
-state 310
+state 308
 
     (68) puntoxy -> PUNTOXY L_PAR hiper_exp COMA hiper_exp R_PAR empty .
 
     PUNTOYCOMA      reduce using rule 68 (puntoxy -> PUNTOXY L_PAR hiper_exp COMA hiper_exp R_PAR empty .)
 
 
+state 309
+
+    (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU . neu_endDecision empty
+    (130) neu_endDecision -> .
+
+    ID              reduce using rule 130 (neu_endDecision -> .)
+    REGRESA         reduce using rule 130 (neu_endDecision -> .)
+    LEER            reduce using rule 130 (neu_endDecision -> .)
+    ESCRIBIR        reduce using rule 130 (neu_endDecision -> .)
+    SI              reduce using rule 130 (neu_endDecision -> .)
+    MIENTRAS        reduce using rule 130 (neu_endDecision -> .)
+    DESDE           reduce using rule 130 (neu_endDecision -> .)
+    CIRCULO         reduce using rule 130 (neu_endDecision -> .)
+    COLOR           reduce using rule 130 (neu_endDecision -> .)
+    GROSOR          reduce using rule 130 (neu_endDecision -> .)
+    LINEA           reduce using rule 130 (neu_endDecision -> .)
+    PUNTOXY         reduce using rule 130 (neu_endDecision -> .)
+    ARCO            reduce using rule 130 (neu_endDecision -> .)
+    PENUP           reduce using rule 130 (neu_endDecision -> .)
+    PENDOWN         reduce using rule 130 (neu_endDecision -> .)
+    PUNTOYCOMA      reduce using rule 130 (neu_endDecision -> .)
+    R_LLAVE         reduce using rule 130 (neu_endDecision -> .)
+
+    neu_endDecision                shift and go to state 314
+
+state 310
+
+    (52) decisionU -> empty .
+
+    ID              reduce using rule 52 (decisionU -> empty .)
+    REGRESA         reduce using rule 52 (decisionU -> empty .)
+    LEER            reduce using rule 52 (decisionU -> empty .)
+    ESCRIBIR        reduce using rule 52 (decisionU -> empty .)
+    SI              reduce using rule 52 (decisionU -> empty .)
+    MIENTRAS        reduce using rule 52 (decisionU -> empty .)
+    DESDE           reduce using rule 52 (decisionU -> empty .)
+    CIRCULO         reduce using rule 52 (decisionU -> empty .)
+    COLOR           reduce using rule 52 (decisionU -> empty .)
+    GROSOR          reduce using rule 52 (decisionU -> empty .)
+    LINEA           reduce using rule 52 (decisionU -> empty .)
+    PUNTOXY         reduce using rule 52 (decisionU -> empty .)
+    ARCO            reduce using rule 52 (decisionU -> empty .)
+    PENUP           reduce using rule 52 (decisionU -> empty .)
+    PENDOWN         reduce using rule 52 (decisionU -> empty .)
+    PUNTOYCOMA      reduce using rule 52 (decisionU -> empty .)
+    R_LLAVE         reduce using rule 52 (decisionU -> empty .)
+
+
 state 311
 
-    (50) decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .
+    (51) decisionU -> SINO . neu_iniciarDecisionElse bloque empty
+    (129) neu_iniciarDecisionElse -> .
 
-    ID              reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    REGRESA         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    LEER            reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    ESCRIBIR        reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    SI              reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    MIENTRAS        reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    DESDE           reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    CIRCULO         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    COLOR           reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    GROSOR          reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    LINEA           reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    PUNTOXY         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    ARCO            reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    PENUP           reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    PENDOWN         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    PUNTOYCOMA      reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
-    R_LLAVE         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty .)
+    L_LLAVE         reduce using rule 129 (neu_iniciarDecisionElse -> .)
 
+    neu_iniciarDecisionElse        shift and go to state 315
 
 state 312
-
-    (51) decisionU -> SINO bloque . empty
-    (103) empty -> .
-
-    ID              reduce using rule 103 (empty -> .)
-    REGRESA         reduce using rule 103 (empty -> .)
-    LEER            reduce using rule 103 (empty -> .)
-    ESCRIBIR        reduce using rule 103 (empty -> .)
-    SI              reduce using rule 103 (empty -> .)
-    MIENTRAS        reduce using rule 103 (empty -> .)
-    DESDE           reduce using rule 103 (empty -> .)
-    CIRCULO         reduce using rule 103 (empty -> .)
-    COLOR           reduce using rule 103 (empty -> .)
-    GROSOR          reduce using rule 103 (empty -> .)
-    LINEA           reduce using rule 103 (empty -> .)
-    PUNTOXY         reduce using rule 103 (empty -> .)
-    ARCO            reduce using rule 103 (empty -> .)
-    PENUP           reduce using rule 103 (empty -> .)
-    PENDOWN         reduce using rule 103 (empty -> .)
-    PUNTOYCOMA      reduce using rule 103 (empty -> .)
-    R_LLAVE         reduce using rule 103 (empty -> .)
-
-    empty                          shift and go to state 315
-
-state 313
 
     (54) no_condicional -> DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER bloque . empty
     (103) empty -> .
@@ -4789,7 +4756,7 @@ state 313
 
     empty                          shift and go to state 316
 
-state 314
+state 313
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA . hiper_exp R_PAR empty
     (84) hiper_exp -> . super_exp neu_hacerHiperExp hiper_expU
@@ -4819,28 +4786,39 @@ state 314
     varcte                         shift and go to state 150
     llamada                        shift and go to state 151
 
+state 314
+
+    (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision . empty
+    (103) empty -> .
+
+    ID              reduce using rule 103 (empty -> .)
+    REGRESA         reduce using rule 103 (empty -> .)
+    LEER            reduce using rule 103 (empty -> .)
+    ESCRIBIR        reduce using rule 103 (empty -> .)
+    SI              reduce using rule 103 (empty -> .)
+    MIENTRAS        reduce using rule 103 (empty -> .)
+    DESDE           reduce using rule 103 (empty -> .)
+    CIRCULO         reduce using rule 103 (empty -> .)
+    COLOR           reduce using rule 103 (empty -> .)
+    GROSOR          reduce using rule 103 (empty -> .)
+    LINEA           reduce using rule 103 (empty -> .)
+    PUNTOXY         reduce using rule 103 (empty -> .)
+    ARCO            reduce using rule 103 (empty -> .)
+    PENUP           reduce using rule 103 (empty -> .)
+    PENDOWN         reduce using rule 103 (empty -> .)
+    PUNTOYCOMA      reduce using rule 103 (empty -> .)
+    R_LLAVE         reduce using rule 103 (empty -> .)
+
+    empty                          shift and go to state 318
+
 state 315
 
-    (51) decisionU -> SINO bloque empty .
+    (51) decisionU -> SINO neu_iniciarDecisionElse . bloque empty
+    (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
 
-    ID              reduce using rule 51 (decisionU -> SINO bloque empty .)
-    REGRESA         reduce using rule 51 (decisionU -> SINO bloque empty .)
-    LEER            reduce using rule 51 (decisionU -> SINO bloque empty .)
-    ESCRIBIR        reduce using rule 51 (decisionU -> SINO bloque empty .)
-    SI              reduce using rule 51 (decisionU -> SINO bloque empty .)
-    MIENTRAS        reduce using rule 51 (decisionU -> SINO bloque empty .)
-    DESDE           reduce using rule 51 (decisionU -> SINO bloque empty .)
-    CIRCULO         reduce using rule 51 (decisionU -> SINO bloque empty .)
-    COLOR           reduce using rule 51 (decisionU -> SINO bloque empty .)
-    GROSOR          reduce using rule 51 (decisionU -> SINO bloque empty .)
-    LINEA           reduce using rule 51 (decisionU -> SINO bloque empty .)
-    PUNTOXY         reduce using rule 51 (decisionU -> SINO bloque empty .)
-    ARCO            reduce using rule 51 (decisionU -> SINO bloque empty .)
-    PENUP           reduce using rule 51 (decisionU -> SINO bloque empty .)
-    PENDOWN         reduce using rule 51 (decisionU -> SINO bloque empty .)
-    PUNTOYCOMA      reduce using rule 51 (decisionU -> SINO bloque empty .)
-    R_LLAVE         reduce using rule 51 (decisionU -> SINO bloque empty .)
+    L_LLAVE         shift and go to state 47
 
+    bloque                         shift and go to state 319
 
 state 316
 
@@ -4869,19 +4847,90 @@ state 317
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA hiper_exp . R_PAR empty
 
-    R_PAR           shift and go to state 318
+    R_PAR           shift and go to state 320
 
 
 state 318
+
+    (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .
+
+    ID              reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    REGRESA         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    LEER            reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    ESCRIBIR        reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    SI              reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    MIENTRAS        reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    DESDE           reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    CIRCULO         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    COLOR           reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    GROSOR          reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    LINEA           reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    PUNTOXY         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    ARCO            reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    PENUP           reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    PENDOWN         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    PUNTOYCOMA      reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+    R_LLAVE         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
+
+
+state 319
+
+    (51) decisionU -> SINO neu_iniciarDecisionElse bloque . empty
+    (103) empty -> .
+
+    ID              reduce using rule 103 (empty -> .)
+    REGRESA         reduce using rule 103 (empty -> .)
+    LEER            reduce using rule 103 (empty -> .)
+    ESCRIBIR        reduce using rule 103 (empty -> .)
+    SI              reduce using rule 103 (empty -> .)
+    MIENTRAS        reduce using rule 103 (empty -> .)
+    DESDE           reduce using rule 103 (empty -> .)
+    CIRCULO         reduce using rule 103 (empty -> .)
+    COLOR           reduce using rule 103 (empty -> .)
+    GROSOR          reduce using rule 103 (empty -> .)
+    LINEA           reduce using rule 103 (empty -> .)
+    PUNTOXY         reduce using rule 103 (empty -> .)
+    ARCO            reduce using rule 103 (empty -> .)
+    PENUP           reduce using rule 103 (empty -> .)
+    PENDOWN         reduce using rule 103 (empty -> .)
+    PUNTOYCOMA      reduce using rule 103 (empty -> .)
+    R_LLAVE         reduce using rule 103 (empty -> .)
+
+    empty                          shift and go to state 321
+
+state 320
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA hiper_exp R_PAR . empty
     (103) empty -> .
 
     PUNTOYCOMA      reduce using rule 103 (empty -> .)
 
-    empty                          shift and go to state 319
+    empty                          shift and go to state 322
 
-state 319
+state 321
+
+    (51) decisionU -> SINO neu_iniciarDecisionElse bloque empty .
+
+    ID              reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    REGRESA         reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    LEER            reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    ESCRIBIR        reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    SI              reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    MIENTRAS        reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    DESDE           reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    CIRCULO         reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    COLOR           reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    GROSOR          reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    LINEA           reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    PUNTOXY         reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    ARCO            reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    PENUP           reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    PENDOWN         reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    PUNTOYCOMA      reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+    R_LLAVE         reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
+
+
+state 322
 
     (67) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA hiper_exp R_PAR empty .
 

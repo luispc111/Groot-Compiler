@@ -55,6 +55,9 @@ cuadruplos = []
 # Arreglo que se llenará con los errores
 errores = []
 
+# Pila de saltos para ciclos
+pilaSaltos = []
+
 ############### LEXER ###############
 
 # TOKENS
@@ -379,11 +382,12 @@ def p_escritura(p):
 
 def p_decision(p):
     '''
-    decision : SI L_PAR hiper_exp R_PAR ENTONCES bloque decisionU empty
+    decision : SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
 
-    decisionU : SINO bloque empty
+    decisionU : SINO neu_iniciarDecisionElse bloque empty
               | empty
     '''
+    p[0] = None
 
 def p_condicional(p):
     '''
@@ -885,6 +889,22 @@ def p_neu_escritura(p):
     # else:
     #     errores.append(str(lexer.lineno) + " - Se debe declarar la variable " + str(pilaTerminos[-1]) + " antes de utilizarla")
 
+# DECISION
+def p_neu_iniciarDecision(p):
+    'neu_iniciarDecision : '
+    cuadruplos.append(Cuadruplo('GOTOF', pilaTerminos[-1], None, 0))
+    pilaSaltos.append(len(cuadruplos)-1)
+
+def p_neu_iniciarDecisionElse(p):
+    'neu_iniciarDecisionElse : '
+    cuadruplos.append(Cuadruplo('GOTO', None, None, 0))
+    cuadruplos[pilaSaltos.pop()].res = len(cuadruplos)
+    pilaSaltos.append(len(cuadruplos)-1)
+
+def p_neu_endDecision(p):
+    'neu_endDecision : '
+    cuadruplos[pilaSaltos.pop()].res = len(cuadruplos)
+
 def p_neu_vaciarPilas(p):
     'neu_vaciarPilas : '
     global pilaTerminos, pilaOperadores, pilaTipos
@@ -912,9 +932,11 @@ try:
             print("\nTABLA DE CONSTANTES ->")
             print(tabla_constantes)
 
+            contador = 0
             print("\nCUADRUPLOS ->")
             for item in cuadruplos:
-                print(item.getCuadruplo())
+                print(str(contador) + " " + str(item.getCuadruplo()))
+                contador += 1
 
 except EOFError:
     print("Error")
