@@ -25,6 +25,8 @@ currFuncType = ''
 currVarName = ''
 currVarType = ''
 
+currAsignacionFor = 0
+
 # Memorias
 
 memoriaGEntero = 1000
@@ -391,13 +393,20 @@ def p_decision(p):
 
 def p_condicional(p):
     '''
-    condicional : MIENTRAS L_PAR hiper_exp R_PAR HACER bloque empty
+    condicional : MIENTRAS L_PAR neu_condicionalAntes hiper_exp neu_condicionalDurante R_PAR HACER bloque neu_condicionalDespues empty
     '''
+    p[0] = None
 
 def p_no_condicional(p):
     '''
-    no_condicional : DESDE L_PAR asignacion R_PAR HASTA hiper_exp HACER bloque empty
+    no_condicional : DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp neu_boolFor HACER bloque neu_endCondicion empty
     '''
+
+def p_asignacionFor(p):
+    '''
+    asignacionFor : ID neu_addIDFor IGUAL neu_addOperador hiper_exp neu_asignacionFor empty
+    '''
+    p[0] = None
 
 # FUNCIONES ESPECIALES
 
@@ -873,7 +882,7 @@ def p_neu_asignacion(p):
     igual = pilaOperadores.pop()
     der = pilaTerminos.pop()
     izq = pilaTerminos.pop()
-    cuadruplos.append(Cuadruplo(igual, izq, None, der))
+    cuadruplos.append(Cuadruplo(igual, der, None, izq))
 
 def p_neu_lectura(p):
     'neu_lectura : '
@@ -887,14 +896,15 @@ def p_neu_escritura(p):
     'neu_escritura : '
     global currFuncName, progName, pilaTerminos
     cuadruplos.append(Cuadruplo('WRITE', None, None, pilaTerminos[-1]))
-    # else:
-    #     errores.append(str(lexer.lineno) + " - Se debe declarar la variable " + str(pilaTerminos[-1]) + " antes de utilizarla")
 
 # DECISION
 def p_neu_iniciarDecision(p):
     'neu_iniciarDecision : '
-    cuadruplos.append(Cuadruplo('GOTOF', pilaTerminos[-1], None, 0))
-    pilaSaltos.append(len(cuadruplos)-1)
+    if pilaTipos[-1] == 'Entero' or pilaTipos[-1] == 'Flotante':
+        cuadruplos.append(Cuadruplo('GOTOF', pilaTerminos[-1], None, 0))
+        pilaSaltos.append(len(cuadruplos)-1)
+    else:
+        errores.append(str(lexer.lineno) + " - No se puede utilizar la variable " + pilaTerminos[-1] + " para realizar una decisión")
 
 def p_neu_iniciarDecisionElse(p):
     'neu_iniciarDecisionElse : '
@@ -905,6 +915,89 @@ def p_neu_iniciarDecisionElse(p):
 def p_neu_endDecision(p):
     'neu_endDecision : '
     cuadruplos[pilaSaltos.pop()].res = len(cuadruplos)
+
+# CONDICIONAL
+def p_neu_condicionalAntes(p):
+    'neu_condicionalAntes : '
+    pilaSaltos.append(len(cuadruplos))
+
+def p_neu_condicionalDurante(p):
+    'neu_condicionalDurante : '
+    cuadruplos.append(Cuadruplo('GOTOF', pilaTerminos.pop(), None, 0))
+
+def p_neu_condicionalDespues(p):
+    'neu_condicionalDespues : '
+    cuadruplos.append(Cuadruplo('GOTO', None, None, pilaSaltos[-1]))
+    cuadruplos[pilaSaltos.pop() + 1].res = len(cuadruplos)
+
+# NO CONDICIONAL
+def p_neu_addIDFor(p):
+    'neu_addIDFor : '
+    global currFuncName, progName
+    if p[-1] in tabla_variables[currFuncName]['variables'].keys():
+        if tabla_variables[currFuncName]['variables'][p[-1]]['tipo'] == 'Entero':
+            pilaTerminos.append(tabla_variables[currFuncName]['variables'][p[-1]]['memoria'])
+            pilaTipos.append('Entero')
+        else:
+            errores.append(str(lexer.lineno) + " - La variable " + p[-1] + " debe ser entero.")
+    elif p[-1] in tabla_variables[progName]['variables'].keys():
+        if tabla_variables[progName]['variables'][p[-1]]['tipo'] == 'Entero':
+            pilaTerminos.append(tabla_variables[progName]['variables'][p[-1]]['memoria'])
+            pilaTipos.append('Entero')
+        else:
+            errores.append(str(lexer.lineno) + " - La variable " + p[-1] + " debe ser entero.")
+    else:
+        errores.append(str(lexer.lineno) + " - No se declaró la variable " + p[-1])
+
+def p_neu_asignacionFor(p):
+    'neu_asignacionFor : '
+    global currAsignacionFor
+    igual = pilaOperadores.pop()
+    der = pilaTerminos.pop()
+    izq = pilaTerminos.pop()
+    cuadruplos.append(Cuadruplo(igual, der, None, izq))
+    currAsignacionFor = izq
+
+def p_neu_boolFor(p):
+    'neu_boolFor : '
+    global currAsignacionFor
+ 
+    ladoDer = pilaTerminos.pop()
+    ladoIzq = currAsignacionFor
+    ladoDerTipo = pilaTipos.pop()
+    ladoIzqTipo = 'Entero'
+    operador = '<'
+
+    tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
+    if currFuncName == progName:
+        memoriaResultado = p_getGMemoria(tipoResultado) 
+    else:
+        memoriaResultado = p_getLMemoria(tipoResultado)
+    
+    if tipoResultado != 'Error':
+        cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
+        pilaSaltos.append(len(cuadruplos)-1)
+        cuadruplos.append(Cuadruplo('GOTOF', memoriaResultado, None, 0))
+    else:
+        errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+
+def p_neu_endCondicion(p):
+    'neu_endCondicion  : '
+    global currAsignacionFor
+
+    if '1' not in tabla_constantes['Entero'].keys():
+        tabla_constantes['Entero']['1'] = {'tipo': 'Entero', 'memoria': p_getCMemoria('Entero')}
+    memoriaSuma = tabla_constantes['Entero']['1']['memoria']
+
+    if currFuncName == progName:
+        memoriaResultado = p_getGMemoria('Entero') 
+    else:
+        memoriaResultado = p_getLMemoria('Entero')
+
+    cuadruplos.append(Cuadruplo('+', currAsignacionFor, memoriaSuma, memoriaResultado))
+    cuadruplos.append(Cuadruplo('=', memoriaResultado, None, currAsignacionFor))
+    cuadruplos.append(Cuadruplo('GOTO', None, None, pilaSaltos[-1]))
+    cuadruplos[pilaSaltos.pop() + 1].res = len(cuadruplos)
 
 def p_neu_vaciarPilas(p):
     'neu_vaciarPilas : '

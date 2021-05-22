@@ -10,31 +10,25 @@ Void Funcion decirHola()
 Variables
   subVar : Entero;
 {
-}
+  Mientras (a < b) Hacer {
+    a = a + 1;
 
-Entero Funcion miFuncion2()
-Variables
-  subVar2 : Entero;
-{
+    Si (5 < 4) Entonces
+    {
+      Escribir(a);
+    }
+    Sino {
+      Escribir(b);
+    }
+  }
+  letra = 'a';
 }
 
 Principal(){
-  Leer(a);
-
-  Si (5 < 4) Entonces
+  Desde (i = 0) Hasta 10 Hacer
   {
     Escribir(a);
-    Escribir(a);
-  }
-  Sino {
-    Escribir(b);
-    Escribir(b);
   }
 
-  Escribir(100 + 100);
-  Escribir('x');
 
-  a = 5 - 17.5 + b / 14;
-  letra = 'b';
-  decirHola();
 }
