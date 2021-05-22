@@ -20,7 +20,10 @@ Variables
 
 Principal(){
   Leer(a);
-  a = 5 - 17.5;
+  Escribir(a);
+  Escribir(100 + 100);
+  Escribir('x');
+  a = 5 - 17.5 + b / 14;
   letra = 'b';
   decirHola();
 }

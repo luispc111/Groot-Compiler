@@ -372,7 +372,7 @@ def p_escritura(p):
     '''
     escritura : ESCRIBIR L_PAR escrituraD R_PAR empty
 
-    escrituraD : hiper_exp empty
+    escrituraD : hiper_exp neu_escritura empty
                | LETRERO empty
     '''
     p[0] = None
@@ -660,7 +660,6 @@ def p_neu_addConstanteCaracter(p):
     pilaTerminos.append(tabla_constantes['Caracter'][p[-1]]['memoria'])
     pilaTipos.append('Caracter')
 
-
 def p_neu_addTermino(p):
     'neu_addTermino : '
     pilaTerminos.append(tabla_variables[currFuncName]['variables'][p[-1]]['memoria'])
@@ -768,97 +767,101 @@ def p_getCMemoria(tipo):
 def p_neu_hacerTermino(p):
     'neu_hacerTermino : '
     global pilaOperadores, pilaTerminos, currFuncName
-    if(pilaOperadores[-1] == '*' or pilaOperadores[-1] == '/'):
-        ladoDer = pilaTerminos.pop()
-        ladoIzq = pilaTerminos.pop()
-        ladoDerTipo = pilaTipos.pop()
-        ladoIzqTipo = pilaTipos.pop()
-        operador = pilaOperadores.pop()
+    if pilaOperadores:
+        if(pilaOperadores[-1] == '*' or pilaOperadores[-1] == '/'):
+            ladoDer = pilaTerminos.pop()
+            ladoIzq = pilaTerminos.pop()
+            ladoDerTipo = pilaTipos.pop()
+            ladoIzqTipo = pilaTipos.pop()
+            operador = pilaOperadores.pop()
 
-        tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
-        if currFuncName == progName:
-            memoriaResultado = p_getGMemoria(tipoResultado) 
-        else:
-            memoriaResultado = p_getLMemoria(tipoResultado)
+            tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
+            if currFuncName == progName:
+                memoriaResultado = p_getGMemoria(tipoResultado) 
+            else:
+                memoriaResultado = p_getLMemoria(tipoResultado)
 
-        if tipoResultado != 'Error':
-            cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
-            pilaTerminos.append(memoriaResultado)
-            pilaTipos.append(tipoResultado)
-        else:
-            errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+            if tipoResultado != 'Error':
+                cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
+                pilaTerminos.append(memoriaResultado)
+                pilaTipos.append(tipoResultado)
+            else:
+                errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
 
 # + -
 def p_neu_hacerExp(p):
     'neu_hacerExp : '
     global pilaOperadores, pilaTerminos, currFuncName
-    if(pilaOperadores[-1] == '+' or pilaOperadores[-1] == '-'):
-        ladoDer = pilaTerminos.pop()
-        ladoIzq = pilaTerminos.pop()
-        ladoDerTipo = pilaTipos.pop()
-        ladoIzqTipo = pilaTipos.pop()
-        operador = pilaOperadores.pop()
+    if pilaOperadores:
+        if(pilaOperadores[-1] == '+' or pilaOperadores[-1] == '-'):
+            ladoDer = pilaTerminos.pop()
+            ladoIzq = pilaTerminos.pop()
+            ladoDerTipo = pilaTipos.pop()
+            ladoIzqTipo = pilaTipos.pop()
+            operador = pilaOperadores.pop()
 
-        tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
-        if currFuncName == progName:
-            memoriaResultado = p_getGMemoria(tipoResultado) 
-        else:
-            memoriaResultado = p_getLMemoria(tipoResultado)
-        
-        if tipoResultado != 'Error':
-            cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
-            pilaTerminos.append(memoriaResultado)
-            pilaTipos.append(tipoResultado)
-        else:
-            errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+            tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
+            if currFuncName == progName:
+                memoriaResultado = p_getGMemoria(tipoResultado) 
+            else:
+                memoriaResultado = p_getLMemoria(tipoResultado)
+            
+            if tipoResultado != 'Error':
+                cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
+                pilaTerminos.append(memoriaResultado)
+                pilaTipos.append(tipoResultado)
+            else:
+                errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
 
 # < > >= >= != ==
 def p_neu_hacerSuperExp(p):
     'neu_hacerSuperExp : '
     global pilaOperadores, pilaTerminos, currFuncName
-    if(pilaOperadores[-1] == '<' or pilaOperadores[-1] == '>' or pilaOperadores[-1] == '<=' or pilaOperadores[-1] == '>=' or pilaOperadores[-1] == '!=' or pilaOperadores[-1] == '=='):
-        ladoDer = pilaTerminos.pop()
-        ladoIzq = pilaTerminos.pop()
-        ladoDerTipo = pilaTipos.pop()
-        ladoIzqTipo = pilaTipos.pop()
-        operador = pilaOperadores.pop()
+    if pilaOperadores:
+        if(pilaOperadores[-1] == '<' or pilaOperadores[-1] == '>' or pilaOperadores[-1] == '<=' or pilaOperadores[-1] == '>=' or pilaOperadores[-1] == '!=' or pilaOperadores[-1] == '=='):
+            ladoDer = pilaTerminos.pop()
+            ladoIzq = pilaTerminos.pop()
+            ladoDerTipo = pilaTipos.pop()
+            ladoIzqTipo = pilaTipos.pop()
+            operador = pilaOperadores.pop()
 
-        tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
-        if currFuncName == progName:
-            memoriaResultado = p_getGMemoria(tipoResultado) 
-        else:
-            memoriaResultado = p_getLMemoria(tipoResultado)
-        
-        if tipoResultado != 'Error':
-            cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
-            pilaTerminos.append(memoriaResultado)
-            pilaTipos.append(tipoResultado)
-        else:
-            errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+            tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
+            if currFuncName == progName:
+                memoriaResultado = p_getGMemoria(tipoResultado) 
+            else:
+                memoriaResultado = p_getLMemoria(tipoResultado)
+            
+            if tipoResultado != 'Error':
+                cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
+                pilaTerminos.append(memoriaResultado)
+                pilaTipos.append(tipoResultado)
+            else:
+                errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
 
 # & |
 def p_neu_hacerHiperExp(p):
     'neu_hacerHiperExp : '
     global pilaOperadores, pilaTerminos, currFuncName
-    if(pilaOperadores[-1] == '&' or pilaOperadores[-1] == '|'):
-        ladoDer = pilaTerminos.pop()
-        ladoIzq = pilaTerminos.pop()
-        ladoDerTipo = pilaTipos.pop()
-        ladoIzqTipo = pilaTipos.pop()
-        operador = pilaOperadores.pop()
+    if pilaOperadores:
+        if(pilaOperadores[-1] == '&' or pilaOperadores[-1] == '|'):
+            ladoDer = pilaTerminos.pop()
+            ladoIzq = pilaTerminos.pop()
+            ladoDerTipo = pilaTipos.pop()
+            ladoIzqTipo = pilaTipos.pop()
+            operador = pilaOperadores.pop()
 
-        tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
-        if currFuncName == progName:
-            memoriaResultado = p_getGMemoria(tipoResultado) 
-        else:
-            memoriaResultado = p_getLMemoria(tipoResultado)
-        
-        if tipoResultado != 'Error':
-            cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
-            pilaTerminos.append(memoriaResultado)
-            pilaTipos.append(tipoResultado)
-        else:
-            errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+            tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
+            if currFuncName == progName:
+                memoriaResultado = p_getGMemoria(tipoResultado) 
+            else:
+                memoriaResultado = p_getLMemoria(tipoResultado)
+            
+            if tipoResultado != 'Error':
+                cuadruplos.append(Cuadruplo(operador, ladoIzq, ladoDer, memoriaResultado))
+                pilaTerminos.append(memoriaResultado)
+                pilaTipos.append(tipoResultado)
+            else:
+                errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
 
 def p_neu_asignacion(p):
     'neu_asignacion : '
@@ -875,14 +878,12 @@ def p_neu_lectura(p):
     else:
         errores.append(str(lexer.lineno) + " - Se debe declarar la variable " + p[-1] + " antes de utilizarla")
 
-# def p_neu_escritura(p):
-#     'neu_escritura : '
-#     global currFuncName
-#     print("---------------------" + str(p[-1]))
-#     if p[-1] in tabla_variables[currFuncName]['variables'].keys():
-#         cuadruplos.append(Cuadruplo('WRITE', None, None, tabla_variables[currFuncName]['variables'][p[-1]]['memoria']))
-#     else:
-#         errores.append(str(lexer.lineno) + " - Se debe declarar la variable " + p[-1] + " antes de utilizarla")
+def p_neu_escritura(p):
+    'neu_escritura : '
+    global currFuncName, progName, pilaTerminos
+    cuadruplos.append(Cuadruplo('WRITE', None, None, pilaTerminos[-1]))
+    # else:
+    #     errores.append(str(lexer.lineno) + " - Se debe declarar la variable " + str(pilaTerminos[-1]) + " antes de utilizarla")
 
 def p_neu_vaciarPilas(p):
     'neu_vaciarPilas : '
