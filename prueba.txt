@@ -24,6 +24,10 @@ Variables
   letra = 'a';
 }
 
+Entero Funcion regresarPrueba() {
+  Regresa(x);
+}
+
 Principal(){
   Desde (i = 0) Hasta 10 Hacer
   {

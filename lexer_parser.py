@@ -364,8 +364,9 @@ def p_llamada(p):
 
 def p_retorno(p):
     '''
-    retorno : REGRESA L_PAR ID R_PAR empty
+    retorno : REGRESA L_PAR hiper_exp neu_retorno R_PAR empty
     '''
+    p[0] = None
 
 def p_lectura(p):
     '''
@@ -897,6 +898,14 @@ def p_neu_escritura(p):
     global currFuncName, progName, pilaTerminos
     cuadruplos.append(Cuadruplo('WRITE', None, None, pilaTerminos[-1]))
 
+def p_neu_retorno(p):
+    'neu_retorno : '
+    global currFuncType
+    if pilaTipos.pop() == currFuncType:
+        cuadruplos.append(Cuadruplo('RETURN', None, None, pilaTerminos.pop()))
+    else:
+        errores.append(str(lexer.lineno) + " - El valor que se retorna no es compatible con el tipo de la función")
+        
 # DECISION
 def p_neu_iniciarDecision(p):
     'neu_iniciarDecision : '
@@ -998,6 +1007,8 @@ def p_neu_endCondicion(p):
     cuadruplos.append(Cuadruplo('=', memoriaResultado, None, currAsignacionFor))
     cuadruplos.append(Cuadruplo('GOTO', None, None, pilaSaltos[-1]))
     cuadruplos[pilaSaltos.pop() + 1].res = len(cuadruplos)
+
+# VACIAR PILAS
 
 def p_neu_vaciarPilas(p):
     'neu_vaciarPilas : '

@@ -53,7 +53,7 @@ Rule 41    estatuto -> funciones_especiales PUNTOYCOMA empty
 Rule 42    estatuto -> empty
 Rule 43    asignacion -> ID neu_addID IGUAL neu_addOperador hiper_exp neu_asignacion empty
 Rule 44    llamada -> ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
-Rule 45    retorno -> REGRESA L_PAR ID R_PAR empty
+Rule 45    retorno -> REGRESA L_PAR hiper_exp neu_retorno R_PAR empty
 Rule 46    lectura -> LEER L_PAR ID neu_lectura R_PAR empty
 Rule 47    escritura -> ESCRIBIR L_PAR escrituraD R_PAR empty
 Rule 48    escrituraD -> hiper_exp neu_escritura empty
@@ -137,17 +137,18 @@ Rule 125   neu_hacerHiperExp -> <empty>
 Rule 126   neu_asignacion -> <empty>
 Rule 127   neu_lectura -> <empty>
 Rule 128   neu_escritura -> <empty>
-Rule 129   neu_iniciarDecision -> <empty>
-Rule 130   neu_iniciarDecisionElse -> <empty>
-Rule 131   neu_endDecision -> <empty>
-Rule 132   neu_condicionalAntes -> <empty>
-Rule 133   neu_condicionalDurante -> <empty>
-Rule 134   neu_condicionalDespues -> <empty>
-Rule 135   neu_addIDFor -> <empty>
-Rule 136   neu_asignacionFor -> <empty>
-Rule 137   neu_boolFor -> <empty>
-Rule 138   neu_endCondicion -> <empty>
-Rule 139   neu_vaciarPilas -> <empty>
+Rule 129   neu_retorno -> <empty>
+Rule 130   neu_iniciarDecision -> <empty>
+Rule 131   neu_iniciarDecisionElse -> <empty>
+Rule 132   neu_endDecision -> <empty>
+Rule 133   neu_condicionalAntes -> <empty>
+Rule 134   neu_condicionalDurante -> <empty>
+Rule 135   neu_condicionalDespues -> <empty>
+Rule 136   neu_addIDFor -> <empty>
+Rule 137   neu_asignacionFor -> <empty>
+Rule 138   neu_boolFor -> <empty>
+Rule 139   neu_endCondicion -> <empty>
+Rule 140   neu_vaciarPilas -> <empty>
 
 Terminals, with rules where they appear
 
@@ -172,7 +173,7 @@ FUNCION              : 10
 GROSOR               : 67
 HACER                : 53 54
 HASTA                : 54
-ID                   : 1 6 7 10 20 24 43 44 45 46 55 100
+ID                   : 1 6 7 10 20 24 43 44 46 55 100
 IGUAL                : 43 55
 IGUALQUE             : 83
 LEER                 : 46
@@ -235,7 +236,7 @@ getCMemoria          :
 getGMemoria          : 
 getLMemoria          : 
 grosor               : 58
-hiper_exp            : 43 48 50 53 54 55 65 66 67 68 68 68 68 69 69 70 71 72 86 99
+hiper_exp            : 43 45 48 50 53 54 55 65 66 67 68 68 68 68 69 69 70 71 72 86 99
 hiper_expU           : 85
 lectura              : 36
 linea                : 59
@@ -273,6 +274,7 @@ neu_llamada_era      : 44
 neu_llamada_gosub    : 44
 neu_principal        : 1
 neu_programa         : 1
+neu_retorno          : 45
 neu_vaciarPilas      : 29
 no_condicional       : 40
 operadorA            : 92
@@ -783,7 +785,7 @@ state 47
     (104) empty -> .
     (43) asignacion -> . ID neu_addID IGUAL neu_addOperador hiper_exp neu_asignacion empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
-    (45) retorno -> . REGRESA L_PAR ID R_PAR empty
+    (45) retorno -> . REGRESA L_PAR hiper_exp neu_retorno R_PAR empty
     (46) lectura -> . LEER L_PAR ID neu_lectura R_PAR empty
     (47) escritura -> . ESCRIBIR L_PAR escrituraD R_PAR empty
     (50) decision -> . SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
@@ -974,7 +976,7 @@ state 55
     (42) estatuto -> . empty
     (43) asignacion -> . ID neu_addID IGUAL neu_addOperador hiper_exp neu_asignacion empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
-    (45) retorno -> . REGRESA L_PAR ID R_PAR empty
+    (45) retorno -> . REGRESA L_PAR hiper_exp neu_retorno R_PAR empty
     (46) lectura -> . LEER L_PAR ID neu_lectura R_PAR empty
     (47) escritura -> . ESCRIBIR L_PAR escrituraD R_PAR empty
     (50) decision -> . SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
@@ -1201,7 +1203,7 @@ state 65
 
 state 66
 
-    (45) retorno -> REGRESA . L_PAR ID R_PAR empty
+    (45) retorno -> REGRESA . L_PAR hiper_exp neu_retorno R_PAR empty
 
     L_PAR           shift and go to state 105
 
@@ -1430,9 +1432,9 @@ state 90
 state 91
 
     (29) bloqueU -> estatuto bloqueD . neu_vaciarPilas empty
-    (139) neu_vaciarPilas -> .
+    (140) neu_vaciarPilas -> .
 
-    R_LLAVE         reduce using rule 139 (neu_vaciarPilas -> .)
+    R_LLAVE         reduce using rule 140 (neu_vaciarPilas -> .)
 
     neu_vaciarPilas                shift and go to state 130
 
@@ -1713,16 +1715,39 @@ state 104
 
 state 105
 
-    (45) retorno -> REGRESA L_PAR . ID R_PAR empty
+    (45) retorno -> REGRESA L_PAR . hiper_exp neu_retorno R_PAR empty
+    (85) hiper_exp -> . super_exp neu_hacerHiperExp hiper_expU
+    (88) super_exp -> . exp neu_hacerSuperExp super_expU
+    (91) exp -> . termino neu_hacerExp expU
+    (94) termino -> . factor neu_hacerTermino terminoU
+    (97) factor -> . varcte empty
+    (98) factor -> . llamada empty
+    (99) factor -> . L_PAR hiper_exp R_PAR empty
+    (100) varcte -> . ID neu_addID empty
+    (101) varcte -> . ENTEROVAL neu_addConstanteEntero empty
+    (102) varcte -> . FLOTANTEVAL neu_addConstanteFlotante empty
+    (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
+    (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    ID              shift and go to state 140
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
+    hiper_exp                      shift and go to state 141
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 106
 
     (46) lectura -> LEER L_PAR . ID neu_lectura R_PAR empty
 
-    ID              shift and go to state 141
+    ID              shift and go to state 152
 
 
 state 107
@@ -1743,21 +1768,21 @@ state 107
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    LETRERO         shift and go to state 145
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    LETRERO         shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
-    escrituraD                     shift and go to state 143
-    hiper_exp                      shift and go to state 144
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    escrituraD                     shift and go to state 153
+    hiper_exp                      shift and go to state 154
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 108
 
@@ -1775,30 +1800,30 @@ state 108
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 156
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 109
 
     (53) condicional -> MIENTRAS L_PAR . neu_condicionalAntes hiper_exp neu_condicionalDurante R_PAR HACER bloque neu_condicionalDespues empty
-    (132) neu_condicionalAntes -> .
+    (133) neu_condicionalAntes -> .
 
-    L_PAR           reduce using rule 132 (neu_condicionalAntes -> .)
-    ID              reduce using rule 132 (neu_condicionalAntes -> .)
-    ENTEROVAL       reduce using rule 132 (neu_condicionalAntes -> .)
-    FLOTANTEVAL     reduce using rule 132 (neu_condicionalAntes -> .)
-    CARACTERVAL     reduce using rule 132 (neu_condicionalAntes -> .)
+    L_PAR           reduce using rule 133 (neu_condicionalAntes -> .)
+    ID              reduce using rule 133 (neu_condicionalAntes -> .)
+    ENTEROVAL       reduce using rule 133 (neu_condicionalAntes -> .)
+    FLOTANTEVAL     reduce using rule 133 (neu_condicionalAntes -> .)
+    CARACTERVAL     reduce using rule 133 (neu_condicionalAntes -> .)
 
     neu_condicionalAntes           shift and go to state 157
 
@@ -1883,19 +1908,19 @@ state 119
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 160
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 120
 
@@ -1913,19 +1938,19 @@ state 120
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 161
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 121
 
@@ -1943,19 +1968,19 @@ state 121
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 162
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 122
 
@@ -1973,19 +1998,19 @@ state 122
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 163
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 123
 
@@ -2003,19 +2028,19 @@ state 123
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 164
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 124
 
@@ -2033,19 +2058,19 @@ state 124
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 165
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 125
 
@@ -2063,19 +2088,19 @@ state 125
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 166
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 126
 
@@ -2093,19 +2118,19 @@ state 126
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 167
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 127
 
@@ -2341,22 +2366,6 @@ state 139
 
 state 140
 
-    (45) retorno -> REGRESA L_PAR ID . R_PAR empty
-
-    R_PAR           shift and go to state 177
-
-
-state 141
-
-    (46) lectura -> LEER L_PAR ID . neu_lectura R_PAR empty
-    (127) neu_lectura -> .
-
-    R_PAR           reduce using rule 127 (neu_lectura -> .)
-
-    neu_lectura                    shift and go to state 178
-
-state 142
-
     (99) factor -> L_PAR . hiper_exp R_PAR empty
     (85) hiper_exp -> . super_exp neu_hacerHiperExp hiper_expU
     (88) super_exp -> . exp neu_hacerSuperExp super_expU
@@ -2371,46 +2380,30 @@ state 142
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
-    hiper_exp                      shift and go to state 179
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    hiper_exp                      shift and go to state 177
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
-state 143
+state 141
 
-    (47) escritura -> ESCRIBIR L_PAR escrituraD . R_PAR empty
+    (45) retorno -> REGRESA L_PAR hiper_exp . neu_retorno R_PAR empty
+    (129) neu_retorno -> .
 
-    R_PAR           shift and go to state 180
+    R_PAR           reduce using rule 129 (neu_retorno -> .)
 
+    neu_retorno                    shift and go to state 178
 
-state 144
-
-    (48) escrituraD -> hiper_exp . neu_escritura empty
-    (128) neu_escritura -> .
-
-    R_PAR           reduce using rule 128 (neu_escritura -> .)
-
-    neu_escritura                  shift and go to state 181
-
-state 145
-
-    (49) escrituraD -> LETRERO . empty
-    (104) empty -> .
-
-    R_PAR           reduce using rule 104 (empty -> .)
-
-    empty                          shift and go to state 182
-
-state 146
+state 142
 
     (85) hiper_exp -> super_exp . neu_hacerHiperExp hiper_expU
     (125) neu_hacerHiperExp -> .
@@ -2422,9 +2415,9 @@ state 146
     PUNTOYCOMA      reduce using rule 125 (neu_hacerHiperExp -> .)
     HACER           reduce using rule 125 (neu_hacerHiperExp -> .)
 
-    neu_hacerHiperExp              shift and go to state 183
+    neu_hacerHiperExp              shift and go to state 179
 
-state 147
+state 143
 
     (88) super_exp -> exp . neu_hacerSuperExp super_expU
     (124) neu_hacerSuperExp -> .
@@ -2442,9 +2435,9 @@ state 147
     PUNTOYCOMA      reduce using rule 124 (neu_hacerSuperExp -> .)
     HACER           reduce using rule 124 (neu_hacerSuperExp -> .)
 
-    neu_hacerSuperExp              shift and go to state 184
+    neu_hacerSuperExp              shift and go to state 180
 
-state 148
+state 144
 
     (91) exp -> termino . neu_hacerExp expU
     (123) neu_hacerExp -> .
@@ -2464,9 +2457,9 @@ state 148
     PUNTOYCOMA      reduce using rule 123 (neu_hacerExp -> .)
     HACER           reduce using rule 123 (neu_hacerExp -> .)
 
-    neu_hacerExp                   shift and go to state 185
+    neu_hacerExp                   shift and go to state 181
 
-state 149
+state 145
 
     (94) termino -> factor . neu_hacerTermino terminoU
     (122) neu_hacerTermino -> .
@@ -2488,9 +2481,9 @@ state 149
     PUNTOYCOMA      reduce using rule 122 (neu_hacerTermino -> .)
     HACER           reduce using rule 122 (neu_hacerTermino -> .)
 
-    neu_hacerTermino               shift and go to state 186
+    neu_hacerTermino               shift and go to state 182
 
-state 150
+state 146
 
     (97) factor -> varcte . empty
     (104) empty -> .
@@ -2512,9 +2505,9 @@ state 150
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 187
+    empty                          shift and go to state 183
 
-state 151
+state 147
 
     (98) factor -> llamada . empty
     (104) empty -> .
@@ -2536,9 +2529,9 @@ state 151
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 188
+    empty                          shift and go to state 184
 
-state 152
+state 148
 
     (100) varcte -> ID . neu_addID empty
     (44) llamada -> ID . neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
@@ -2563,10 +2556,10 @@ state 152
     HACER           reduce using rule 111 (neu_addID -> .)
     L_PAR           reduce using rule 116 (neu_llamada_era -> .)
 
-    neu_addID                      shift and go to state 189
+    neu_addID                      shift and go to state 185
     neu_llamada_era                shift and go to state 104
 
-state 153
+state 149
 
     (101) varcte -> ENTEROVAL . neu_addConstanteEntero empty
     (112) neu_addConstanteEntero -> .
@@ -2588,9 +2581,9 @@ state 153
     PUNTOYCOMA      reduce using rule 112 (neu_addConstanteEntero -> .)
     HACER           reduce using rule 112 (neu_addConstanteEntero -> .)
 
-    neu_addConstanteEntero         shift and go to state 190
+    neu_addConstanteEntero         shift and go to state 186
 
-state 154
+state 150
 
     (102) varcte -> FLOTANTEVAL . neu_addConstanteFlotante empty
     (113) neu_addConstanteFlotante -> .
@@ -2612,9 +2605,9 @@ state 154
     PUNTOYCOMA      reduce using rule 113 (neu_addConstanteFlotante -> .)
     HACER           reduce using rule 113 (neu_addConstanteFlotante -> .)
 
-    neu_addConstanteFlotante       shift and go to state 191
+    neu_addConstanteFlotante       shift and go to state 187
 
-state 155
+state 151
 
     (103) varcte -> CARACTERVAL . neu_addConstanteCaracter empty
     (114) neu_addConstanteCaracter -> .
@@ -2636,7 +2629,41 @@ state 155
     PUNTOYCOMA      reduce using rule 114 (neu_addConstanteCaracter -> .)
     HACER           reduce using rule 114 (neu_addConstanteCaracter -> .)
 
-    neu_addConstanteCaracter       shift and go to state 192
+    neu_addConstanteCaracter       shift and go to state 188
+
+state 152
+
+    (46) lectura -> LEER L_PAR ID . neu_lectura R_PAR empty
+    (127) neu_lectura -> .
+
+    R_PAR           reduce using rule 127 (neu_lectura -> .)
+
+    neu_lectura                    shift and go to state 189
+
+state 153
+
+    (47) escritura -> ESCRIBIR L_PAR escrituraD . R_PAR empty
+
+    R_PAR           shift and go to state 190
+
+
+state 154
+
+    (48) escrituraD -> hiper_exp . neu_escritura empty
+    (128) neu_escritura -> .
+
+    R_PAR           reduce using rule 128 (neu_escritura -> .)
+
+    neu_escritura                  shift and go to state 191
+
+state 155
+
+    (49) escrituraD -> LETRERO . empty
+    (104) empty -> .
+
+    R_PAR           reduce using rule 104 (empty -> .)
+
+    empty                          shift and go to state 192
 
 state 156
 
@@ -2661,19 +2688,19 @@ state 157
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 194
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 158
 
@@ -2685,9 +2712,9 @@ state 158
 state 159
 
     (55) asignacionFor -> ID . neu_addIDFor IGUAL neu_addOperador hiper_exp neu_asignacionFor empty
-    (135) neu_addIDFor -> .
+    (136) neu_addIDFor -> .
 
-    IGUAL           reduce using rule 135 (neu_addIDFor -> .)
+    IGUAL           reduce using rule 136 (neu_addIDFor -> .)
 
     neu_addIDFor                   shift and go to state 196
 
@@ -2812,19 +2839,19 @@ state 173
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 208
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 174
 
@@ -2855,53 +2882,19 @@ state 176
 
 state 177
 
-    (45) retorno -> REGRESA L_PAR ID R_PAR . empty
-    (104) empty -> .
+    (99) factor -> L_PAR hiper_exp . R_PAR empty
 
-    PUNTOYCOMA      reduce using rule 104 (empty -> .)
+    R_PAR           shift and go to state 213
 
-    empty                          shift and go to state 213
 
 state 178
 
-    (46) lectura -> LEER L_PAR ID neu_lectura . R_PAR empty
+    (45) retorno -> REGRESA L_PAR hiper_exp neu_retorno . R_PAR empty
 
     R_PAR           shift and go to state 214
 
 
 state 179
-
-    (99) factor -> L_PAR hiper_exp . R_PAR empty
-
-    R_PAR           shift and go to state 215
-
-
-state 180
-
-    (47) escritura -> ESCRIBIR L_PAR escrituraD R_PAR . empty
-    (104) empty -> .
-
-    PUNTOYCOMA      reduce using rule 104 (empty -> .)
-
-    empty                          shift and go to state 216
-
-state 181
-
-    (48) escrituraD -> hiper_exp neu_escritura . empty
-    (104) empty -> .
-
-    R_PAR           reduce using rule 104 (empty -> .)
-
-    empty                          shift and go to state 217
-
-state 182
-
-    (49) escrituraD -> LETRERO empty .
-
-    R_PAR           reduce using rule 49 (escrituraD -> LETRERO empty .)
-
-
-state 183
 
     (85) hiper_exp -> super_exp neu_hacerHiperExp . hiper_expU
     (86) hiper_expU -> . operadorL hiper_exp empty
@@ -2910,18 +2903,18 @@ state 183
     (78) operadorL -> . AND neu_addOperador empty
     (104) empty -> .
 
-    OR              shift and go to state 221
-    AND             shift and go to state 222
+    OR              shift and go to state 218
+    AND             shift and go to state 219
     R_PAR           reduce using rule 104 (empty -> .)
     COMA            reduce using rule 104 (empty -> .)
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    hiper_expU                     shift and go to state 218
-    operadorL                      shift and go to state 219
-    empty                          shift and go to state 220
+    hiper_expU                     shift and go to state 215
+    operadorL                      shift and go to state 216
+    empty                          shift and go to state 217
 
-state 184
+state 180
 
     (88) super_exp -> exp neu_hacerSuperExp . super_expU
     (89) super_expU -> . operadorR super_exp empty
@@ -2934,12 +2927,12 @@ state 184
     (84) operadorR -> . DIFQUE neu_addOperador empty
     (104) empty -> .
 
-    MENORQUE        shift and go to state 226
-    MAYORQUE        shift and go to state 227
-    MENORIGUALQUE   shift and go to state 228
-    MAYORIGUALQUE   shift and go to state 229
-    IGUALQUE        shift and go to state 230
-    DIFQUE          shift and go to state 231
+    MENORQUE        shift and go to state 223
+    MAYORQUE        shift and go to state 224
+    MENORIGUALQUE   shift and go to state 225
+    MAYORIGUALQUE   shift and go to state 226
+    IGUALQUE        shift and go to state 227
+    DIFQUE          shift and go to state 228
     OR              reduce using rule 104 (empty -> .)
     AND             reduce using rule 104 (empty -> .)
     R_PAR           reduce using rule 104 (empty -> .)
@@ -2947,11 +2940,11 @@ state 184
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    super_expU                     shift and go to state 223
-    operadorR                      shift and go to state 224
-    empty                          shift and go to state 225
+    super_expU                     shift and go to state 220
+    operadorR                      shift and go to state 221
+    empty                          shift and go to state 222
 
-state 185
+state 181
 
     (91) exp -> termino neu_hacerExp . expU
     (92) expU -> . operadorA exp
@@ -2960,8 +2953,8 @@ state 185
     (74) operadorA -> . MENOS neu_addOperador empty
     (104) empty -> .
 
-    MAS             shift and go to state 235
-    MENOS           shift and go to state 236
+    MAS             shift and go to state 232
+    MENOS           shift and go to state 233
     MENORQUE        reduce using rule 104 (empty -> .)
     MAYORQUE        reduce using rule 104 (empty -> .)
     MENORIGUALQUE   reduce using rule 104 (empty -> .)
@@ -2975,11 +2968,11 @@ state 185
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    expU                           shift and go to state 232
-    operadorA                      shift and go to state 233
-    empty                          shift and go to state 234
+    expU                           shift and go to state 229
+    operadorA                      shift and go to state 230
+    empty                          shift and go to state 231
 
-state 186
+state 182
 
     (94) termino -> factor neu_hacerTermino . terminoU
     (95) terminoU -> . operadorT termino
@@ -2988,8 +2981,8 @@ state 186
     (76) operadorT -> . DIV neu_addOperador empty
     (104) empty -> .
 
-    MULT            shift and go to state 240
-    DIV             shift and go to state 241
+    MULT            shift and go to state 237
+    DIV             shift and go to state 238
     MAS             reduce using rule 104 (empty -> .)
     MENOS           reduce using rule 104 (empty -> .)
     MENORQUE        reduce using rule 104 (empty -> .)
@@ -3005,11 +2998,11 @@ state 186
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    terminoU                       shift and go to state 237
-    operadorT                      shift and go to state 238
-    empty                          shift and go to state 239
+    terminoU                       shift and go to state 234
+    operadorT                      shift and go to state 235
+    empty                          shift and go to state 236
 
-state 187
+state 183
 
     (97) factor -> varcte empty .
 
@@ -3031,7 +3024,7 @@ state 187
     HACER           reduce using rule 97 (factor -> varcte empty .)
 
 
-state 188
+state 184
 
     (98) factor -> llamada empty .
 
@@ -3053,7 +3046,7 @@ state 188
     HACER           reduce using rule 98 (factor -> llamada empty .)
 
 
-state 189
+state 185
 
     (100) varcte -> ID neu_addID . empty
     (104) empty -> .
@@ -3075,9 +3068,9 @@ state 189
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 242
+    empty                          shift and go to state 239
 
-state 190
+state 186
 
     (101) varcte -> ENTEROVAL neu_addConstanteEntero . empty
     (104) empty -> .
@@ -3099,9 +3092,9 @@ state 190
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 243
+    empty                          shift and go to state 240
 
-state 191
+state 187
 
     (102) varcte -> FLOTANTEVAL neu_addConstanteFlotante . empty
     (104) empty -> .
@@ -3123,9 +3116,9 @@ state 191
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 244
+    empty                          shift and go to state 241
 
-state 192
+state 188
 
     (103) varcte -> CARACTERVAL neu_addConstanteCaracter . empty
     (104) empty -> .
@@ -3147,23 +3140,55 @@ state 192
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
+    empty                          shift and go to state 242
+
+state 189
+
+    (46) lectura -> LEER L_PAR ID neu_lectura . R_PAR empty
+
+    R_PAR           shift and go to state 243
+
+
+state 190
+
+    (47) escritura -> ESCRIBIR L_PAR escrituraD R_PAR . empty
+    (104) empty -> .
+
+    PUNTOYCOMA      reduce using rule 104 (empty -> .)
+
+    empty                          shift and go to state 244
+
+state 191
+
+    (48) escrituraD -> hiper_exp neu_escritura . empty
+    (104) empty -> .
+
+    R_PAR           reduce using rule 104 (empty -> .)
+
     empty                          shift and go to state 245
+
+state 192
+
+    (49) escrituraD -> LETRERO empty .
+
+    R_PAR           reduce using rule 49 (escrituraD -> LETRERO empty .)
+
 
 state 193
 
     (50) decision -> SI L_PAR hiper_exp R_PAR . neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty
-    (129) neu_iniciarDecision -> .
+    (130) neu_iniciarDecision -> .
 
-    ENTONCES        reduce using rule 129 (neu_iniciarDecision -> .)
+    ENTONCES        reduce using rule 130 (neu_iniciarDecision -> .)
 
     neu_iniciarDecision            shift and go to state 246
 
 state 194
 
     (53) condicional -> MIENTRAS L_PAR neu_condicionalAntes hiper_exp . neu_condicionalDurante R_PAR HACER bloque neu_condicionalDespues empty
-    (133) neu_condicionalDurante -> .
+    (134) neu_condicionalDurante -> .
 
-    R_PAR           reduce using rule 133 (neu_condicionalDurante -> .)
+    R_PAR           reduce using rule 134 (neu_condicionalDurante -> .)
 
     neu_condicionalDurante         shift and go to state 247
 
@@ -3224,19 +3249,19 @@ state 200
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 253
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 201
 
@@ -3254,19 +3279,19 @@ state 201
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 254
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 202
 
@@ -3401,22 +3426,6 @@ state 212
 
 state 213
 
-    (45) retorno -> REGRESA L_PAR ID R_PAR empty .
-
-    PUNTOYCOMA      reduce using rule 45 (retorno -> REGRESA L_PAR ID R_PAR empty .)
-
-
-state 214
-
-    (46) lectura -> LEER L_PAR ID neu_lectura R_PAR . empty
-    (104) empty -> .
-
-    PUNTOYCOMA      reduce using rule 104 (empty -> .)
-
-    empty                          shift and go to state 266
-
-state 215
-
     (99) factor -> L_PAR hiper_exp R_PAR . empty
     (104) empty -> .
 
@@ -3437,23 +3446,18 @@ state 215
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
+    empty                          shift and go to state 266
+
+state 214
+
+    (45) retorno -> REGRESA L_PAR hiper_exp neu_retorno R_PAR . empty
+    (104) empty -> .
+
+    PUNTOYCOMA      reduce using rule 104 (empty -> .)
+
     empty                          shift and go to state 267
 
-state 216
-
-    (47) escritura -> ESCRIBIR L_PAR escrituraD R_PAR empty .
-
-    PUNTOYCOMA      reduce using rule 47 (escritura -> ESCRIBIR L_PAR escrituraD R_PAR empty .)
-
-
-state 217
-
-    (48) escrituraD -> hiper_exp neu_escritura empty .
-
-    R_PAR           reduce using rule 48 (escrituraD -> hiper_exp neu_escritura empty .)
-
-
-state 218
+state 215
 
     (85) hiper_exp -> super_exp neu_hacerHiperExp hiper_expU .
 
@@ -3463,7 +3467,7 @@ state 218
     HACER           reduce using rule 85 (hiper_exp -> super_exp neu_hacerHiperExp hiper_expU .)
 
 
-state 219
+state 216
 
     (86) hiper_expU -> operadorL . hiper_exp empty
     (85) hiper_exp -> . super_exp neu_hacerHiperExp hiper_expU
@@ -3479,21 +3483,21 @@ state 219
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     hiper_exp                      shift and go to state 268
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
-state 220
+state 217
 
     (87) hiper_expU -> empty .
 
@@ -3503,7 +3507,7 @@ state 220
     HACER           reduce using rule 87 (hiper_expU -> empty .)
 
 
-state 221
+state 218
 
     (77) operadorL -> OR . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3516,7 +3520,7 @@ state 221
 
     neu_addOperador                shift and go to state 269
 
-state 222
+state 219
 
     (78) operadorL -> AND . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3529,7 +3533,7 @@ state 222
 
     neu_addOperador                shift and go to state 270
 
-state 223
+state 220
 
     (88) super_exp -> exp neu_hacerSuperExp super_expU .
 
@@ -3541,7 +3545,7 @@ state 223
     HACER           reduce using rule 88 (super_exp -> exp neu_hacerSuperExp super_expU .)
 
 
-state 224
+state 221
 
     (89) super_expU -> operadorR . super_exp empty
     (88) super_exp -> . exp neu_hacerSuperExp super_expU
@@ -3556,20 +3560,20 @@ state 224
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     super_exp                      shift and go to state 271
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
-state 225
+state 222
 
     (90) super_expU -> empty .
 
@@ -3581,7 +3585,7 @@ state 225
     HACER           reduce using rule 90 (super_expU -> empty .)
 
 
-state 226
+state 223
 
     (79) operadorR -> MENORQUE . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3594,7 +3598,7 @@ state 226
 
     neu_addOperador                shift and go to state 272
 
-state 227
+state 224
 
     (80) operadorR -> MAYORQUE . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3607,7 +3611,7 @@ state 227
 
     neu_addOperador                shift and go to state 273
 
-state 228
+state 225
 
     (81) operadorR -> MENORIGUALQUE . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3620,7 +3624,7 @@ state 228
 
     neu_addOperador                shift and go to state 274
 
-state 229
+state 226
 
     (82) operadorR -> MAYORIGUALQUE . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3633,7 +3637,7 @@ state 229
 
     neu_addOperador                shift and go to state 275
 
-state 230
+state 227
 
     (83) operadorR -> IGUALQUE . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3646,7 +3650,7 @@ state 230
 
     neu_addOperador                shift and go to state 276
 
-state 231
+state 228
 
     (84) operadorR -> DIFQUE . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3659,7 +3663,7 @@ state 231
 
     neu_addOperador                shift and go to state 277
 
-state 232
+state 229
 
     (91) exp -> termino neu_hacerExp expU .
 
@@ -3677,7 +3681,7 @@ state 232
     HACER           reduce using rule 91 (exp -> termino neu_hacerExp expU .)
 
 
-state 233
+state 230
 
     (92) expU -> operadorA . exp
     (91) exp -> . termino neu_hacerExp expU
@@ -3691,19 +3695,19 @@ state 233
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     exp                            shift and go to state 278
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
-state 234
+state 231
 
     (93) expU -> empty .
 
@@ -3721,7 +3725,7 @@ state 234
     HACER           reduce using rule 93 (expU -> empty .)
 
 
-state 235
+state 232
 
     (73) operadorA -> MAS . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3734,7 +3738,7 @@ state 235
 
     neu_addOperador                shift and go to state 279
 
-state 236
+state 233
 
     (74) operadorA -> MENOS . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3747,7 +3751,7 @@ state 236
 
     neu_addOperador                shift and go to state 280
 
-state 237
+state 234
 
     (94) termino -> factor neu_hacerTermino terminoU .
 
@@ -3767,7 +3771,7 @@ state 237
     HACER           reduce using rule 94 (termino -> factor neu_hacerTermino terminoU .)
 
 
-state 238
+state 235
 
     (95) terminoU -> operadorT . termino
     (94) termino -> . factor neu_hacerTermino terminoU
@@ -3780,18 +3784,18 @@ state 238
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
     termino                        shift and go to state 281
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
-state 239
+state 236
 
     (96) terminoU -> empty .
 
@@ -3811,7 +3815,7 @@ state 239
     HACER           reduce using rule 96 (terminoU -> empty .)
 
 
-state 240
+state 237
 
     (75) operadorT -> MULT . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3824,7 +3828,7 @@ state 240
 
     neu_addOperador                shift and go to state 282
 
-state 241
+state 238
 
     (76) operadorT -> DIV . neu_addOperador empty
     (118) neu_addOperador -> .
@@ -3837,7 +3841,7 @@ state 241
 
     neu_addOperador                shift and go to state 283
 
-state 242
+state 239
 
     (100) varcte -> ID neu_addID empty .
 
@@ -3859,7 +3863,7 @@ state 242
     HACER           reduce using rule 100 (varcte -> ID neu_addID empty .)
 
 
-state 243
+state 240
 
     (101) varcte -> ENTEROVAL neu_addConstanteEntero empty .
 
@@ -3881,7 +3885,7 @@ state 243
     HACER           reduce using rule 101 (varcte -> ENTEROVAL neu_addConstanteEntero empty .)
 
 
-state 244
+state 241
 
     (102) varcte -> FLOTANTEVAL neu_addConstanteFlotante empty .
 
@@ -3903,7 +3907,7 @@ state 244
     HACER           reduce using rule 102 (varcte -> FLOTANTEVAL neu_addConstanteFlotante empty .)
 
 
-state 245
+state 242
 
     (103) varcte -> CARACTERVAL neu_addConstanteCaracter empty .
 
@@ -3925,18 +3929,41 @@ state 245
     HACER           reduce using rule 103 (varcte -> CARACTERVAL neu_addConstanteCaracter empty .)
 
 
+state 243
+
+    (46) lectura -> LEER L_PAR ID neu_lectura R_PAR . empty
+    (104) empty -> .
+
+    PUNTOYCOMA      reduce using rule 104 (empty -> .)
+
+    empty                          shift and go to state 284
+
+state 244
+
+    (47) escritura -> ESCRIBIR L_PAR escrituraD R_PAR empty .
+
+    PUNTOYCOMA      reduce using rule 47 (escritura -> ESCRIBIR L_PAR escrituraD R_PAR empty .)
+
+
+state 245
+
+    (48) escrituraD -> hiper_exp neu_escritura empty .
+
+    R_PAR           reduce using rule 48 (escrituraD -> hiper_exp neu_escritura empty .)
+
+
 state 246
 
     (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision . ENTONCES bloque decisionU neu_endDecision empty
 
-    ENTONCES        shift and go to state 284
+    ENTONCES        shift and go to state 285
 
 
 state 247
 
     (53) condicional -> MIENTRAS L_PAR neu_condicionalAntes hiper_exp neu_condicionalDurante . R_PAR HACER bloque neu_condicionalDespues empty
 
-    R_PAR           shift and go to state 285
+    R_PAR           shift and go to state 286
 
 
 state 248
@@ -3955,19 +3982,19 @@ state 248
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
-    hiper_exp                      shift and go to state 286
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    hiper_exp                      shift and go to state 287
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
 state 249
 
@@ -3980,7 +4007,7 @@ state 249
     FLOTANTEVAL     reduce using rule 118 (neu_addOperador -> .)
     CARACTERVAL     reduce using rule 118 (neu_addOperador -> .)
 
-    neu_addOperador                shift and go to state 287
+    neu_addOperador                shift and go to state 288
 
 state 250
 
@@ -4007,14 +4034,14 @@ state 253
 
     (68) linea -> LINEA L_PAR hiper_exp COMA hiper_exp . COMA hiper_exp COMA hiper_exp R_PAR empty
 
-    COMA            shift and go to state 288
+    COMA            shift and go to state 289
 
 
 state 254
 
     (69) puntoxy -> PUNTOXY L_PAR hiper_exp COMA hiper_exp . R_PAR empty
 
-    R_PAR           shift and go to state 289
+    R_PAR           shift and go to state 290
 
 
 state 255
@@ -4077,7 +4104,7 @@ state 262
 
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 290
+    empty                          shift and go to state 291
 
 state 263
 
@@ -4093,7 +4120,7 @@ state 264
 
     R_PAR           reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 291
+    empty                          shift and go to state 292
 
 state 265
 
@@ -4117,16 +4144,9 @@ state 265
     COMA            reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 292
+    empty                          shift and go to state 293
 
 state 266
-
-    (46) lectura -> LEER L_PAR ID neu_lectura R_PAR empty .
-
-    PUNTOYCOMA      reduce using rule 46 (lectura -> LEER L_PAR ID neu_lectura R_PAR empty .)
-
-
-state 267
 
     (99) factor -> L_PAR hiper_exp R_PAR empty .
 
@@ -4148,6 +4168,13 @@ state 267
     HACER           reduce using rule 99 (factor -> L_PAR hiper_exp R_PAR empty .)
 
 
+state 267
+
+    (45) retorno -> REGRESA L_PAR hiper_exp neu_retorno R_PAR empty .
+
+    PUNTOYCOMA      reduce using rule 45 (retorno -> REGRESA L_PAR hiper_exp neu_retorno R_PAR empty .)
+
+
 state 268
 
     (86) hiper_expU -> operadorL hiper_exp . empty
@@ -4158,7 +4185,7 @@ state 268
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 293
+    empty                          shift and go to state 294
 
 state 269
 
@@ -4171,7 +4198,7 @@ state 269
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 294
+    empty                          shift and go to state 295
 
 state 270
 
@@ -4184,7 +4211,7 @@ state 270
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 295
+    empty                          shift and go to state 296
 
 state 271
 
@@ -4198,7 +4225,7 @@ state 271
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     HACER           reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 296
+    empty                          shift and go to state 297
 
 state 272
 
@@ -4211,7 +4238,7 @@ state 272
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 297
+    empty                          shift and go to state 298
 
 state 273
 
@@ -4224,7 +4251,7 @@ state 273
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 298
+    empty                          shift and go to state 299
 
 state 274
 
@@ -4237,7 +4264,7 @@ state 274
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 299
+    empty                          shift and go to state 300
 
 state 275
 
@@ -4250,7 +4277,7 @@ state 275
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 300
+    empty                          shift and go to state 301
 
 state 276
 
@@ -4263,7 +4290,7 @@ state 276
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 301
+    empty                          shift and go to state 302
 
 state 277
 
@@ -4276,7 +4303,7 @@ state 277
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 302
+    empty                          shift and go to state 303
 
 state 278
 
@@ -4307,7 +4334,7 @@ state 279
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 303
+    empty                          shift and go to state 304
 
 state 280
 
@@ -4320,7 +4347,7 @@ state 280
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 304
+    empty                          shift and go to state 305
 
 state 281
 
@@ -4353,7 +4380,7 @@ state 282
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 305
+    empty                          shift and go to state 306
 
 state 283
 
@@ -4366,34 +4393,41 @@ state 283
     FLOTANTEVAL     reduce using rule 104 (empty -> .)
     CARACTERVAL     reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 306
+    empty                          shift and go to state 307
 
 state 284
+
+    (46) lectura -> LEER L_PAR ID neu_lectura R_PAR empty .
+
+    PUNTOYCOMA      reduce using rule 46 (lectura -> LEER L_PAR ID neu_lectura R_PAR empty .)
+
+
+state 285
 
     (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES . bloque decisionU neu_endDecision empty
     (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
 
     L_LLAVE         shift and go to state 47
 
-    bloque                         shift and go to state 307
-
-state 285
-
-    (53) condicional -> MIENTRAS L_PAR neu_condicionalAntes hiper_exp neu_condicionalDurante R_PAR . HACER bloque neu_condicionalDespues empty
-
-    HACER           shift and go to state 308
-
+    bloque                         shift and go to state 308
 
 state 286
 
-    (54) no_condicional -> DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp . neu_boolFor HACER bloque neu_endCondicion empty
-    (137) neu_boolFor -> .
+    (53) condicional -> MIENTRAS L_PAR neu_condicionalAntes hiper_exp neu_condicionalDurante R_PAR . HACER bloque neu_condicionalDespues empty
 
-    HACER           reduce using rule 137 (neu_boolFor -> .)
+    HACER           shift and go to state 309
 
-    neu_boolFor                    shift and go to state 309
 
 state 287
+
+    (54) no_condicional -> DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp . neu_boolFor HACER bloque neu_endCondicion empty
+    (138) neu_boolFor -> .
+
+    HACER           reduce using rule 138 (neu_boolFor -> .)
+
+    neu_boolFor                    shift and go to state 310
+
+state 288
 
     (55) asignacionFor -> ID neu_addIDFor IGUAL neu_addOperador . hiper_exp neu_asignacionFor empty
     (85) hiper_exp -> . super_exp neu_hacerHiperExp hiper_expU
@@ -4409,21 +4443,21 @@ state 287
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
-    hiper_exp                      shift and go to state 310
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    hiper_exp                      shift and go to state 311
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
-state 288
+state 289
 
     (68) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA . hiper_exp COMA hiper_exp R_PAR empty
     (85) hiper_exp -> . super_exp neu_hacerHiperExp hiper_expU
@@ -4439,44 +4473,44 @@ state 288
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
-    hiper_exp                      shift and go to state 311
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    hiper_exp                      shift and go to state 312
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
-state 289
+state 290
 
     (69) puntoxy -> PUNTOXY L_PAR hiper_exp COMA hiper_exp R_PAR . empty
     (104) empty -> .
 
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 312
+    empty                          shift and go to state 313
 
-state 290
+state 291
 
     (43) asignacion -> ID neu_addID IGUAL neu_addOperador hiper_exp neu_asignacion empty .
 
     PUNTOYCOMA      reduce using rule 43 (asignacion -> ID neu_addID IGUAL neu_addOperador hiper_exp neu_asignacion empty .)
 
 
-state 291
+state 292
 
     (26) mandar_parametrosD -> COMA mandar_parametros empty .
 
     R_PAR           reduce using rule 26 (mandar_parametrosD -> COMA mandar_parametros empty .)
 
 
-state 292
+state 293
 
     (44) llamada -> ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty .
 
@@ -4498,7 +4532,7 @@ state 292
     HACER           reduce using rule 44 (llamada -> ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty .)
 
 
-state 293
+state 294
 
     (86) hiper_expU -> operadorL hiper_exp empty .
 
@@ -4508,7 +4542,7 @@ state 293
     HACER           reduce using rule 86 (hiper_expU -> operadorL hiper_exp empty .)
 
 
-state 294
+state 295
 
     (77) operadorL -> OR neu_addOperador empty .
 
@@ -4519,7 +4553,7 @@ state 294
     CARACTERVAL     reduce using rule 77 (operadorL -> OR neu_addOperador empty .)
 
 
-state 295
+state 296
 
     (78) operadorL -> AND neu_addOperador empty .
 
@@ -4530,7 +4564,7 @@ state 295
     CARACTERVAL     reduce using rule 78 (operadorL -> AND neu_addOperador empty .)
 
 
-state 296
+state 297
 
     (89) super_expU -> operadorR super_exp empty .
 
@@ -4542,7 +4576,7 @@ state 296
     HACER           reduce using rule 89 (super_expU -> operadorR super_exp empty .)
 
 
-state 297
+state 298
 
     (79) operadorR -> MENORQUE neu_addOperador empty .
 
@@ -4553,7 +4587,7 @@ state 297
     CARACTERVAL     reduce using rule 79 (operadorR -> MENORQUE neu_addOperador empty .)
 
 
-state 298
+state 299
 
     (80) operadorR -> MAYORQUE neu_addOperador empty .
 
@@ -4564,7 +4598,7 @@ state 298
     CARACTERVAL     reduce using rule 80 (operadorR -> MAYORQUE neu_addOperador empty .)
 
 
-state 299
+state 300
 
     (81) operadorR -> MENORIGUALQUE neu_addOperador empty .
 
@@ -4575,7 +4609,7 @@ state 299
     CARACTERVAL     reduce using rule 81 (operadorR -> MENORIGUALQUE neu_addOperador empty .)
 
 
-state 300
+state 301
 
     (82) operadorR -> MAYORIGUALQUE neu_addOperador empty .
 
@@ -4586,7 +4620,7 @@ state 300
     CARACTERVAL     reduce using rule 82 (operadorR -> MAYORIGUALQUE neu_addOperador empty .)
 
 
-state 301
+state 302
 
     (83) operadorR -> IGUALQUE neu_addOperador empty .
 
@@ -4597,7 +4631,7 @@ state 301
     CARACTERVAL     reduce using rule 83 (operadorR -> IGUALQUE neu_addOperador empty .)
 
 
-state 302
+state 303
 
     (84) operadorR -> DIFQUE neu_addOperador empty .
 
@@ -4608,7 +4642,7 @@ state 302
     CARACTERVAL     reduce using rule 84 (operadorR -> DIFQUE neu_addOperador empty .)
 
 
-state 303
+state 304
 
     (73) operadorA -> MAS neu_addOperador empty .
 
@@ -4619,7 +4653,7 @@ state 303
     CARACTERVAL     reduce using rule 73 (operadorA -> MAS neu_addOperador empty .)
 
 
-state 304
+state 305
 
     (74) operadorA -> MENOS neu_addOperador empty .
 
@@ -4630,7 +4664,7 @@ state 304
     CARACTERVAL     reduce using rule 74 (operadorA -> MENOS neu_addOperador empty .)
 
 
-state 305
+state 306
 
     (75) operadorT -> MULT neu_addOperador empty .
 
@@ -4641,7 +4675,7 @@ state 305
     CARACTERVAL     reduce using rule 75 (operadorT -> MULT neu_addOperador empty .)
 
 
-state 306
+state 307
 
     (76) operadorT -> DIV neu_addOperador empty .
 
@@ -4652,14 +4686,14 @@ state 306
     CARACTERVAL     reduce using rule 76 (operadorT -> DIV neu_addOperador empty .)
 
 
-state 307
+state 308
 
     (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque . decisionU neu_endDecision empty
     (51) decisionU -> . SINO neu_iniciarDecisionElse bloque empty
     (52) decisionU -> . empty
     (104) empty -> .
 
-    SINO            shift and go to state 315
+    SINO            shift and go to state 316
     ID              reduce using rule 104 (empty -> .)
     REGRESA         reduce using rule 104 (empty -> .)
     LEER            reduce using rule 104 (empty -> .)
@@ -4678,74 +4712,74 @@ state 307
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     R_LLAVE         reduce using rule 104 (empty -> .)
 
-    decisionU                      shift and go to state 313
-    empty                          shift and go to state 314
+    decisionU                      shift and go to state 314
+    empty                          shift and go to state 315
 
-state 308
+state 309
 
     (53) condicional -> MIENTRAS L_PAR neu_condicionalAntes hiper_exp neu_condicionalDurante R_PAR HACER . bloque neu_condicionalDespues empty
     (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
 
     L_LLAVE         shift and go to state 47
 
-    bloque                         shift and go to state 316
-
-state 309
-
-    (54) no_condicional -> DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp neu_boolFor . HACER bloque neu_endCondicion empty
-
-    HACER           shift and go to state 317
-
+    bloque                         shift and go to state 317
 
 state 310
 
-    (55) asignacionFor -> ID neu_addIDFor IGUAL neu_addOperador hiper_exp . neu_asignacionFor empty
-    (136) neu_asignacionFor -> .
+    (54) no_condicional -> DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp neu_boolFor . HACER bloque neu_endCondicion empty
 
-    R_PAR           reduce using rule 136 (neu_asignacionFor -> .)
+    HACER           shift and go to state 318
 
-    neu_asignacionFor              shift and go to state 318
 
 state 311
 
-    (68) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp . COMA hiper_exp R_PAR empty
+    (55) asignacionFor -> ID neu_addIDFor IGUAL neu_addOperador hiper_exp . neu_asignacionFor empty
+    (137) neu_asignacionFor -> .
 
-    COMA            shift and go to state 319
+    R_PAR           reduce using rule 137 (neu_asignacionFor -> .)
 
+    neu_asignacionFor              shift and go to state 319
 
 state 312
+
+    (68) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp . COMA hiper_exp R_PAR empty
+
+    COMA            shift and go to state 320
+
+
+state 313
 
     (69) puntoxy -> PUNTOXY L_PAR hiper_exp COMA hiper_exp R_PAR empty .
 
     PUNTOYCOMA      reduce using rule 69 (puntoxy -> PUNTOXY L_PAR hiper_exp COMA hiper_exp R_PAR empty .)
 
 
-state 313
+state 314
 
     (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU . neu_endDecision empty
-    (131) neu_endDecision -> .
+    (132) neu_endDecision -> .
 
-    ID              reduce using rule 131 (neu_endDecision -> .)
-    REGRESA         reduce using rule 131 (neu_endDecision -> .)
-    LEER            reduce using rule 131 (neu_endDecision -> .)
-    ESCRIBIR        reduce using rule 131 (neu_endDecision -> .)
-    SI              reduce using rule 131 (neu_endDecision -> .)
-    MIENTRAS        reduce using rule 131 (neu_endDecision -> .)
-    DESDE           reduce using rule 131 (neu_endDecision -> .)
-    CIRCULO         reduce using rule 131 (neu_endDecision -> .)
-    COLOR           reduce using rule 131 (neu_endDecision -> .)
-    GROSOR          reduce using rule 131 (neu_endDecision -> .)
-    LINEA           reduce using rule 131 (neu_endDecision -> .)
-    PUNTOXY         reduce using rule 131 (neu_endDecision -> .)
-    ARCO            reduce using rule 131 (neu_endDecision -> .)
-    PENUP           reduce using rule 131 (neu_endDecision -> .)
-    PENDOWN         reduce using rule 131 (neu_endDecision -> .)
-    PUNTOYCOMA      reduce using rule 131 (neu_endDecision -> .)
-    R_LLAVE         reduce using rule 131 (neu_endDecision -> .)
+    ID              reduce using rule 132 (neu_endDecision -> .)
+    REGRESA         reduce using rule 132 (neu_endDecision -> .)
+    LEER            reduce using rule 132 (neu_endDecision -> .)
+    ESCRIBIR        reduce using rule 132 (neu_endDecision -> .)
+    SI              reduce using rule 132 (neu_endDecision -> .)
+    MIENTRAS        reduce using rule 132 (neu_endDecision -> .)
+    DESDE           reduce using rule 132 (neu_endDecision -> .)
+    CIRCULO         reduce using rule 132 (neu_endDecision -> .)
+    COLOR           reduce using rule 132 (neu_endDecision -> .)
+    GROSOR          reduce using rule 132 (neu_endDecision -> .)
+    LINEA           reduce using rule 132 (neu_endDecision -> .)
+    PUNTOXY         reduce using rule 132 (neu_endDecision -> .)
+    ARCO            reduce using rule 132 (neu_endDecision -> .)
+    PENUP           reduce using rule 132 (neu_endDecision -> .)
+    PENDOWN         reduce using rule 132 (neu_endDecision -> .)
+    PUNTOYCOMA      reduce using rule 132 (neu_endDecision -> .)
+    R_LLAVE         reduce using rule 132 (neu_endDecision -> .)
 
-    neu_endDecision                shift and go to state 320
+    neu_endDecision                shift and go to state 321
 
-state 314
+state 315
 
     (52) decisionU -> empty .
 
@@ -4768,59 +4802,59 @@ state 314
     R_LLAVE         reduce using rule 52 (decisionU -> empty .)
 
 
-state 315
-
-    (51) decisionU -> SINO . neu_iniciarDecisionElse bloque empty
-    (130) neu_iniciarDecisionElse -> .
-
-    L_LLAVE         reduce using rule 130 (neu_iniciarDecisionElse -> .)
-
-    neu_iniciarDecisionElse        shift and go to state 321
-
 state 316
 
-    (53) condicional -> MIENTRAS L_PAR neu_condicionalAntes hiper_exp neu_condicionalDurante R_PAR HACER bloque . neu_condicionalDespues empty
-    (134) neu_condicionalDespues -> .
+    (51) decisionU -> SINO . neu_iniciarDecisionElse bloque empty
+    (131) neu_iniciarDecisionElse -> .
 
-    ID              reduce using rule 134 (neu_condicionalDespues -> .)
-    REGRESA         reduce using rule 134 (neu_condicionalDespues -> .)
-    LEER            reduce using rule 134 (neu_condicionalDespues -> .)
-    ESCRIBIR        reduce using rule 134 (neu_condicionalDespues -> .)
-    SI              reduce using rule 134 (neu_condicionalDespues -> .)
-    MIENTRAS        reduce using rule 134 (neu_condicionalDespues -> .)
-    DESDE           reduce using rule 134 (neu_condicionalDespues -> .)
-    CIRCULO         reduce using rule 134 (neu_condicionalDespues -> .)
-    COLOR           reduce using rule 134 (neu_condicionalDespues -> .)
-    GROSOR          reduce using rule 134 (neu_condicionalDespues -> .)
-    LINEA           reduce using rule 134 (neu_condicionalDespues -> .)
-    PUNTOXY         reduce using rule 134 (neu_condicionalDespues -> .)
-    ARCO            reduce using rule 134 (neu_condicionalDespues -> .)
-    PENUP           reduce using rule 134 (neu_condicionalDespues -> .)
-    PENDOWN         reduce using rule 134 (neu_condicionalDespues -> .)
-    PUNTOYCOMA      reduce using rule 134 (neu_condicionalDespues -> .)
-    R_LLAVE         reduce using rule 134 (neu_condicionalDespues -> .)
+    L_LLAVE         reduce using rule 131 (neu_iniciarDecisionElse -> .)
 
-    neu_condicionalDespues         shift and go to state 322
+    neu_iniciarDecisionElse        shift and go to state 322
 
 state 317
+
+    (53) condicional -> MIENTRAS L_PAR neu_condicionalAntes hiper_exp neu_condicionalDurante R_PAR HACER bloque . neu_condicionalDespues empty
+    (135) neu_condicionalDespues -> .
+
+    ID              reduce using rule 135 (neu_condicionalDespues -> .)
+    REGRESA         reduce using rule 135 (neu_condicionalDespues -> .)
+    LEER            reduce using rule 135 (neu_condicionalDespues -> .)
+    ESCRIBIR        reduce using rule 135 (neu_condicionalDespues -> .)
+    SI              reduce using rule 135 (neu_condicionalDespues -> .)
+    MIENTRAS        reduce using rule 135 (neu_condicionalDespues -> .)
+    DESDE           reduce using rule 135 (neu_condicionalDespues -> .)
+    CIRCULO         reduce using rule 135 (neu_condicionalDespues -> .)
+    COLOR           reduce using rule 135 (neu_condicionalDespues -> .)
+    GROSOR          reduce using rule 135 (neu_condicionalDespues -> .)
+    LINEA           reduce using rule 135 (neu_condicionalDespues -> .)
+    PUNTOXY         reduce using rule 135 (neu_condicionalDespues -> .)
+    ARCO            reduce using rule 135 (neu_condicionalDespues -> .)
+    PENUP           reduce using rule 135 (neu_condicionalDespues -> .)
+    PENDOWN         reduce using rule 135 (neu_condicionalDespues -> .)
+    PUNTOYCOMA      reduce using rule 135 (neu_condicionalDespues -> .)
+    R_LLAVE         reduce using rule 135 (neu_condicionalDespues -> .)
+
+    neu_condicionalDespues         shift and go to state 323
+
+state 318
 
     (54) no_condicional -> DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp neu_boolFor HACER . bloque neu_endCondicion empty
     (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
 
     L_LLAVE         shift and go to state 47
 
-    bloque                         shift and go to state 323
+    bloque                         shift and go to state 324
 
-state 318
+state 319
 
     (55) asignacionFor -> ID neu_addIDFor IGUAL neu_addOperador hiper_exp neu_asignacionFor . empty
     (104) empty -> .
 
     R_PAR           reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 324
+    empty                          shift and go to state 325
 
-state 319
+state 320
 
     (68) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA . hiper_exp R_PAR empty
     (85) hiper_exp -> . super_exp neu_hacerHiperExp hiper_expU
@@ -4836,21 +4870,21 @@ state 319
     (103) varcte -> . CARACTERVAL neu_addConstanteCaracter empty
     (44) llamada -> . ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
 
-    L_PAR           shift and go to state 142
-    ID              shift and go to state 152
-    ENTEROVAL       shift and go to state 153
-    FLOTANTEVAL     shift and go to state 154
-    CARACTERVAL     shift and go to state 155
+    L_PAR           shift and go to state 140
+    ID              shift and go to state 148
+    ENTEROVAL       shift and go to state 149
+    FLOTANTEVAL     shift and go to state 150
+    CARACTERVAL     shift and go to state 151
 
-    hiper_exp                      shift and go to state 325
-    super_exp                      shift and go to state 146
-    exp                            shift and go to state 147
-    termino                        shift and go to state 148
-    factor                         shift and go to state 149
-    varcte                         shift and go to state 150
-    llamada                        shift and go to state 151
+    hiper_exp                      shift and go to state 326
+    super_exp                      shift and go to state 142
+    exp                            shift and go to state 143
+    termino                        shift and go to state 144
+    factor                         shift and go to state 145
+    varcte                         shift and go to state 146
+    llamada                        shift and go to state 147
 
-state 320
+state 321
 
     (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision . empty
     (104) empty -> .
@@ -4873,18 +4907,18 @@ state 320
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     R_LLAVE         reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 326
+    empty                          shift and go to state 327
 
-state 321
+state 322
 
     (51) decisionU -> SINO neu_iniciarDecisionElse . bloque empty
     (28) bloque -> . L_LLAVE bloqueU R_LLAVE empty
 
     L_LLAVE         shift and go to state 47
 
-    bloque                         shift and go to state 327
+    bloque                         shift and go to state 328
 
-state 322
+state 323
 
     (53) condicional -> MIENTRAS L_PAR neu_condicionalAntes hiper_exp neu_condicionalDurante R_PAR HACER bloque neu_condicionalDespues . empty
     (104) empty -> .
@@ -4907,48 +4941,48 @@ state 322
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     R_LLAVE         reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 328
-
-state 323
-
-    (54) no_condicional -> DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp neu_boolFor HACER bloque . neu_endCondicion empty
-    (138) neu_endCondicion -> .
-
-    ID              reduce using rule 138 (neu_endCondicion -> .)
-    REGRESA         reduce using rule 138 (neu_endCondicion -> .)
-    LEER            reduce using rule 138 (neu_endCondicion -> .)
-    ESCRIBIR        reduce using rule 138 (neu_endCondicion -> .)
-    SI              reduce using rule 138 (neu_endCondicion -> .)
-    MIENTRAS        reduce using rule 138 (neu_endCondicion -> .)
-    DESDE           reduce using rule 138 (neu_endCondicion -> .)
-    CIRCULO         reduce using rule 138 (neu_endCondicion -> .)
-    COLOR           reduce using rule 138 (neu_endCondicion -> .)
-    GROSOR          reduce using rule 138 (neu_endCondicion -> .)
-    LINEA           reduce using rule 138 (neu_endCondicion -> .)
-    PUNTOXY         reduce using rule 138 (neu_endCondicion -> .)
-    ARCO            reduce using rule 138 (neu_endCondicion -> .)
-    PENUP           reduce using rule 138 (neu_endCondicion -> .)
-    PENDOWN         reduce using rule 138 (neu_endCondicion -> .)
-    PUNTOYCOMA      reduce using rule 138 (neu_endCondicion -> .)
-    R_LLAVE         reduce using rule 138 (neu_endCondicion -> .)
-
-    neu_endCondicion               shift and go to state 329
+    empty                          shift and go to state 329
 
 state 324
+
+    (54) no_condicional -> DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp neu_boolFor HACER bloque . neu_endCondicion empty
+    (139) neu_endCondicion -> .
+
+    ID              reduce using rule 139 (neu_endCondicion -> .)
+    REGRESA         reduce using rule 139 (neu_endCondicion -> .)
+    LEER            reduce using rule 139 (neu_endCondicion -> .)
+    ESCRIBIR        reduce using rule 139 (neu_endCondicion -> .)
+    SI              reduce using rule 139 (neu_endCondicion -> .)
+    MIENTRAS        reduce using rule 139 (neu_endCondicion -> .)
+    DESDE           reduce using rule 139 (neu_endCondicion -> .)
+    CIRCULO         reduce using rule 139 (neu_endCondicion -> .)
+    COLOR           reduce using rule 139 (neu_endCondicion -> .)
+    GROSOR          reduce using rule 139 (neu_endCondicion -> .)
+    LINEA           reduce using rule 139 (neu_endCondicion -> .)
+    PUNTOXY         reduce using rule 139 (neu_endCondicion -> .)
+    ARCO            reduce using rule 139 (neu_endCondicion -> .)
+    PENUP           reduce using rule 139 (neu_endCondicion -> .)
+    PENDOWN         reduce using rule 139 (neu_endCondicion -> .)
+    PUNTOYCOMA      reduce using rule 139 (neu_endCondicion -> .)
+    R_LLAVE         reduce using rule 139 (neu_endCondicion -> .)
+
+    neu_endCondicion               shift and go to state 330
+
+state 325
 
     (55) asignacionFor -> ID neu_addIDFor IGUAL neu_addOperador hiper_exp neu_asignacionFor empty .
 
     R_PAR           reduce using rule 55 (asignacionFor -> ID neu_addIDFor IGUAL neu_addOperador hiper_exp neu_asignacionFor empty .)
 
 
-state 325
+state 326
 
     (68) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA hiper_exp . R_PAR empty
 
-    R_PAR           shift and go to state 330
+    R_PAR           shift and go to state 331
 
 
-state 326
+state 327
 
     (50) decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .
 
@@ -4971,7 +5005,7 @@ state 326
     R_LLAVE         reduce using rule 50 (decision -> SI L_PAR hiper_exp R_PAR neu_iniciarDecision ENTONCES bloque decisionU neu_endDecision empty .)
 
 
-state 327
+state 328
 
     (51) decisionU -> SINO neu_iniciarDecisionElse bloque . empty
     (104) empty -> .
@@ -4994,9 +5028,9 @@ state 327
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     R_LLAVE         reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 331
+    empty                          shift and go to state 332
 
-state 328
+state 329
 
     (53) condicional -> MIENTRAS L_PAR neu_condicionalAntes hiper_exp neu_condicionalDurante R_PAR HACER bloque neu_condicionalDespues empty .
 
@@ -5019,7 +5053,7 @@ state 328
     R_LLAVE         reduce using rule 53 (condicional -> MIENTRAS L_PAR neu_condicionalAntes hiper_exp neu_condicionalDurante R_PAR HACER bloque neu_condicionalDespues empty .)
 
 
-state 329
+state 330
 
     (54) no_condicional -> DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp neu_boolFor HACER bloque neu_endCondicion . empty
     (104) empty -> .
@@ -5042,18 +5076,18 @@ state 329
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
     R_LLAVE         reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 332
+    empty                          shift and go to state 333
 
-state 330
+state 331
 
     (68) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA hiper_exp R_PAR . empty
     (104) empty -> .
 
     PUNTOYCOMA      reduce using rule 104 (empty -> .)
 
-    empty                          shift and go to state 333
+    empty                          shift and go to state 334
 
-state 331
+state 332
 
     (51) decisionU -> SINO neu_iniciarDecisionElse bloque empty .
 
@@ -5076,7 +5110,7 @@ state 331
     R_LLAVE         reduce using rule 51 (decisionU -> SINO neu_iniciarDecisionElse bloque empty .)
 
 
-state 332
+state 333
 
     (54) no_condicional -> DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp neu_boolFor HACER bloque neu_endCondicion empty .
 
@@ -5099,7 +5133,7 @@ state 332
     R_LLAVE         reduce using rule 54 (no_condicional -> DESDE L_PAR asignacionFor R_PAR HASTA hiper_exp neu_boolFor HACER bloque neu_endCondicion empty .)
 
 
-state 333
+state 334
 
     (68) linea -> LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA hiper_exp R_PAR empty .
 
