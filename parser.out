@@ -150,6 +150,7 @@ Rule 138   neu_asignacionFor -> <empty>
 Rule 139   neu_boolFor -> <empty>
 Rule 140   neu_endCondicion -> <empty>
 Rule 141   neu_vaciarPilas -> <empty>
+Rule 142   notifError -> <empty>
 
 Terminals, with rules where they appear
 
@@ -279,6 +280,7 @@ neu_programa         : 1
 neu_retorno          : 45
 neu_vaciarPilas      : 29
 no_condicional       : 40
+notifError           : 
 operadorA            : 92
 operadorL            : 86
 operadorR            : 89

@@ -54,9 +54,6 @@ tabla_constantes = {'Entero': {}, 'Flotante': {}, 'Caracter': {}}
 # Arreglo que se llenará con objetos tipo Cuadruplo
 cuadruplos = []
 
-# Arreglo que se llenará con los errores
-errores = []
-
 # Pila de saltos para ciclos
 pilaSaltos = []
 
@@ -595,7 +592,7 @@ def p_neu_addFuncion(p):
         memoriaLFlotante = 5000
         memoriaLCaracter = 6000
     else:
-        errores.append(str(lexer.lineno) + " - La función " + currFuncName + " ya se declaró con anterioridad")
+        p_notifError(str(lexer.lineno) + " - La función " + currFuncName + " ya se declaró con anterioridad")
 
 # Punto Neuralgico - Al terminar una función
 def p_neu_endFuncion(p):
@@ -625,14 +622,14 @@ def p_neu_addVariable(p):
             tabla_variables[currFuncName]['variables'][varsStack[0]] = {'tipo': currVarType, 'memoria': memoria}
             varsStack.popleft()
         else:
-            errores.append(str(lexer.lineno) + " - La variable " + varsStack[0] + " ya se declaró anteriormente")
+            p_notifError(str(lexer.lineno) + " - La variable " + varsStack[0] + " ya se declaró anteriormente")
 
     # Meter la variable más cercana al tipo, es decir "c" en "a, b, c : Entero"
     if currVarName not in tabla_variables[currFuncName]['variables'].keys() and currVarName not in tabla_variables[progName]['variables'].keys():
         memoria = p_getMemoriaForID(currVarType)
         tabla_variables[currFuncName]['variables'][currVarName] = {'tipo': currVarType, 'memoria': memoria}
     else:
-        errores.append(str(lexer.lineno) + " - La variable " + currVarName + " ya se declaró anteriormente")  
+        p_notifError(str(lexer.lineno) + " - La variable " + currVarName + " ya se declaró anteriormente")  
 
 def p_neu_addVariableAStack(p):
     'neu_addVariableAStack : '
@@ -651,7 +648,7 @@ def p_neu_addID(p):
         pilaTerminos.append(tabla_variables[progName]['variables'][p[-1]]['memoria'])
         pilaTipos.append(tabla_variables[progName]['variables'][p[-1]]['tipo'])
     else:
-        errores.append(str(lexer.lineno) + " - No se declaró la variable " + p[-1])
+        p_notifError(str(lexer.lineno) + " - No se declaró la variable " + p[-1])
 
 # Añado una constante ENTERO a la tabla de constantes
 def p_neu_addConstanteEntero(p):
@@ -692,7 +689,7 @@ def p_neu_llamada_era(p):
     if p[-1] in tabla_variables.keys():
         cuadruplos.append(Cuadruplo('ERA', p[-1], None, None))
     else:
-        errores.append(str(lexer.lineno) + " - No se declaró la función " + p[-1])
+        p_notifError(str(lexer.lineno) + " - No se declaró la función " + p[-1])
         
 # Punto Neuralgico - Llamada GOSUB
 def p_neu_llamada_gosub(p):
@@ -721,19 +718,19 @@ def p_getGMemoria(tipo):
             memoriaGEntero = memoriaGEntero + 1
             return memoriaGEntero
         else:
-            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
+            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
     elif tipo == 'Flotante':
         if memoriaGFlotante < 3000:
             memoriaGFlotante = memoriaGFlotante + 1
             return memoriaGFlotante
         else:
-            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
+            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
     elif tipo == 'Caracter':
         if memoriaGCaracter < 4000:
             memoriaGCaracter = memoriaGCaracter + 1
             return memoriaGCaracter
         else:
-            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
+            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
 
 # Local
 def p_getLMemoria(tipo):
@@ -744,19 +741,19 @@ def p_getLMemoria(tipo):
             memoriaLEntero = memoriaLEntero + 1
             return memoriaLEntero
         else:
-            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
+            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
     elif tipo == 'Flotante':
         if memoriaLFlotante < 6000:
             memoriaLFlotante = memoriaLFlotante + 1
             return memoriaLFlotante
         else:
-            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
+            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
     elif tipo == 'Caracter':
         if memoriaLCaracter < 7000:
             memoriaLCaracter = memoriaLCaracter + 1
             return memoriaLCaracter
         else:
-            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
+            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
 
 # Constante
 def p_getCMemoria(tipo):
@@ -767,19 +764,19 @@ def p_getCMemoria(tipo):
             memoriaCEntero = memoriaCEntero + 1
             return memoriaCEntero
         else:
-            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
+            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
     elif tipo == 'Flotante':
         if memoriaCFlotante < 9000:
             memoriaCFlotante = memoriaCFlotante + 1
             return memoriaCFlotante
         else:
-            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
+            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
     elif tipo == 'Caracter':
         if memoriaCCaracter < 10000:
             memoriaCCaracter = memoriaCCaracter + 1
             return memoriaCCaracter
         else:
-            errores.append(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
+            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
 
 # REALIZAR OPERACIONES
 
@@ -806,7 +803,7 @@ def p_neu_hacerTermino(p):
                 pilaTerminos.append(memoriaResultado)
                 pilaTipos.append(tipoResultado)
             else:
-                errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+                p_notifError(str(lexer.lineno) + " - Error en operaciones de tipos")
 
 # + -
 def p_neu_hacerExp(p):
@@ -831,7 +828,7 @@ def p_neu_hacerExp(p):
                 pilaTerminos.append(memoriaResultado)
                 pilaTipos.append(tipoResultado)
             else:
-                errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+                p_notifError(str(lexer.lineno) + " - Error en operaciones de tipos")
 
 # < > >= >= != ==
 def p_neu_hacerSuperExp(p):
@@ -856,7 +853,7 @@ def p_neu_hacerSuperExp(p):
                 pilaTerminos.append(memoriaResultado)
                 pilaTipos.append(tipoResultado)
             else:
-                errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+                p_notifError(str(lexer.lineno) + " - Error en operaciones de tipos")
 
 # & |
 def p_neu_hacerHiperExp(p):
@@ -881,14 +878,19 @@ def p_neu_hacerHiperExp(p):
                 pilaTerminos.append(memoriaResultado)
                 pilaTipos.append(tipoResultado)
             else:
-                errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+                p_notifError(str(lexer.lineno) + " - Error en operaciones de tipos")
 
 def p_neu_asignacion(p):
     'neu_asignacion : '
     igual = pilaOperadores.pop()
     der = pilaTerminos.pop()
     izq = pilaTerminos.pop()
-    cuadruplos.append(Cuadruplo(igual, der, None, izq))
+    derTipo = pilaTipos.pop()
+    izqTipo = pilaTipos.pop()
+    if derTipo == izqTipo:
+        cuadruplos.append(Cuadruplo(igual, der, None, izq))
+    else:
+        p_notifError(str(lexer.lineno) + " - La asignación no se puede realizar por la compatibilidad de los tipos")
 
 def p_neu_lectura(p):
     'neu_lectura : '
@@ -896,7 +898,7 @@ def p_neu_lectura(p):
     if p[-1] in tabla_variables[currFuncName]['variables'].keys():
         cuadruplos.append(Cuadruplo('READ', None, None, tabla_variables[currFuncName]['variables'][p[-1]]['memoria']))
     else:
-        errores.append(str(lexer.lineno) + " - Se debe declarar la variable " + p[-1] + " antes de utilizarla")
+        p_notifError(str(lexer.lineno) + " - Se debe declarar la variable " + p[-1] + " antes de utilizarla")
 
 def p_neu_escritura(p):
     'neu_escritura : '
@@ -909,7 +911,7 @@ def p_neu_retorno(p):
     if pilaTipos.pop() == currFuncType:
         cuadruplos.append(Cuadruplo('RETURN', None, None, pilaTerminos.pop()))
     else:
-        errores.append(str(lexer.lineno) + " - El valor que se retorna no es compatible con el tipo de la función")
+        p_notifError(str(lexer.lineno) + " - El valor que se retorna no es compatible con el tipo de la función")
         
 # DECISION
 def p_neu_iniciarDecision(p):
@@ -918,7 +920,7 @@ def p_neu_iniciarDecision(p):
         cuadruplos.append(Cuadruplo('GOTOF', pilaTerminos[-1], None, 0))
         pilaSaltos.append(len(cuadruplos)-1)
     else:
-        errores.append(str(lexer.lineno) + " - No se puede utilizar la variable " + pilaTerminos[-1] + " para realizar una decisión")
+        p_notifError(str(lexer.lineno) + " - No se puede utilizar la variable " + pilaTerminos[-1] + " para realizar una decisión")
 
 def p_neu_iniciarDecisionElse(p):
     'neu_iniciarDecisionElse : '
@@ -953,15 +955,15 @@ def p_neu_addIDFor(p):
             pilaTerminos.append(tabla_variables[currFuncName]['variables'][p[-1]]['memoria'])
             pilaTipos.append('Entero')
         else:
-            errores.append(str(lexer.lineno) + " - La variable " + p[-1] + " debe ser entero.")
+            p_notifError(str(lexer.lineno) + " - La variable " + p[-1] + " debe ser entero.")
     elif p[-1] in tabla_variables[progName]['variables'].keys():
         if tabla_variables[progName]['variables'][p[-1]]['tipo'] == 'Entero':
             pilaTerminos.append(tabla_variables[progName]['variables'][p[-1]]['memoria'])
             pilaTipos.append('Entero')
         else:
-            errores.append(str(lexer.lineno) + " - La variable " + p[-1] + " debe ser entero.")
+            p_notifError(str(lexer.lineno) + " - La variable " + p[-1] + " debe ser entero.")
     else:
-        errores.append(str(lexer.lineno) + " - No se declaró la variable " + p[-1])
+        p_notifError(str(lexer.lineno) + " - No se declaró la variable " + p[-1])
 
 def p_neu_asignacionFor(p):
     'neu_asignacionFor : '
@@ -993,7 +995,7 @@ def p_neu_boolFor(p):
         pilaSaltos.append(len(cuadruplos)-1)
         cuadruplos.append(Cuadruplo('GOTOF', memoriaResultado, None, 0))
     else:
-        errores.append(str(lexer.lineno) + " - Error en operaciones de tipos")
+        p_notifError(str(lexer.lineno) + " - Error en operaciones de tipos")
 
 def p_neu_endCondicion(p):
     'neu_endCondicion  : '
@@ -1022,6 +1024,13 @@ def p_neu_vaciarPilas(p):
     pilaOperadores.clear()
     pilaTipos.clear()
 
+# ERRORES
+
+def p_notifError(errorText):
+    'notifError : '
+    print("\n! Linea " + errorText + "\n")
+    sys.exit()
+
 parser = yacc.yacc()
 
 ############### EJECUCIÓN ###############
@@ -1031,22 +1040,17 @@ try:
     with open(text, 'r') as file:
         parser.parse(file.read())
 
-        if errores:
-            print("\n! " + str(len(errores)) + " ERROR(ES) ->")
-            for item in errores:
-                print("! Linea " + item)
-        else:
-            print("\nTABLA DE VARIABLES ->")
-            print(tabla_variables)
+        print("\nTABLA DE VARIABLES ->")
+        print(tabla_variables)
 
-            print("\nTABLA DE CONSTANTES ->")
-            print(tabla_constantes)
+        print("\nTABLA DE CONSTANTES ->")
+        print(tabla_constantes)
 
-            contador = 0
-            print("\nCUADRUPLOS ->")
-            for item in cuadruplos:
-                print(str(contador) + " " + str(item.getCuadruplo()))
-                contador += 1
+        contador = 0
+        print("\nCUADRUPLOS ->")
+        for item in cuadruplos:
+            print(str(contador) + " " + str(item.getCuadruplo()))
+            contador += 1
 
 except EOFError:
     print("Error")
