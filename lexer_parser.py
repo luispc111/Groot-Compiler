@@ -258,7 +258,7 @@ lexer = lex.lex()
 
 def p_programa(p):
     '''
-    program : PROGRAMA ID neu_programa PUNTOYCOMA variables funciones PRINCIPAL neu_principal L_PAR R_PAR bloque empty
+    program : PROGRAMA ID neu_programa PUNTOYCOMA variables funciones PRINCIPAL neu_principal L_PAR R_PAR bloque neu_endPrograma empty
     '''
     p[0] = None
 
@@ -572,6 +572,11 @@ def p_neu_programa(p):
     tabla_variables[progName] = {'tipo': progName, 'variables': {}}
     cuadruplos.append(Cuadruplo('GOTO', None, None, progName))
 
+# Punto Neuralgico - Terminar el programa
+def p_neu_endPrograma(p):
+    'neu_endPrograma : '
+    cuadruplos.append(Cuadruplo('END', None, None, None))
+
 # Punto Neuralgico - Al iniciar una función
 def p_neu_addFuncion(p):
     'neu_addFuncion : '
@@ -583,7 +588,7 @@ def p_neu_addFuncion(p):
 
     # Se crea la función en la tabla de variables si no hay otra con el mismo nombre
     if currFuncName not in tabla_variables.keys():
-        tabla_variables[currFuncName] = {'tipo': currFuncType, 'variables': {}}
+        tabla_variables[currFuncName] = {'tipo': currFuncType, 'numCuadruplo': len(cuadruplos),'variables': {}}
 
         # Resetear la memoria local para funciones
         memoriaLEntero = 4000
@@ -685,14 +690,14 @@ def p_neu_addTermino(p):
 def p_neu_llamada_era(p):
     'neu_llamada_era : '
     if p[-1] in tabla_variables.keys():
-        cuadruplos.append(Cuadruplo('ERA', None, None, p[-1]))
+        cuadruplos.append(Cuadruplo('ERA', p[-1], None, None))
     else:
         errores.append(str(lexer.lineno) + " - No se declaró la función " + p[-1])
         
 # Punto Neuralgico - Llamada GOSUB
 def p_neu_llamada_gosub(p):
     'neu_llamada_gosub : '
-    cuadruplos.append(Cuadruplo('GOSUB', None, None, p[-5]))
+    cuadruplos.append(Cuadruplo('GOSUB', p[-5], None, None))
 
 # Punto Neuralgico - ...
 def p_neu_addOperador(p):

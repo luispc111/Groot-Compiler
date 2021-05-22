@@ -33,6 +33,7 @@ Principal(){
   {
     Escribir(a);
   }
-
+  decirHola();
+  regresarPrueba();
 
 }
