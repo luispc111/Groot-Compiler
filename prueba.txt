@@ -6,7 +6,7 @@ Variables
   a, b, c : Flotante;
   letra : Caracter;
 
-Void Funcion decirHola()
+Void Funcion func1()
 Variables
   subVar : Entero;
 {
@@ -33,7 +33,7 @@ Principal(){
   {
     Escribir(a);
   }
-  decirHola();
-  regresarPrueba();
+  regresarPrueba(5, a);
+  regresarPrueba(7);
 
 }

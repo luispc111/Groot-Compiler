@@ -27,6 +27,9 @@ currVarType = ''
 
 currAsignacionFor = 0
 
+paramContador = 0
+paramTipos = []
+
 # Memorias
 
 memoriaGEntero = 1000
@@ -312,12 +315,13 @@ def p_recibir_parametros(p):
 
 def p_mandar_parametros(p):
     '''
-    mandar_parametros : ID mandar_parametrosD empty
+    mandar_parametros : hiper_exp neu_parametroEnviado mandar_parametrosD empty
                       | empty
 
     mandar_parametrosD : COMA mandar_parametros empty
                        | empty
     '''
+    p[0] = None
 
 # BLOQUE Y EXPRESIONES
 
@@ -587,6 +591,11 @@ def p_neu_addFuncion(p):
     if currFuncName not in tabla_variables.keys():
         tabla_variables[currFuncName] = {'tipo': currFuncType, 'numCuadruplo': len(cuadruplos),'variables': {}}
 
+        # Añadir funcion a variables globales
+        if currFuncType != 'Void':
+            memoria = p_getGMemoria(currFuncType)
+            tabla_variables[progName]['variables'][currFuncName] = {'tipo': currFuncType, 'memoria': memoria}
+
         # Resetear la memoria local para funciones
         memoriaLEntero = 4000
         memoriaLFlotante = 5000
@@ -686,7 +695,9 @@ def p_neu_addTermino(p):
 # Punto Neuralgico - Llamada ERA
 def p_neu_llamada_era(p):
     'neu_llamada_era : '
+    global paramContador
     if p[-1] in tabla_variables.keys():
+        paramContador = 0
         cuadruplos.append(Cuadruplo('ERA', p[-1], None, None))
     else:
         p_notifError(str(lexer.lineno) + " - No se declaró la función " + p[-1])
@@ -1014,6 +1025,14 @@ def p_neu_endCondicion(p):
     cuadruplos.append(Cuadruplo('=', memoriaResultado, None, currAsignacionFor))
     cuadruplos.append(Cuadruplo('GOTO', None, None, pilaSaltos[-1]))
     cuadruplos[pilaSaltos.pop() + 1].res = len(cuadruplos)
+
+# LLAMADA
+def p_neu_parametroEnviado(p):
+    'neu_parametroEnviado : '
+    global paramContador
+    paramContador += 1
+    paramTipos.append(pilaTipos.pop())
+    cuadruplos.append(Cuadruplo('PARAM', pilaTerminos.pop(), None, "par"+str(paramContador)))
 
 # VACIAR PILAS
 
