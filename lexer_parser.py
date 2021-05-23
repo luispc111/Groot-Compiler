@@ -131,16 +131,6 @@ tokens = [
     'CARACTER',     # caracter
     'VOID',         # void
 
-    # Funciones reservadas
-    'CIRCULO',      # Circulo
-    'COLOR',        # Color
-    'GROSOR',       # Grosor
-    'LINEA',        # Linea
-    'PUNTOXY',      # PuntoXY
-    'ARCO',         # Arco
-    'PENUP',        # PenUp
-    'PENDOWN',      # PenDown
-
     'ID',           # id
 ]
 
@@ -211,16 +201,6 @@ t_ENTERO = r'Entero'
 t_FLOTANTE = r'Flotante'
 t_CARACTER = r'Caracter'
 t_VOID = r'Void'
-
-# Funciones especiales
-t_CIRCULO = r'Circulo'  # (radio)
-t_COLOR = r'Color'      # (i)
-t_GROSOR = r'Grosor'    # (i)
-t_LINEA = r'Linea'      # (x1,y1,x2,y2)
-t_PUNTOXY = r'PuntoXY'  # (x,y)
-t_ARCO = r'Arco'        # (i)
-t_PENUP = r'PenUp'      # ()
-t_PENDOWN = r'PenDown'  # ()
 
 t_ID = r'([a-z][a-zA-Z0-9]*)'
 
@@ -347,7 +327,6 @@ def p_estatuto(p):
              | decision empty
              | condicional empty
              | no_condicional empty
-             | funciones_especiales PUNTOYCOMA empty
              | empty
     '''
 
@@ -409,61 +388,6 @@ def p_asignacionFor(p):
     asignacionFor : ID neu_addIDFor IGUAL neu_addOperador hiper_exp neu_asignacionFor empty
     '''
     p[0] = None
-
-# FUNCIONES ESPECIALES
-
-def p_funciones_especiales(p):
-    '''
-    funciones_especiales : circulo empty
-                         | color empty
-                         | grosor empty
-                         | linea empty
-                         | puntoxy empty
-                         | arco empty
-                         | penup empty
-                         | pendown empty
-                         | empty
-    '''
-
-def p_circulo(p):
-    '''
-    circulo : CIRCULO L_PAR hiper_exp R_PAR empty
-    '''
-
-def p_color(p):
-    '''
-    color : COLOR L_PAR hiper_exp R_PAR empty
-    '''
-
-def p_grosor(p):
-    '''
-    grosor : GROSOR L_PAR hiper_exp R_PAR empty
-    '''
-
-def p_linea(p):
-    '''
-    linea : LINEA L_PAR hiper_exp COMA hiper_exp COMA hiper_exp COMA hiper_exp R_PAR empty
-    '''
-
-def p_puntoxy(p):
-    '''
-    puntoxy : PUNTOXY L_PAR hiper_exp COMA hiper_exp R_PAR empty
-    '''
-
-def p_arco(p):
-    '''
-    arco : ARCO L_PAR hiper_exp R_PAR empty
-    '''
-
-def p_penup(p):
-    '''
-    penup : PENUP L_PAR hiper_exp R_PAR empty
-    '''
-
-def p_pendown(p):
-    '''
-    pendown : PENDOWN L_PAR hiper_exp R_PAR empty
-    '''
 
 # OPERADORES 
 

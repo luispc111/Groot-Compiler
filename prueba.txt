@@ -34,6 +34,4 @@ Principal(){
     Escribir(a);
   }
   regresarPrueba(5, a);
-  regresarPrueba(7);
-
 }
