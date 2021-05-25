@@ -31,6 +31,7 @@ paramContador = 0
 paramRecibirContador = 0
 paramTipos = []
 existeReturn = 0
+origenLlamada = 0
 
 # Memorias
 
@@ -466,6 +467,7 @@ def p_factor(p):
            | llamada empty
            | L_PAR hiper_exp R_PAR empty
     '''
+    p[0] = None
 
 def p_varcte(p):
     '''
@@ -479,7 +481,7 @@ def p_varcte(p):
 # ERROR / EMPTY
 
 def p_error(p):
-    print("Syntax error found at line %d." % (lexer.lineno))
+    print("Error de sintaxis en la linea " + str(lexer.lineno))
 
 def p_empty(p):
     '''
@@ -621,6 +623,7 @@ def p_neu_addConstanteCaracter(p):
     pilaTerminos.append(tabla_constantes['Caracter'][p[-1]]['memoria'])
     pilaTipos.append('Caracter')
 
+
 def p_neu_addTermino(p):
     'neu_addTermino : '
     pilaTerminos.append(tabla_variables[currFuncName]['variables'][p[-1]]['memoria'])
@@ -630,9 +633,10 @@ def p_neu_addTermino(p):
 # Punto Neuralgico - Llamada ERA
 def p_neu_llamada_era(p):
     'neu_llamada_era : '
-    global paramContador, currFuncName
+    global paramContador, currFuncName, origenLlamada
     if p[-1] in tabla_variables.keys():
         paramContador = 0
+        origenLlamada = currFuncName
         currFuncName = p[-1]
         cuadruplos.append(Cuadruplo('ERA', p[-1], None, None))
     else:
@@ -642,8 +646,23 @@ def p_neu_llamada_era(p):
 def p_neu_llamada_gosub(p):
     'neu_llamada_gosub : '
     global currFuncName, progName
+    cuadruplos.append(Cuadruplo('GOSUB', currFuncName, None, None))
+
+    # Si no es Void, asignar resultado al espacio de memoria reservado para esa función
+    if tabla_variables[currFuncName]['tipo'] != 'Void':
+        memoria = tabla_variables[progName]['variables'][currFuncName]['memoria']
+        if origenLlamada == progName:
+            memoriaTemp = p_getGMemoria(tabla_variables[currFuncName]['tipo'])
+        else:
+            memoriaTemp = p_getLMemoria(tabla_variables[currFuncName]['tipo'])
+        cuadruplos.append(Cuadruplo('=', memoria, None, memoriaTemp))
+
+        # añadir termino y tipo para utilizar en expresiones
+        pilaTerminos.append(memoriaTemp)
+        pilaTipos.append(tabla_variables[currFuncName]['tipo'])
+
     currFuncName = progName
-    cuadruplos.append(Cuadruplo('GOSUB', p[-5], None, None))
+    
 
 # Punto Neuralgico - ...
 def p_neu_addOperador(p):
@@ -854,12 +873,14 @@ def p_neu_escritura(p):
     global currFuncName, progName, pilaTerminos
     cuadruplos.append(Cuadruplo('WRITE', None, None, pilaTerminos[-1]))
 
+# RETORNO
 def p_neu_retorno(p):
     'neu_retorno : '
     global currFuncType, progName, existeReturn
+    # Comprueba si la variable a retornar es del mismo tipo que la función
     if pilaTipos.pop() == currFuncType:
         existeReturn = 1
-        tabla_variables[progName][currFuncName] = pilaTerminos[-1]
+        #tabla_variables[progName]['variables'][currFuncName]
         cuadruplos.append(Cuadruplo('RETURN', None, None, pilaTerminos.pop()))
     else:
         p_notifError(str(lexer.lineno) + " - El valor que se retorna no es compatible con el tipo de la función")
