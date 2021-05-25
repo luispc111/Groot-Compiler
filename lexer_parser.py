@@ -28,7 +28,9 @@ currVarType = ''
 currAsignacionFor = 0
 
 paramContador = 0
+paramRecibirContador = 0
 paramTipos = []
+existeReturn = 0
 
 # Memorias
 
@@ -286,12 +288,13 @@ def p_tipo_var(p):
 
 def p_recibir_parametros(p):
     '''
-    recibir_parametros : ID DOSPUNTOS tipo_var recibir_parametrosD empty
+    recibir_parametros : ID DOSPUNTOS tipo_var neu_recibirParametros recibir_parametrosD empty
                        | empty
 
     recibir_parametrosD : COMA recibir_parametros empty
                        | empty
     '''
+    p[0] = None
 
 def p_mandar_parametros(p):
     '''
@@ -338,7 +341,7 @@ def p_asignacion(p):
 
 def p_llamada(p):
     '''
-    llamada : ID neu_llamada_era L_PAR mandar_parametros R_PAR neu_llamada_gosub empty
+    llamada : ID neu_llamada_era L_PAR mandar_parametros neu_paramValidacion R_PAR neu_llamada_gosub empty
     '''
     p[0] = None
 
@@ -505,15 +508,16 @@ def p_neu_endPrograma(p):
 # Punto Neuralgico - Al iniciar una función
 def p_neu_addFuncion(p):
     'neu_addFuncion : '
-    global currFuncName, currFuncType, progName, memoriaLEntero, memoriaLFlotante, memoriaLCaracter
+    global currFuncName, currFuncType, progName, memoriaLEntero, memoriaLFlotante, memoriaLCaracter, existeReturn
     
     # Asignar el nombre de la función y su tipo a las variables globales
+    existeReturn = 0
     currFuncName = p[-1]
     currFuncType = p[-3]
 
     # Se crea la función en la tabla de variables si no hay otra con el mismo nombre
     if currFuncName not in tabla_variables.keys():
-        tabla_variables[currFuncName] = {'tipo': currFuncType, 'numCuadruplo': len(cuadruplos),'variables': {}}
+        tabla_variables[currFuncName] = {'tipo': currFuncType, 'numCuadruplo': len(cuadruplos),'variables': {},'parametros':{}}
 
         # Añadir funcion a variables globales
         if currFuncType != 'Void':
@@ -530,7 +534,14 @@ def p_neu_addFuncion(p):
 # Punto Neuralgico - Al terminar una función
 def p_neu_endFuncion(p):
     'neu_endFuncion : '
-    cuadruplos.append(Cuadruplo('ENDFUNC', None, None, None))
+    global existeReturn
+    if currFuncType != 'Void' and existeReturn == 0:
+        p_notifError(str(lexer.lineno) + " - La función " + currFuncName + " no tiene estatuto de regreso")
+    elif currFuncType == 'Void' and existeReturn == 1:
+        p_notifError(str(lexer.lineno) + " - La función " + currFuncName + " no debe tener estatutos de regreso")
+    else:
+        cuadruplos.append(Cuadruplo('ENDFUNC', None, None, None))
+        existeReturn = 0
 
 # Punto Neuralgico - Al inicial principal()
 def p_neu_principal(p):
@@ -619,9 +630,10 @@ def p_neu_addTermino(p):
 # Punto Neuralgico - Llamada ERA
 def p_neu_llamada_era(p):
     'neu_llamada_era : '
-    global paramContador
+    global paramContador, currFuncName
     if p[-1] in tabla_variables.keys():
         paramContador = 0
+        currFuncName = p[-1]
         cuadruplos.append(Cuadruplo('ERA', p[-1], None, None))
     else:
         p_notifError(str(lexer.lineno) + " - No se declaró la función " + p[-1])
@@ -629,6 +641,8 @@ def p_neu_llamada_era(p):
 # Punto Neuralgico - Llamada GOSUB
 def p_neu_llamada_gosub(p):
     'neu_llamada_gosub : '
+    global currFuncName, progName
+    currFuncName = progName
     cuadruplos.append(Cuadruplo('GOSUB', p[-5], None, None))
 
 # Punto Neuralgico - ...
@@ -842,8 +856,10 @@ def p_neu_escritura(p):
 
 def p_neu_retorno(p):
     'neu_retorno : '
-    global currFuncType
+    global currFuncType, progName, existeReturn
     if pilaTipos.pop() == currFuncType:
+        existeReturn = 1
+        tabla_variables[progName][currFuncName] = pilaTerminos[-1]
         cuadruplos.append(Cuadruplo('RETURN', None, None, pilaTerminos.pop()))
     else:
         p_notifError(str(lexer.lineno) + " - El valor que se retorna no es compatible con el tipo de la función")
@@ -953,10 +969,43 @@ def p_neu_endCondicion(p):
 # LLAMADA
 def p_neu_parametroEnviado(p):
     'neu_parametroEnviado : '
-    global paramContador
+    global paramContador, currFuncName
     paramContador += 1
-    paramTipos.append(pilaTipos.pop())
-    cuadruplos.append(Cuadruplo('PARAM', pilaTerminos.pop(), None, "par"+str(paramContador)))
+
+    # si existe un n registro en la tabla de parametros
+    if paramContador in tabla_variables[currFuncName]['parametros'].keys():
+        # si el tipo coincide
+        if tabla_variables[currFuncName]['parametros'][paramContador] == pilaTipos.pop():
+            cuadruplos.append(Cuadruplo('PARAM', pilaTerminos.pop(), None, "PARAM"+str(paramContador)))
+        else:
+            p_notifError(str(lexer.lineno) + " - Los parametros de la función " + currFuncName + " no coinciden en sus tipos")
+
+    else:
+        p_notifError(str(lexer.lineno) + " - La cantidad de parametros de la función " + currFuncName + " no coinciden con los de su llamada")
+
+def p_neu_recibirParametros(p):
+    'neu_recibirParametros : '
+    global paramRecibirContador
+
+    # Si la variable que recibe una función como parametro no existe en su contexto local y no es global
+    if p[-3] not in tabla_variables[currFuncName]['variables'].keys() and p[-3] not in tabla_variables[progName]['variables'].keys():
+        memoria = p_getMemoriaForID(p[-1])
+        tabla_variables[currFuncName]['variables'][p[-3]] = {'tipo': p[-1], 'memoria': memoria}
+
+        # Añadir tipos a tabla de variables para comprobar cuando se envien parametros desde una llamada
+        if tabla_variables[currFuncName]['parametros']:
+            paramRecibirContador = 0
+        paramRecibirContador += 1
+        tabla_variables[currFuncName]['parametros'] = {paramRecibirContador: p[-1]}
+
+    else:
+        p_notifError(str(lexer.lineno) + " - La variable " + p[-3] + " ya se declaró anteriormente")
+
+# Valida el caso especifico de si no se envian parametros y si se esperaban
+def p_neu_paramValidacion(p):
+    'neu_paramValidacion : '
+    if len(tabla_variables[currFuncName]['parametros']) != paramContador:
+        p_notifError(str(lexer.lineno) + " - La cantidad de parametros de la función " + currFuncName + " no coinciden con los de su llamada")
 
 # VACIAR PILAS
 

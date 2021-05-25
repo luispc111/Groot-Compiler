@@ -6,7 +6,7 @@ Variables
   a, b, c : Flotante;
   letra : Caracter;
 
-Void Funcion func1()
+Entero Funcion func1(parametro1 : Flotante)
 Variables
   subVar : Entero;
 {
@@ -16,15 +16,16 @@ Variables
     Si (5 < 4) Entonces
     {
       Escribir(a);
+      Regresa(i);
     }
     Sino {
-      Escribir(b);
+      Escribir(parametro1 + subVar);
     }
   }
   letra = 'a';
 }
 
-Entero Funcion regresarPrueba() {
+Entero Funcion func2() {
   Regresa(x);
 }
 
@@ -33,5 +34,6 @@ Principal(){
   {
     Escribir(a);
   }
-  regresarPrueba(5, a);
+  func2();
+  func1(7.5);
 }
