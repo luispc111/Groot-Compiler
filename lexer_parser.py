@@ -993,11 +993,10 @@ def p_neu_recibirParametros(p):
         tabla_variables[currFuncName]['variables'][p[-3]] = {'tipo': p[-1], 'memoria': memoria}
 
         # Añadir tipos a tabla de variables para comprobar cuando se envien parametros desde una llamada
-        if tabla_variables[currFuncName]['parametros']:
+        if len(tabla_variables[currFuncName]['parametros']) == 0:
             paramRecibirContador = 0
         paramRecibirContador += 1
-        tabla_variables[currFuncName]['parametros'] = {paramRecibirContador: p[-1]}
-
+        tabla_variables[currFuncName]['parametros'][paramRecibirContador] = p[-1]
     else:
         p_notifError(str(lexer.lineno) + " - La variable " + p[-3] + " ya se declaró anteriormente")
 

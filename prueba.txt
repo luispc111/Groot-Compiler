@@ -6,7 +6,7 @@ Variables
   a, b, c : Flotante;
   letra : Caracter;
 
-Entero Funcion func1(parametro1 : Flotante)
+Entero Funcion func1(parametro1 : Flotante, parametro2 : Entero)
 Variables
   subVar : Entero;
 {
@@ -35,5 +35,5 @@ Principal(){
     Escribir(a);
   }
   func2();
-  func1(7.5);
+  func1(7.0, x);
 }
