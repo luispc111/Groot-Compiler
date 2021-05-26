@@ -6,13 +6,40 @@ Variables
   a, b, c : Flotante;
   letra : Caracter;
 
+Void Funcion func1(dato : Entero) 
+Variables
+  subVar : Entero;
+{
+  subVar = 998;
+  Escribir(subVar + dato);
+}
+
+Void Funcion func2(dato : Entero, dato2 : Entero) 
+Variables
+  subVar : Entero;
+{
+  subVar = 999;
+  Escribir(subVar + 1);
+  Escribir(dato + dato2 + 1);
+  func1(1);
+}
+
+Entero Funcion regresaCinco() 
+Variables
+  miCinco : Entero;
+{
+  miCinco = 5;
+  Regresa(miCinco);
+}
+
 Principal(){
   i = 10;
   x = 5;
   i = 5 / 2;
-  Escribir(5 / 2.0);
+  Escribir(5 / 2);
 
   Si (1) Entonces {
+    func2(99 + 1, 101);
   }
   Sino{
   }

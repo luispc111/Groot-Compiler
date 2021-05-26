@@ -32,6 +32,7 @@ paramRecibirContador = 0
 paramTipos = []
 existeReturn = 0
 origenLlamada = 0
+parametrosFuncion = {}
 
 # Memorias
 
@@ -996,6 +997,10 @@ def p_neu_parametroEnviado(p):
     if paramContador in tabla_variables[currFuncName]['parametros'].keys():
         # si el tipo coincide
         if tabla_variables[currFuncName]['parametros'][paramContador] == pilaTipos.pop():
+            if currFuncName not in parametrosFuncion.keys():
+                parametrosFuncion[currFuncName] = {}
+            parametrosFuncion[currFuncName][pilaTerminos[-1]] = None
+
             cuadruplos.append(Cuadruplo('PARAM', pilaTerminos.pop(), None, "PARAM"+str(paramContador)))
         else:
             p_notifError(str(lexer.lineno) + " - Los parametros de la función " + currFuncName + " no coinciden en sus tipos")
@@ -1058,6 +1063,9 @@ def generarDatos():
             # print("\nTABLA DE CONSTANTES ->")
             # print(tabla_constantes)
 
+            # print("\nPARAMETROS POR FUNCION ->")
+            # print(parametrosFuncion)
+
             # contador = 0
             # print("\nCUADRUPLOS ->")
             # for item in cuadruplos:
@@ -1073,7 +1081,8 @@ def correrMV():
         'cuadruplos': cuadruplos,
         'tabla_variables': tabla_variables,
         'tabla_constantes': tabla_constantes,
-        'progName': progName
+        'progName': progName,
+        'parametrosFuncion' : parametrosFuncion
     }
     return data
 
