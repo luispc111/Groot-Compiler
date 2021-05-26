@@ -8,10 +8,13 @@ Variables
 
 Principal(){
   i = 10;
-  x = 0;
+  x = 5;
   a = 10.0 + i;
-  Si (x) Entonces {
+
+  Si (1 | 0) Entonces {
     Escribir(a);
   }
-  Escribir(a + 1);
+  Sino{
+    Escribir(x);
+  }
 }

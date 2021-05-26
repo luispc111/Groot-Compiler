@@ -64,24 +64,100 @@ while corriendo:
     elif operador == '=':
         if st[cuadruplo[1]] == None:
             notifError("Una variable en la asignación no tiene un valor asignado")
+
         st[cuadruplo[3]] = st[cuadruplo[1]]
         currCuadruplo += 1
     elif operador == '+':
         if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
             notifError("Una variable en la suma no tiene valor asignado")
+
         st[cuadruplo[3]] = getType(cuadruplo[1]) + getType(cuadruplo[2])
         currCuadruplo += 1
     elif operador == '-':
         if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
             notifError("Una variable en la resta no tiene valor asignado")
+
         st[cuadruplo[3]] = getType(cuadruplo[1]) - getType(cuadruplo[2])
         currCuadruplo += 1
     elif operador == '*':
         if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
             notifError("Una variable en la multiplicación no tiene valor asignado")
+
         st[cuadruplo[3]] = getType(cuadruplo[1]) / getType(cuadruplo[2])
         currCuadruplo += 1
     ############ DIVISIÓN ############
+    elif operador == '<':
+        if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
+            notifError("Una variable en la comparación no tiene valor asignado")
+
+        if getType(cuadruplo[1]) < getType(cuadruplo[2]):
+            st[cuadruplo[3]] = 1
+        else:
+            st[cuadruplo[3]] = 0
+        currCuadruplo += 1
+    elif operador == '>':
+        if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
+            notifError("Una variable en la comparación no tiene valor asignado")
+
+        if getType(cuadruplo[1]) > getType(cuadruplo[2]):
+            st[cuadruplo[3]] = 1
+        else:
+            st[cuadruplo[3]] = 0
+        currCuadruplo += 1
+    elif operador == '<=':
+        if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
+            notifError("Una variable en la comparación no tiene valor asignado")
+
+        if getType(cuadruplo[1]) <= getType(cuadruplo[2]):
+            st[cuadruplo[3]] = 1
+        else:
+            st[cuadruplo[3]] = 0
+        currCuadruplo += 1
+    elif operador == '>=':
+        if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
+            notifError("Una variable en la comparación no tiene valor asignado")
+
+        if getType(cuadruplo[1]) >= getType(cuadruplo[2]):
+            st[cuadruplo[3]] = 1
+        else:
+            st[cuadruplo[3]] = 0
+        currCuadruplo += 1
+    elif operador == '==':
+        if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
+            notifError("Una variable en la comparación no tiene valor asignado")
+
+        if getType(cuadruplo[1]) == getType(cuadruplo[2]):
+            st[cuadruplo[3]] = 1
+        else:
+            st[cuadruplo[3]] = 0
+        currCuadruplo += 1
+    elif operador == '!=':
+        if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
+            notifError("Una variable en la comparación no tiene valor asignado")
+
+        if getType(cuadruplo[1]) != getType(cuadruplo[2]):
+            st[cuadruplo[3]] = 1
+        else:
+            st[cuadruplo[3]] = 0
+        currCuadruplo += 1
+    elif operador == '&':
+        if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
+            notifError("Una variable en la comparación no tiene valor asignado")
+
+        if getType(cuadruplo[1]) != 0 and getType(cuadruplo[2]) != 0:
+            st[cuadruplo[3]] = 1
+        else:
+            st[cuadruplo[3]] = 0
+        currCuadruplo += 1
+    elif operador == '|':
+        if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
+            notifError("Una variable en la comparación no tiene valor asignado")
+
+        if getType(cuadruplo[1]) == 0 and getType(cuadruplo[2]) == 0:
+            st[cuadruplo[3]] = 0
+        else:
+            st[cuadruplo[3]] = 1
+        currCuadruplo += 1
     elif operador == 'WRITE':
         print(st[cuadruplo[3]])
         currCuadruplo += 1
