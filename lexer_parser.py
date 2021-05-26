@@ -1057,8 +1057,8 @@ def generarDatos():
         with open(text, 'r') as file:
             parser.parse(file.read())
 
-            # print("\nTABLA DE VARIABLES ->")
-            # print(tabla_variables)
+            print("\nTABLA DE VARIABLES ->")
+            print(tabla_variables)
 
             # print("\nTABLA DE CONSTANTES ->")
             # print(tabla_constantes)
@@ -1066,11 +1066,11 @@ def generarDatos():
             # print("\nPARAMETROS POR FUNCION ->")
             # print(parametrosFuncion)
 
-            # contador = 0
-            # print("\nCUADRUPLOS ->")
-            # for item in cuadruplos:
-            #     print(str(contador) + " " + str(item.getCuadruplo()))
-            #     contador += 1
+            contador = 0
+            print("\nCUADRUPLOS ->")
+            for item in cuadruplos:
+                print(str(contador) + " " + str(item.getCuadruplo()))
+                contador += 1
     except EOFError:
         print("Error")
 

@@ -43,4 +43,7 @@ Principal(){
   }
   Sino{
   }
+  Escribir(regresaCinco() + 1);
+  x = regresaCinco();
+  Escribir(x);
 }

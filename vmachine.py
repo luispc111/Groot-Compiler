@@ -86,6 +86,7 @@ while corriendo:
     # ASIGNACIÓN
     elif operador == '=':
         if st[cuadruplo[1]] == None:
+            print(currCuadruplo)
             notifError("Una variable en la asignación no tiene un valor asignado")
 
         st[cuadruplo[3]] = st[cuadruplo[1]]
@@ -211,6 +212,10 @@ while corriendo:
     elif operador == 'GOSUB':
         pilaLlamadas.append(currCuadruplo)
         currCuadruplo = tabla_variables[cuadruplo[1]]['numCuadruplo']
+    elif operador == 'RETURN':
+        memoria = tabla_variables[progName]['variables'][currFunc]['memoria']
+        st[memoria] = st[cuadruplo[3]]
+        currCuadruplo = int(pilaLlamadas.pop()) + 1
     elif operador == 'ENDFUNC':
         deleteMemoriaLocal()
         currCuadruplo = int(pilaLlamadas.pop()) + 1
