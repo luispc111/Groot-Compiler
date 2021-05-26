@@ -33,7 +33,7 @@ for tipo in tabla_constantes:
 
 # SUPER TABLA
 st = {**super_tabla_variables , **super_tabla_constantes}
-print(st)
+# print(st)
 
 # HELPERS
 def notifError(errorText):
@@ -44,6 +44,7 @@ def getType(memoria):
     # ENTERO
     if 1001 <= memoria <= 2000 or 7001 <= memoria <= 8000:
         return int(st[memoria])
+    # FLOTANTE
     elif 2001 <= memoria <= 3000 or 8001 <= memoria <= 9000:
         return float(st[memoria])
 
@@ -83,9 +84,16 @@ while corriendo:
         if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
             notifError("Una variable en la multiplicación no tiene valor asignado")
 
+        st[cuadruplo[3]] = getType(cuadruplo[1]) * getType(cuadruplo[2])
+        currCuadruplo += 1
+    elif operador == '/':
+        if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
+            notifError("Una variable en la división no tiene valor asignado")
+        elif getType(cuadruplo[2]) == 0:
+            notifError("Se está realizando una división entre 0")
+
         st[cuadruplo[3]] = getType(cuadruplo[1]) / getType(cuadruplo[2])
         currCuadruplo += 1
-    ############ DIVISIÓN ############
     elif operador == '<':
         if st[cuadruplo[1]] == None or st[cuadruplo[2]] == None:
             notifError("Una variable en la comparación no tiene valor asignado")
@@ -159,7 +167,7 @@ while corriendo:
             st[cuadruplo[3]] = 1
         currCuadruplo += 1
     elif operador == 'WRITE':
-        print(st[cuadruplo[3]])
+        print(getType(cuadruplo[3]))
         currCuadruplo += 1
     elif operador == 'END':
         corriendo = 0

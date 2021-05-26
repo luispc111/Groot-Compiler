@@ -1058,11 +1058,11 @@ def generarDatos():
             # print("\nTABLA DE CONSTANTES ->")
             # print(tabla_constantes)
 
-            contador = 0
-            print("\nCUADRUPLOS ->")
-            for item in cuadruplos:
-                print(str(contador) + " " + str(item.getCuadruplo()))
-                contador += 1
+            # contador = 0
+            # print("\nCUADRUPLOS ->")
+            # for item in cuadruplos:
+            #     print(str(contador) + " " + str(item.getCuadruplo()))
+            #     contador += 1
     except EOFError:
         print("Error")
 
