@@ -25,7 +25,7 @@ Variables
 }
 
 Flotante Funcion func2() {
-  func1(1.0, 1);
+  func1(a, 1);
   Regresa(c);
 }
 

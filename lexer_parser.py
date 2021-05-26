@@ -623,7 +623,6 @@ def p_neu_addConstanteCaracter(p):
     pilaTerminos.append(tabla_constantes['Caracter'][p[-1]]['memoria'])
     pilaTipos.append('Caracter')
 
-
 def p_neu_addTermino(p):
     'neu_addTermino : '
     pilaTerminos.append(tabla_variables[currFuncName]['variables'][p[-1]]['memoria'])
@@ -1047,22 +1046,36 @@ parser = yacc.yacc()
 
 ############### EJECUCIÓN ###############
 
-try:
-    text = input('Nombre de archivo txt: ')
-    with open(text, 'r') as file:
-        parser.parse(file.read())
+def generarDatos():
+    try:
+        text = input('Nombre de archivo txt: ')
+        with open(text, 'r') as file:
+            parser.parse(file.read())
 
-        print("\nTABLA DE VARIABLES ->")
-        print(tabla_variables)
+            # print("\nTABLA DE VARIABLES ->")
+            # print(tabla_variables)
 
-        print("\nTABLA DE CONSTANTES ->")
-        print(tabla_constantes)
+            # print("\nTABLA DE CONSTANTES ->")
+            # print(tabla_constantes)
 
-        contador = 0
-        print("\nCUADRUPLOS ->")
-        for item in cuadruplos:
-            print(str(contador) + " " + str(item.getCuadruplo()))
-            contador += 1
+            contador = 0
+            print("\nCUADRUPLOS ->")
+            for item in cuadruplos:
+                print(str(contador) + " " + str(item.getCuadruplo()))
+                contador += 1
+    except EOFError:
+        print("Error")
 
-except EOFError:
-    print("Error")
+# Función que se correrá desde la maquina virtual
+def correrMV():
+    generarDatos()
+    data = {
+        'cuadruplos': cuadruplos,
+        'tabla_variables': tabla_variables,
+        'tabla_constantes': tabla_constantes,
+        'progName': progName
+    }
+    return data
+
+
+

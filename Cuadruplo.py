@@ -9,4 +9,4 @@ class Cuadruplo:
 
   # Retorna un cuadruplo
   def getCuadruplo(self):
-      return [self.operador, self.operando_i, self.operando_d, self.res]
+    return [self.operador, self.operando_i, self.operando_d, self.res]
