@@ -220,9 +220,15 @@ def t_newline(t):
 # REFERENCIA: https://www.dabeaz.com/ply/ply.html#ply_nn12
 # Errores de lexer
 def t_error(t):
-    print("Illegal character '%s' at line '%d'" % (t.value[0], t.lexer.lineno))
+    print("Caracter '%s' invalido en la linea '%d'" % (t.value[0], t.lexer.lineno))
     t.lexer.skip(1)
-    #sys.exit("Illegal character '%s'" % t.value[0])
+    sys.exit()
+
+# REFERENCIA: https://www.dabeaz.com/ply/ply.html#ply_nn12
+# Comentarios
+def t_comment(t):
+    r'\#.*'
+    pass
 
 lexer = lex.lex()
 
@@ -1053,7 +1059,7 @@ parser = yacc.yacc()
 
 def generarDatos():
     try:
-        text = input('Nombre de archivo txt: ')
+        text = input('Nombre de archivo con extensión .groot: ')
         with open(text, 'r') as file:
             parser.parse(file.read())
 

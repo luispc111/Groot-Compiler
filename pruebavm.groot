@@ -1,11 +1,13 @@
-Programa groot;
+Programa pruebavm;
 
+##### VARIABLES GLOBALES #######
 Variables
   x : Entero;
   i : Entero;
   a, b, c : Flotante;
   letra : Caracter;
 
+# FUNCIÓN VOID
 Void Funcion func1(dato : Entero) 
 Variables
   subVar : Entero;
@@ -24,6 +26,7 @@ Variables
   func1(1);
 }
 
+# FUNCIÓN CON RETURN
 Entero Funcion regresaCinco() 
 Variables
   miCinco : Entero;
@@ -37,6 +40,7 @@ Principal(){
   x = 5;
   i = 5 / 2;
   Escribir(5 / 2);
+  # Este es un comentario aaaaaaaa
 
   Si (1) Entonces {
     func2(99 + 1, 101);
