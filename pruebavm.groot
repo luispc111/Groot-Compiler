@@ -37,9 +37,9 @@ Variables
 
 Principal(){
   i = 10;
-  x = 5;
+  x = 700;
   i = 5 / 2;
-  Escribir(5 / 2);
+  Escribir(5.0 / 2);
   # Este es un comentario aaaaaaaa
 
   Si (1) Entonces {
@@ -48,6 +48,7 @@ Principal(){
   Sino{
   }
   Escribir(regresaCinco() + 1);
+  func2(99 + 1, 101);
   x = regresaCinco();
   Escribir(x);
 }

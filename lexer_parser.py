@@ -33,6 +33,7 @@ paramTipos = []
 existeReturn = 0
 origenLlamada = 0
 parametrosFuncion = {}
+expresionOEstatuto = '...'
 
 # Memorias
 
@@ -331,7 +332,7 @@ def p_bloque(p):
 def p_estatuto(p):
     '''
     estatuto : asignacion PUNTOYCOMA empty
-             | llamada PUNTOYCOMA empty
+             | llamada neu_esEstatuto PUNTOYCOMA empty
              | retorno PUNTOYCOMA empty
              | lectura PUNTOYCOMA empty
              | escritura PUNTOYCOMA empty
@@ -471,7 +472,7 @@ def p_termino(p):
 def p_factor(p):
     '''
     factor : varcte empty
-           | llamada empty
+           | llamada neu_esExpresion empty
            | L_PAR hiper_exp R_PAR empty
     '''
     p[0] = None
@@ -666,9 +667,21 @@ def p_neu_llamada_gosub(p):
         # añadir termino y tipo para utilizar en expresiones
         pilaTerminos.append(memoriaTemp)
         pilaTipos.append(tabla_variables[currFuncName]['tipo'])
-
-    currFuncName = progName
     
+def p_neu_esEstatuto(p):
+    'neu_esEstatuto : '
+    global currFuncName
+    if tabla_variables[currFuncName]['tipo'] != 'Void':
+        p_notifError(str(lexer.lineno) + " - No se puede utilizar la función en un estatuto")
+    currFuncName = progName
+        
+
+def p_neu_esExpresion(p):
+    'neu_esExpresion : '
+    global currFuncName
+    if tabla_variables[currFuncName]['tipo'] == 'Void':
+        p_notifError(str(lexer.lineno) + " - No se puede utilizar la función en una expresión")
+    currFuncName = progName
 
 # Punto Neuralgico - ...
 def p_neu_addOperador(p):
