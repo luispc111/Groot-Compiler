@@ -26,12 +26,42 @@ Entero Funcion factor(dato : Entero)
   }
 }
 
+Entero Funcion fiboRecursivo(dato:Entero) {
+  Si (dato <= 1) Entonces {
+    Regresa(dato);
+  } 
+  Sino {
+    Regresa (fiboRecursivo(dato - 1) + fiboRecursivo(dato - 2));
+  }
+}
+
+Entero Funcion fiboCiclico(tope : Entero)
+Variables
+  num1, num2, suma, count : Entero;
+{
+    num1 = 0;
+    num2 = 1;
+    suma = 1;
+
+    Desde (count = 2) Hasta tope Hacer{
+      Escribir(3333333333);
+      suma = num1 + num2;
+      num1 = num2;
+      num2 = suma;
+    }
+    Regresa(suma);
+}
+
 Principal(){
   i = 1;
   #cuentaRegresiva(20);
   Escribir(22222222222222222222);
 
   # PRUEBAS
-  Escribir(factor(5));
-
+  # Escribir(fiboRecursivo(9));
+  # Escribir(factor(5));
+  # Escribir(fiboCiclico(5));
+  Escribir("I am Groot");
+  Escribir("");
+  Escribir("llegue");
 }

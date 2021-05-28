@@ -30,7 +30,6 @@ dic_tabla_locales = {}
 super_tabla_variables = {}
 super_tabla_constantes = {}
 
-
 for var in tabla_variables[progName]['variables']:
     super_tabla_variables[tabla_variables[progName]['variables'][var]['memoria']] = None
     
@@ -67,6 +66,11 @@ def getType(memoria):
             return variablesLocales[-1][memoria]
         else:
             return st[memoria]
+    # LETREROS
+    elif 10001 <= memoria <= 11000:
+        text = st[memoria]
+        tam = len(text)
+        return text[1:tam-1]
     else:
         notifError("ERROR EN OPERACIÓN")
 

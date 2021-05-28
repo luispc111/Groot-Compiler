@@ -49,6 +49,8 @@ memoriaCEntero = 7000
 memoriaCFlotante = 8000
 memoriaCCaracter = 9000
 
+memoriaLetreros = 10000
+
 varsStack = deque()
 
 pilaOperadores = deque()
@@ -371,7 +373,7 @@ def p_escritura(p):
     escritura : ESCRIBIR L_PAR escrituraD R_PAR empty
 
     escrituraD : hiper_exp neu_escritura empty
-               | LETRERO empty
+               | LETRERO neu_letrero empty
     '''
     p[0] = None
 
@@ -894,6 +896,15 @@ def p_neu_escritura(p):
     global currFuncName, progName, pilaTerminos
     cuadruplos.append(Cuadruplo('WRITE', None, None, pilaTerminos[-1]))
 
+def p_neu_letrero(p):
+    'neu_letrero : '
+    global memoriaLetreros, progName
+    memoriaLetreros += 1
+    if 'Letrero' not in tabla_constantes:
+        tabla_constantes['Letrero'] = {}
+    tabla_constantes['Letrero'][p[-1]] = {'tipo': 'Letrero', 'memoria': memoriaLetreros}
+    cuadruplos.append(Cuadruplo('WRITE', None, None, memoriaLetreros))
+
 # RETORNO
 def p_neu_retorno(p):
     'neu_retorno : '
@@ -901,7 +912,6 @@ def p_neu_retorno(p):
     # Comprueba si la variable a retornar es del mismo tipo que la función
     if pilaTipos.pop() == currFuncType:
         existeReturn = 1
-        #tabla_variables[progName]['variables'][currFuncName]
         cuadruplos.append(Cuadruplo('RETURN', None, None, pilaTerminos.pop()))
     else:
         p_notifError(str(lexer.lineno) + " - El valor que se retorna no es compatible con el tipo de la función")
@@ -1078,8 +1088,8 @@ def generarDatos():
         with open(text, 'r') as file:
             parser.parse(file.read())
 
-            print("\nTABLA DE VARIABLES ->")
-            print(tabla_variables)
+            # print("\nTABLA DE VARIABLES ->")
+            # print(tabla_variables)
 
             # print("\nTABLA DE CONSTANTES ->")
             # print(tabla_constantes)
@@ -1087,11 +1097,11 @@ def generarDatos():
             # print("\nPARAMETROS POR FUNCION ->")
             # print(parametrosFuncion)
 
-            contador = 0
-            print("\nCUADRUPLOS ->")
-            for item in cuadruplos:
-                print(str(contador) + " " + str(item.getCuadruplo()))
-                contador += 1
+            # contador = 0
+            # print("\nCUADRUPLOS ->")
+            # for item in cuadruplos:
+            #     print(str(contador) + " " + str(item.getCuadruplo()))
+            #     contador += 1
     except EOFError:
         print("Error")
 
