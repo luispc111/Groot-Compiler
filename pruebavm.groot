@@ -7,48 +7,31 @@ Variables
   a, b, c : Flotante;
   letra : Caracter;
 
-# FUNCIÓN VOID
-Void Funcion func1(dato : Entero) 
-Variables
-  subVar : Entero;
-{
-  subVar = 998;
-  Escribir(subVar + dato);
+Void Funcion cuentaRegresiva(cuenta : Entero){
+  Si (cuenta >= 0) Entonces {
+    Escribir(cuenta);
+    cuentaRegresiva(cuenta - 1);
+  }
 }
 
-Void Funcion func2(dato : Entero, dato2 : Entero) 
-Variables
-  subVar : Entero;
+Entero Funcion factor(dato : Entero) 
 {
-  subVar = 999;
-  Escribir(subVar + 1);
-  Escribir(dato + dato2 + 1);
-  func1(1);
-}
-
-# FUNCIÓN CON RETURN
-Entero Funcion regresaCinco() 
-Variables
-  miCinco : Entero;
-{
-  miCinco = 5;
-  Regresa(miCinco);
+  Escribir(dato);
+  Si (dato == 0) Entonces {
+    Regresa(1);
+  }
+  Sino {
+    #Escribir(dato - 1);
+    Regresa(dato * factor(dato - 1));
+  }
 }
 
 Principal(){
-  i = 10;
-  x = 700;
-  i = 5 / 2;
-  Escribir(5.0 / 2);
-  # Este es un comentario aaaaaaaa
+  i = 1;
+  #cuentaRegresiva(20);
+  Escribir(22222222222222222222);
 
-  Si (1) Entonces {
-    func2(99 + 1, 101);
-  }
-  Sino{
-  }
-  Escribir(regresaCinco() + 1);
-  func2(99 + 1, 101);
-  x = regresaCinco();
-  Escribir(x);
+  # PRUEBAS
+  Escribir(factor(5));
+
 }

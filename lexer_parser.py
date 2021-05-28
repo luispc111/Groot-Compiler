@@ -640,11 +640,12 @@ def p_neu_addTermino(p):
 # Punto Neuralgico - Llamada ERA
 def p_neu_llamada_era(p):
     'neu_llamada_era : '
-    global paramContador, currFuncName, origenLlamada
+    global paramContador, currFuncName, origenLlamada, pilaOperadores
     if p[-1] in tabla_variables.keys():
         paramContador = 0
         origenLlamada = currFuncName
         currFuncName = p[-1]
+        pilaOperadores.append('(') 
         cuadruplos.append(Cuadruplo('ERA', p[-1], None, None))
     else:
         p_notifError(str(lexer.lineno) + " - No se declaró la función " + p[-1])
@@ -652,8 +653,9 @@ def p_neu_llamada_era(p):
 # Punto Neuralgico - Llamada GOSUB
 def p_neu_llamada_gosub(p):
     'neu_llamada_gosub : '
-    global currFuncName, progName
+    global currFuncName, progName, pilaOperadores, origenLlamada
     cuadruplos.append(Cuadruplo('GOSUB', currFuncName, None, None))
+    pilaOperadores.pop()
 
     # Si no es Void, asignar resultado al espacio de memoria reservado para esa función
     if tabla_variables[currFuncName]['tipo'] != 'Void':
@@ -667,13 +669,13 @@ def p_neu_llamada_gosub(p):
         # añadir termino y tipo para utilizar en expresiones
         pilaTerminos.append(memoriaTemp)
         pilaTipos.append(tabla_variables[currFuncName]['tipo'])
-    
+
 def p_neu_esEstatuto(p):
     'neu_esEstatuto : '
     global currFuncName
     if tabla_variables[currFuncName]['tipo'] != 'Void':
         p_notifError(str(lexer.lineno) + " - No se puede utilizar la función en un estatuto")
-    currFuncName = progName
+    #currFuncName = progName
         
 
 def p_neu_esExpresion(p):
@@ -681,7 +683,7 @@ def p_neu_esExpresion(p):
     global currFuncName
     if tabla_variables[currFuncName]['tipo'] == 'Void':
         p_notifError(str(lexer.lineno) + " - No se puede utilizar la función en una expresión")
-    currFuncName = progName
+    #currFuncName = progName
 
 # Punto Neuralgico - ...
 def p_neu_addOperador(p):
