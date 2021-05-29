@@ -31,9 +31,19 @@ dic_tabla_locales = {}
 super_tabla_variables = {}
 super_tabla_constantes = {}
 
+max = 0
+min = 100000
 for var in tabla_variables[progName]['variables']:
-    super_tabla_variables[tabla_variables[progName]['variables'][var]['memoria']] = None
+    if tabla_variables[progName]['variables'][var]['memoria'] > max:
+        max = tabla_variables[progName]['variables'][var]['memoria']
     
+    if tabla_variables[progName]['variables'][var]['memoria'] < min:
+        min = tabla_variables[progName]['variables'][var]['memoria']
+
+while min <= max:
+    super_tabla_variables[min] = None
+    min += 1
+
 super_tabla_constantes = {}
 for tipo in tabla_constantes:
     for var in tabla_constantes[tipo]:
@@ -49,6 +59,10 @@ def notifError(errorText):
     sys.exit()
 
 def getType(memoria):
+
+    if re.match("\(\d+\)", str(memoria)):
+        memoria = getType(int(memoria[1:-1]))
+
     # ENTERO
     if 1001 <= memoria <= 2000 or 4001 <= memoria <= 5000 or 7001 <= memoria <= 8000:
         if 4001 <= memoria <= 5000:
@@ -100,6 +114,9 @@ def checarExistenciaLocal(memoria):
     return None
 
 def esLocal(memoria):
+    if re.match("\(\d+\)", str(memoria)):
+        memoria = getType(int(memoria[1:-1]))
+
     if 4001 <= memoria <= 7000:
         return True
     else:
@@ -157,6 +174,9 @@ while corriendo:
         # a = b
         a = cuadruplo[3]
         b = getType(cuadruplo[1])
+
+        if re.match("\(\d+\)", str(a)):
+            a = getType(int(a[1:-1]))
 
         if esLocal(a):
             variablesLocales[-1][a] = b
@@ -319,6 +339,21 @@ while corriendo:
     elif operador == 'ENDFUNC':
         deleteMemoriaLocal()
         currCuadruplo = int(pilaLlamadas.pop()) + 1
+    
+    # ARREGLOS
+    elif operador == 'VER':
+        if int(cuadruplo[2]) <= int(getType(cuadruplo[1])) < int(cuadruplo[3]):
+            pass
+        else:
+            notifError("El index para un arreglo/matriz no es válido")
+        currCuadruplo += 1  
+    
+    elif operador == 'SUMABASE':
+        if esLocal(int(cuadruplo[1]) + getType(cuadruplo[2])):
+            variablesLocales[-1][cuadruplo[3]] = int(cuadruplo[1]) + getType(cuadruplo[2])
+        else:
+            st[cuadruplo[3]] = int(cuadruplo[1]) + getType(cuadruplo[2])
+        currCuadruplo += 1
     
     # END
     elif operador == 'END':

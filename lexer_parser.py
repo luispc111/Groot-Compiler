@@ -36,6 +36,7 @@ existeReturn = 0
 origenLlamada = 0
 parametrosFuncion = {}
 expresionOEstatuto = '...'
+tamVariable = 1
 
 # Memorias
 
@@ -267,6 +268,7 @@ def p_variales(p):
 
     variablesD : ID neu_addVariableAStack COMA variablesD
                | ID DOSPUNTOS tipo_var neu_addVariable PUNTOYCOMA variablesU
+               | ID L_CORCHETE ENTEROVAL R_CORCHETE DOSPUNTOS tipo_var neu_addArreglo PUNTOYCOMA variablesU
     '''
     p[0] = None
 
@@ -349,6 +351,7 @@ def p_estatuto(p):
 def p_asignacion(p):
     '''
     asignacion : ID neu_addID IGUAL neu_addOperador hiper_exp neu_asignacion empty
+               | ID L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE neu_addIDArreglo IGUAL neu_addOperador hiper_exp neu_asignacion empty
     '''
     p[0] = None
 
@@ -484,6 +487,7 @@ def p_factor(p):
 def p_varcte(p):
     '''
     varcte  : ID neu_addID empty
+            | ID L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE neu_addIDArreglo empty
             | ENTEROVAL neu_addConstanteEntero empty
             | FLOTANTEVAL neu_addConstanteFlotante empty
             | CARACTERVAL neu_addConstanteCaracter empty
@@ -569,9 +573,10 @@ def p_neu_principal(p):
 # Punto Neuralgico - Añade variables a la tabla de variables
 def p_neu_addVariable(p):
     'neu_addVariable : '
-    global currFuncName, currVarName, currVarType, progName
+    global currFuncName, currVarName, currVarType, progName, tamVariable
     currVarType = p[-1]
     currVarName = p[-3]
+    tamVariable = 1
 
     # Meter las variables acumuladas, es decir "a" y "b" en "a, b, c : Entero" 
     while varsStack:
@@ -595,6 +600,22 @@ def p_neu_addVariableAStack(p):
     currVarName = p[-1]
     varsStack.append(currVarName)
 
+# Punto Neuralgico - Añade arreglos a la tabla de variables
+def p_neu_addArreglo(p):
+    'neu_addArreglo : '
+    global currFuncName, currVarName, currVarType, progName, tamVariable
+    currVarType = p[-1]
+    currVarName = p[-6]
+    tamVariable = p[-4]
+    # ID L_CORCHETE ENTEROVAL L_CORCHETE DOSPUNTOS tipo_var neu_addArreglo PUNTOYCOMA variablesU
+
+    if currVarName not in tabla_variables[currFuncName]['variables'].keys() and currVarName not in tabla_variables[progName]['variables'].keys():
+        memoria = p_getMemoriaForID(currVarType)
+        tabla_variables[currFuncName]['variables'][currVarName] = {'tipo': currVarType, 'memoria': memoria, 'tam': tamVariable}
+        tamVariable = 1
+    else:
+        p_notifError(str(lexer.lineno) + " - El arreglo " + currVarName + " ya se declaró anteriormente")  
+
 # Añado un ID a mi pila de terminos y su tipo a la pila de tipos (SE USA PARA EXPRESIONES)
 def p_neu_addID(p):
     'neu_addID : '
@@ -607,6 +628,53 @@ def p_neu_addID(p):
         pilaTipos.append(tabla_variables[progName]['variables'][p[-1]]['tipo'])
     else:
         p_notifError(str(lexer.lineno) + " - No se declaró la variable " + p[-1])
+
+def p_neu_fondoFalso(p):
+    'neu_fondoFalso : '
+    pilaOperadores.append('(')
+
+# Añado un ID de arreglo a mi pila de terminos y su tipo a la pila de tipos (SE USA PARA EXPRESIONES)
+def p_neu_addIDArreglo(p):
+    'neu_addIDArreglo : '
+    global currFuncName, pilaOperadores
+    # fondo falso
+    pilaOperadores.pop()
+    id = p[-5]
+    
+    dimension = pilaTerminos.pop()
+    # ID L_CORCHETE neu_fondoFalso ENTEROVAL R_CORCHETE neu_addIDArreglo
+
+    # Generar cuadruplo de verificación de dimensión
+    if tabla_variables[progName]['variables'][id]:
+        cuadruplos.append(Cuadruplo('VER', dimension, 0, tabla_variables[progName]['variables'][id]['tam']))
+    elif tabla_variables[currFuncName]['variables'][id]:
+        cuadruplos.append(Cuadruplo('VER', dimension, 0, tabla_variables[currFuncName]['variables'][id]['tam']))
+    else:
+        p_notifError(str(lexer.lineno) + " - No se declaró la variable " + id)
+    
+    # Generar memoria temporal donde se asignará la memoria en donde se calculará la memoria base + dimensión
+    memoriaTemp = 0
+    if currFuncName == progName: memoriaTemp = p_getGMemoria('Entero')
+    else: memoriaTemp = p_getLMemoria('Entero')
+
+    if id in tabla_variables[currFuncName]['variables'].keys():
+        # + BASE DIMENSION TEMP
+        cuadruplos.append(Cuadruplo('SUMABASE', tabla_variables[currFuncName]['variables'][id]['memoria'], dimension, memoriaTemp))
+
+        pilaTerminos.append("(" + str(memoriaTemp) + ")")
+        pilaTipos.append(tabla_variables[currFuncName]['variables'][id]['tipo'])
+
+    elif id in tabla_variables[progName]['variables'].keys():
+        # + BASE DIMENSION TEMP
+        cuadruplos.append(Cuadruplo('SUMABASE', tabla_variables[progName]['variables'][id]['memoria'], dimension, memoriaTemp))
+        
+        pilaTerminos.append("(" + str(memoriaTemp) + ")")
+        pilaTipos.append(tabla_variables[progName]['variables'][id]['tipo'])
+    else:
+        p_notifError(str(lexer.lineno) + " - No se declaró la variable " + id)
+    
+     
+    
 
 # Añado una constante ENTERO a la tabla de constantes
 def p_neu_addConstanteEntero(p):
@@ -704,46 +772,47 @@ def p_getMemoriaForID(tipo):
 # Global
 def p_getGMemoria(tipo):
     'getGMemoria : '
-    global memoriaGEntero, memoriaGFlotante, memoriaGCaracter
+    global memoriaGEntero, memoriaGFlotante, memoriaGCaracter, tamVariable
     if tipo == 'Entero':
+        
         if memoriaGEntero < 2000:
-            memoriaGEntero = memoriaGEntero + 1
-            return memoriaGEntero
+            memoriaGEntero = memoriaGEntero + int(tamVariable)
+            return memoriaGEntero - int(tamVariable) + 1
         else:
             p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
     elif tipo == 'Flotante':
         if memoriaGFlotante < 3000:
-            memoriaGFlotante = memoriaGFlotante + 1
-            return memoriaGFlotante
+            memoriaGFlotante = memoriaGFlotante + int(tamVariable)
+            return memoriaGFlotante - int(tamVariable) + 1
         else:
             p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
     elif tipo == 'Caracter':
         if memoriaGCaracter < 4000:
-            memoriaGCaracter = memoriaGCaracter + 1
-            return memoriaGCaracter
+            memoriaGCaracter = memoriaGCaracter + int(tamVariable)
+            return memoriaGCaracter - int(tamVariable) + 1
         else:
             p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
 
 # Local
 def p_getLMemoria(tipo):
     'getLMemoria : '
-    global memoriaLEntero, memoriaLFlotante, memoriaLCaracter
+    global memoriaLEntero, memoriaLFlotante, memoriaLCaracter, tamVariable
     if tipo == 'Entero':
         if memoriaLEntero < 5000:
-            memoriaLEntero = memoriaLEntero + 1
-            return memoriaLEntero
+            memoriaLEntero = memoriaLEntero + int(tamVariable)
+            return memoriaLEntero - int(tamVariable) + 1
         else:
             p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
     elif tipo == 'Flotante':
         if memoriaLFlotante < 6000:
-            memoriaLFlotante = memoriaLFlotante + 1
-            return memoriaLFlotante
+            memoriaLFlotante = memoriaLFlotante + int(tamVariable)
+            return memoriaLFlotante - int(tamVariable) + 1
         else:
             p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
     elif tipo == 'Caracter':
         if memoriaLCaracter < 7000:
-            memoriaLCaracter = memoriaLCaracter + 1
-            return memoriaLCaracter
+            memoriaLCaracter = memoriaLCaracter + int(tamVariable)
+            return memoriaLCaracter - int(tamVariable) + 1
         else:
             p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
 
@@ -786,7 +855,7 @@ def p_neu_hacerTermino(p):
 
             tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
             if currFuncName == progName:
-                memoriaResultado = p_getGMemoria(tipoResultado) 
+                memoriaResultado = p_getGMemoria(tipoResultado)
             else:
                 memoriaResultado = p_getLMemoria(tipoResultado)
 
@@ -1103,11 +1172,11 @@ def generarDatos():
                 # print("\nPARAMETROS POR FUNCION ->")
                 # print(parametrosFuncion)
 
-                # contador = 0
-                # print("\nCUADRUPLOS ->")
-                # for item in cuadruplos:
-                #     print(str(contador) + " " + str(item.getCuadruplo()))
-                #     contador += 1
+                contador = 0
+                print("\nCUADRUPLOS ->")
+                for item in cuadruplos:
+                    print(str(contador) + " " + str(item.getCuadruplo()))
+                    contador += 1
     except EOFError:
         print("Error")
 

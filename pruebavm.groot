@@ -3,81 +3,29 @@ Programa pruebavm;
 ##### VARIABLES GLOBALES #######
 Variables
   x : Entero;
+  arr[10] : Entero;
   i : Entero;
-  a, b, c : Flotante;
-  letra : Caracter;
+  a : Entero;
 
-Void Funcion cuentaRegresiva(cuenta : Entero){
-  Si (cuenta >= 0) Entonces {
-    Escribir(cuenta);
-    cuentaRegresiva(cuenta - 1);
-  }
-}
-
-Entero Funcion factor(dato : Entero) {
-
-  Si (dato == 0) Entonces {
-    Regresa(1);
-  }
-  Sino {
-    Regresa(dato * factor(dato - 1));
-  }
-}
-
-Entero Funcion fiboRecursivo(dato:Entero) {
-  Si (dato <= 1) Entonces {
-    Regresa(dato);
-  } 
-  Sino {
-    Regresa (fiboRecursivo(dato - 1) + fiboRecursivo(dato - 2));
-  }
-}
-
-Entero Funcion fiboCiclico(tope : Entero)
+Void Funcion decirHola()
 Variables
-  num1, num2, suma, count : Entero;
+  medidas[20] : Flotante;
+  prom : Flotante;
 {
-    num1 = 0;
-    num2 = 1;
-    suma = 1;
-
-    Desde (count = 1) Hasta tope Hacer{
-      suma = num1 + num2;
-      num1 = num2;
-      num2 = suma;
-    }
-    Regresa(suma);
-}
-
-Void Funcion decirHola(){
   Escribir("I am Groot");
 }
 
 Principal(){
-  i = 1;
-  cuentaRegresiva(10);
   decirHola();
-  
-  x = 5;
-  #Escribir("Introduce el valor de x...");
-  #Leer(x);
-  #Escribir(x);
-  #x = x + 1;
-  #Escribir(x);
-  #Escribir(x+1);
+  arr[2] = 4;
+  arr[5] = 123;
+  arr[8] = 7;
+  Escribir(arr[arr[2]+1] + arr[8]);
 
-  # PRUEBAS RECURSIVAS
-
-  Escribir("Dame el factorial de...");
-  Leer(x);
-  Escribir(factor(x));
-
-  Escribir("Dame el fibonacci recursivo de...");
-  Leer(x);
-  Escribir(fiboRecursivo(x));
-
-  Escribir("Dame el fibonacci ciclico de...");
-  Leer(x);
-  Escribir(fiboCiclico(x));
-
+  Desde (i = 0) Hasta 10 Hacer {
+    arr[i] = i+1;
+  }
+  Desde (i = 0) Hasta 10 Hacer {
+    Escribir(arr[i]);
+  }
 }
