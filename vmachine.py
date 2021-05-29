@@ -2,6 +2,7 @@
 
 #IMPORTS
 import sys
+import re
 
 import lexer_parser
 from Cuadruplo import *
@@ -118,6 +119,25 @@ def comparadorHelper(booleano, memoria):
             st[memoria] = 1
     currCuadruplo += 1
 
+def lecturaCaster(value, memoria):
+    if re.match("[-]?[0-9]+([.][0-9]+)", value):
+        if 2001 <= memoria <= 3000 or 5001 <= memoria <= 6000 or 8001 <= memoria <= 9000:
+            return float(value)
+        else:
+            notifError("El valor proporcionado no coincide con el tipo de la variable")
+    elif re.match("[-]?[0-9]+", value):
+        if 1001 <= memoria <= 2000 or 4001 <= memoria <= 5000 or 7001 <= memoria <= 8000:
+            return int(value)
+        else:
+            notifError("El valor proporcionado no coincide con el tipo de la variable")
+    elif re.match("([^\'])", value):
+        if 3001 <= memoria <= 4000 or 6001 <= memoria <= 7000 or 9001 <= memoria <= 10000:
+            return value
+        else:
+            notifError("El valor proporcionado no coincide con el tipo de la variable")
+    else:
+        notifError("El valor que se leyó no se puede asignar a la variable")
+
 while corriendo:
     cuadruplo = Cuadruplo.getCuadruplo(cuadruplos[currCuadruplo])
     operador = cuadruplo[0]
@@ -139,7 +159,7 @@ while corriendo:
         b = getType(cuadruplo[1])
 
         if esLocal(a):
-            (variablesLocales[-1])[a] = b
+            variablesLocales[-1][a] = b
         else:
             st[a] = b
         currCuadruplo += 1
@@ -147,6 +167,7 @@ while corriendo:
     # OPERACIONES
     elif operador == '+':
         if esLocal(cuadruplo[3]):
+            print(variablesLocales[-1])
             (variablesLocales[-1])[cuadruplo[3]] = getType(cuadruplo[1]) + getType(cuadruplo[2])
         else:
             st[cuadruplo[3]] = getType(cuadruplo[1]) + getType(cuadruplo[2])
@@ -262,6 +283,11 @@ while corriendo:
     
     # LECTURA
     elif operador == 'READ':
+        var = input("> ")
+        if esLocal(cuadruplo[3]):
+            variablesLocales[-1][cuadruplo[3]] = lecturaCaster(var)
+        else:
+            st[cuadruplo[3]] = lecturaCaster(var, cuadruplo[3])
         currCuadruplo += 1
     
     # FUNCIONES

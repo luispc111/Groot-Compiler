@@ -14,14 +14,12 @@ Void Funcion cuentaRegresiva(cuenta : Entero){
   }
 }
 
-Entero Funcion factor(dato : Entero) 
-{
-  Escribir(dato);
+Entero Funcion factor(dato : Entero) {
+
   Si (dato == 0) Entonces {
     Regresa(1);
   }
   Sino {
-    #Escribir(dato - 1);
     Regresa(dato * factor(dato - 1));
   }
 }
@@ -44,7 +42,6 @@ Variables
     suma = 1;
 
     Desde (count = 2) Hasta tope Hacer{
-      Escribir(3333333333);
       suma = num1 + num2;
       num1 = num2;
       num2 = suma;
@@ -52,16 +49,31 @@ Variables
     Regresa(suma);
 }
 
+Void Funcion decirHola(){
+  Escribir("I am Groot");
+}
+
 Principal(){
   i = 1;
   #cuentaRegresiva(20);
-  Escribir(22222222222222222222);
+
+  Escribir("Introduce el valor de x...");
+  Leer(x);
+  Escribir(x);
+  x = x + 1;
+  Escribir(x);
+  Escribir(x+1);
 
   # PRUEBAS
-  # Escribir(fiboRecursivo(9));
-  # Escribir(factor(5));
-  # Escribir(fiboCiclico(5));
-  Escribir("I am Groot");
-  Escribir("");
-  Escribir("llegue");
+  #Escribir(fiboRecursivo(5));
+
+  Escribir("Dame el factorial de...");
+  Leer(x);
+  Escribir(factor(x));
+
+  decirHola();
+  
+  
+  #Escribir(fiboCiclico(5));
+  
 }

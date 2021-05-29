@@ -9,6 +9,8 @@
 import ply.lex as lex
 import ply.yacc as yacc
 import sys
+import re
+import os.path
 
 from collections import deque
 
@@ -1084,24 +1086,29 @@ parser = yacc.yacc()
 
 def generarDatos():
     try:
-        text = input('Nombre de archivo con extensión .groot: ')
-        with open(text, 'r') as file:
-            parser.parse(file.read())
+        file = input('Nombre de archivo con extensión .groot: ')
+        if not re.match("(.*?)\.(groot)$", file):
+            sys.exit("ERROR ! La extensión del archivo no es válida")
+        elif not os.path.isfile(file):
+            sys.exit("ERROR ! No se encuentra el archivo " + file)
+        else:
+            with open(file, 'r') as file:
+                parser.parse(file.read())
 
-            # print("\nTABLA DE VARIABLES ->")
-            # print(tabla_variables)
+                # print("\nTABLA DE VARIABLES ->")
+                # print(tabla_variables)
 
-            # print("\nTABLA DE CONSTANTES ->")
-            # print(tabla_constantes)
+                # print("\nTABLA DE CONSTANTES ->")
+                # print(tabla_constantes)
 
-            # print("\nPARAMETROS POR FUNCION ->")
-            # print(parametrosFuncion)
+                # print("\nPARAMETROS POR FUNCION ->")
+                # print(parametrosFuncion)
 
-            # contador = 0
-            # print("\nCUADRUPLOS ->")
-            # for item in cuadruplos:
-            #     print(str(contador) + " " + str(item.getCuadruplo()))
-            #     contador += 1
+                # contador = 0
+                # print("\nCUADRUPLOS ->")
+                # for item in cuadruplos:
+                #     print(str(contador) + " " + str(item.getCuadruplo()))
+                #     contador += 1
     except EOFError:
         print("Error")
 
