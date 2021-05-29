@@ -167,7 +167,6 @@ while corriendo:
     # OPERACIONES
     elif operador == '+':
         if esLocal(cuadruplo[3]):
-            print(variablesLocales[-1])
             (variablesLocales[-1])[cuadruplo[3]] = getType(cuadruplo[1]) + getType(cuadruplo[2])
         else:
             st[cuadruplo[3]] = getType(cuadruplo[1]) + getType(cuadruplo[2])

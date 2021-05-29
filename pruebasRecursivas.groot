@@ -1,18 +1,7 @@
-Programa pruebavm;
+Programa pruebasRecursivas;
 
-##### VARIABLES GLOBALES #######
 Variables
   x : Entero;
-  i : Entero;
-  a, b, c : Flotante;
-  letra : Caracter;
-
-Void Funcion cuentaRegresiva(cuenta : Entero){
-  Si (cuenta >= 0) Entonces {
-    Escribir(cuenta);
-    cuentaRegresiva(cuenta - 1);
-  }
-}
 
 Entero Funcion factor(dato : Entero) {
 
@@ -54,17 +43,7 @@ Void Funcion decirHola(){
 }
 
 Principal(){
-  i = 1;
-  cuentaRegresiva(10);
   decirHola();
-  
-  x = 5;
-  #Escribir("Introduce el valor de x...");
-  #Leer(x);
-  #Escribir(x);
-  #x = x + 1;
-  #Escribir(x);
-  #Escribir(x+1);
 
   # PRUEBAS RECURSIVAS
 
@@ -79,5 +58,4 @@ Principal(){
   Escribir("Dame el fibonacci ciclico de...");
   Leer(x);
   Escribir(fiboCiclico(x));
-
 }

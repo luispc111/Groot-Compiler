@@ -548,7 +548,7 @@ def p_neu_addFuncion(p):
 # Punto Neuralgico - Al terminar una función
 def p_neu_endFuncion(p):
     'neu_endFuncion : '
-    global existeReturn
+    global existeReturn, currFuncName
     if currFuncType != 'Void' and existeReturn == 0:
         p_notifError(str(lexer.lineno) + " - La función " + currFuncName + " no tiene estatuto de regreso")
     elif currFuncType == 'Void' and existeReturn == 1:
@@ -679,15 +679,14 @@ def p_neu_esEstatuto(p):
     global currFuncName
     if tabla_variables[currFuncName]['tipo'] != 'Void':
         p_notifError(str(lexer.lineno) + " - No se puede utilizar la función en un estatuto")
-    #currFuncName = progName
-        
+    currFuncName = origenLlamada
 
 def p_neu_esExpresion(p):
     'neu_esExpresion : '
     global currFuncName
     if tabla_variables[currFuncName]['tipo'] == 'Void':
         p_notifError(str(lexer.lineno) + " - No se puede utilizar la función en una expresión")
-    #currFuncName = progName
+    currFuncName = origenLlamada
 
 # Punto Neuralgico - ...
 def p_neu_addOperador(p):
