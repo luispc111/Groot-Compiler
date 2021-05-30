@@ -1,0 +1,42 @@
+Programa sort;
+
+Variables
+  arr[10] : Entero;
+  aux : Entero;
+  i, j : Entero;
+
+Principal() {
+  arr[0] = 5;
+  arr[1] = 0;
+  arr[2] = 2;
+  arr[3] = 3;
+  arr[4] = 4;
+  arr[5] = 4;
+  arr[6] = 11;
+  arr[7] = 17;
+  arr[8] = -4;
+  arr[9] = -8;
+
+  Escribir("Antes del sort esta...");
+  Desde (i = 0) Hasta 10 Hacer {
+    Escribir(arr[i]);
+  }
+
+  # Bubble sort
+  Desde (i = 0) Hasta 10 Hacer {
+    Desde (j = 0) Hasta 9-i Hacer {
+      Si (arr[j] > arr[j+1]) Entonces {
+        aux = arr[j];
+        arr[j] = arr[j+1];
+        arr[j+1] = aux;
+      }
+      #Escribir("xd");
+    }
+  }
+
+  Escribir("Despues del sort esta...");
+  Desde (i = 0) Hasta 10 Hacer {
+    Escribir(arr[i]);
+  }
+
+}

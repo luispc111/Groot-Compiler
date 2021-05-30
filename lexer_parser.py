@@ -37,6 +37,7 @@ origenLlamada = 0
 parametrosFuncion = {}
 expresionOEstatuto = '...'
 tamVariable = 1
+pilaVarFor = deque()
 
 # Memorias
 
@@ -673,9 +674,6 @@ def p_neu_addIDArreglo(p):
     else:
         p_notifError(str(lexer.lineno) + " - No se declaró la variable " + id)
     
-     
-    
-
 # Añado una constante ENTERO a la tabla de constantes
 def p_neu_addConstanteEntero(p):
     'neu_addConstanteEntero : '
@@ -1069,10 +1067,12 @@ def p_neu_boolFor(p):
         cuadruplos.append(Cuadruplo('GOTOF', memoriaResultado, None, 0))
     else:
         p_notifError(str(lexer.lineno) + " - Error en operaciones de tipos")
+    pilaVarFor.append(currAsignacionFor)
 
 def p_neu_endCondicion(p):
     'neu_endCondicion  : '
     global currAsignacionFor
+    currAsignacionFor = pilaVarFor.pop()
 
     if '1' not in tabla_constantes['Entero'].keys():
         tabla_constantes['Entero']['1'] = {'tipo': 'Entero', 'memoria': p_getCMemoria('Entero')}
@@ -1172,11 +1172,11 @@ def generarDatos():
                 # print("\nPARAMETROS POR FUNCION ->")
                 # print(parametrosFuncion)
 
-                contador = 0
-                print("\nCUADRUPLOS ->")
-                for item in cuadruplos:
-                    print(str(contador) + " " + str(item.getCuadruplo()))
-                    contador += 1
+                # contador = 0
+                # print("\nCUADRUPLOS ->")
+                # for item in cuadruplos:
+                #     print(str(contador) + " " + str(item.getCuadruplo()))
+                #     contador += 1
     except EOFError:
         print("Error")
 
