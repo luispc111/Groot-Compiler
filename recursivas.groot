@@ -54,8 +54,8 @@ Principal(){
   Escribir("Dame el fibonacci recursivo de...");
   Leer(x);
   Escribir(fiboRecursivo(x));
-
+  
   Escribir("Dame el fibonacci ciclico de...");
   Leer(x);
-  Escribir(fiboCiclico(x));
+  Escribir(fiboCiclico(x));  
 }

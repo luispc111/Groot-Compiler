@@ -1,9 +1,5 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
-Unused terminals:
-
-    PUNTO
-
 Grammar
 
 Rule 0     S' -> program
@@ -187,7 +183,6 @@ MULT                 : 61
 OR                   : 63
 PRINCIPAL            : 1
 PROGRAMA             : 1
-PUNTO                : 
 PUNTOYCOMA           : 1 7 8 9 35 36 37 38 39
 REGRESA              : 48
 R_CORCHETE           : 8 9 9 45 46 46 87 88 88

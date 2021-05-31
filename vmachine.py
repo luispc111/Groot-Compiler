@@ -80,8 +80,7 @@ for tipo in tabla_constantes:
 
 # SUPER TABLA
 st = {**super_tabla_variables , **super_tabla_constantes}
-print("/////////////////////////////////////////////////////")
-print(st)
+# print(st)
 
 # HELPERS
 def notifError(errorText):
@@ -119,8 +118,6 @@ def getType(memoria):
         tam = len(text)
         return text[1:tam-1]
     else:
-        print(currCuadruplo)
-        print(memoria)
         notifError("ERROR EN OPERACIÓN")
 
 def startMemoriaLocal(funcName):
@@ -376,7 +373,6 @@ while corriendo:
     
     # ARREGLOS
     elif operador == 'VER':
-        print(cuadruplo)
         if int(cuadruplo[2]) <= int(getType(cuadruplo[1])) < int(cuadruplo[3]):
             pass
         else:

@@ -1,0 +1,78 @@
+Programa multMatrices;
+
+Variables
+  i, j, k : Entero;
+  mat1[2][3] : Entero;
+  mat2[3][5] : Entero;
+  mat3[2][5] : Entero;
+
+Principal() {
+
+    # MATRIZ 1
+    # 2 4 5
+    # 3 7 -5
+    mat1[0][0] = 2;
+    mat1[0][1] = 4;
+    mat1[0][2] = 5;    
+    mat1[1][0] = 3;
+    mat1[1][1] = 7;
+    mat1[1][2] = -5;
+    
+
+    Escribir("La matriz 1 tiene...");
+    Desde (i = 0) Hasta 2 Hacer {
+        Desde (j = 0) Hasta 3 Hacer {
+            Escribir(mat1[i][j]);
+        }
+    }
+    
+    # MATRIZ 2
+    # 7 0 10 -1 1
+    # 9 3 1 -11 20
+    # 8 8 9 2 -2
+    mat2[0][0] = 7;
+    mat2[0][1] = 0;
+    mat2[0][2] = 10;  
+    mat2[0][3] = -1;  
+    mat2[0][4] = 1; 
+    mat2[1][0] = 9;
+    mat2[1][1] = 3;
+    mat2[1][2] = 1;  
+    mat2[1][3] = -11;  
+    mat2[1][4] = 20;  
+    mat2[2][0] = 8;
+    mat2[2][1] = 8;
+    mat2[2][2] = 9;  
+    mat2[2][3] = 2;  
+    mat2[2][4] = -2;    
+
+    Escribir("La matriz 2 tiene...");
+    Desde (i = 0) Hasta 3 Hacer {
+        Desde (j = 0) Hasta 5 Hacer {
+            Escribir(mat2[i][j]);
+        }
+    }
+
+    Escribir("Multiplicamos las matrices...");
+    # Multiplicacion de matrices
+    Desde (i = 0) Hasta 2 Hacer {
+        Desde (j = 0) Hasta 5 Hacer {
+            mat3[i][j] = 0;
+        }
+    }
+
+    Desde (i = 0) Hasta 2 Hacer {
+        Desde (j = 0) Hasta 5 Hacer {
+            Desde (k = 0) Hasta 3 Hacer {
+                mat3[i][j] = mat3[i][j] + mat1[i][k] * mat2[k][j];
+            }
+        }
+    }
+
+    Escribir("La matriz resultante da...");
+    Desde (i = 0) Hasta 2 Hacer {
+        Desde (j = 0) Hasta 5 Hacer {
+            Escribir(mat3[i][j]);
+        }
+    }
+}

@@ -105,7 +105,6 @@ tokens = [
     'PUNTOYCOMA',   # ;
     'COMA',         # ,
     'DOSPUNTOS',    # :
-    'PUNTO',        # .
 
     # Separadores
     'L_LLAVE',      # {
@@ -176,7 +175,6 @@ t_HASTA = r'Hasta'
 t_PUNTOYCOMA = r'\;'
 t_COMA = r'\,'
 t_DOSPUNTOS = r'\:'
-t_PUNTO = r'\.'
 
 # Separadores
 t_L_LLAVE = r'\{'
@@ -241,7 +239,7 @@ lexer = lex.lex()
 
 # Funcion para probar el escaner lexico 
 # def pruebaLex():
-#     lexer.input("Programa Variables Funcion Principal Regresa Leer Escribir Si Hacer Sino Mientras Hacer Desde Hasta ; , : . { } ( ) [ ] = + - * / < > <= >= != == 1 101 10.5 'a' \"Hola\" Entero Flotante Caracter Void Circulo Color Grosor Linea PuntoXY Arco PenUp PenDown cantCrayones")
+#     lexer.input("Programa Variables Funcion Principal Regresa Leer Escribir Si Hacer Sino Mientras Hacer Desde Hasta ; , : { } ( ) [ ] = + - * / < > <= >= != == 1 101 10.5 'a' \"Hola\" Entero Flotante Caracter Void Circulo Color Grosor Linea PuntoXY Arco PenUp PenDown cantCrayones")
 #     #lexer.input("PROGRAMA groot;")
 #     while True:
 #         tok = lexer.token()
