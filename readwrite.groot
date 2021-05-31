@@ -1,0 +1,38 @@
+Programa readwrite;
+Variables
+    i : Entero;
+    f: Flotante;
+    c : Caracter;
+
+Principal(){
+
+    # ASIGNACIÓN Y ESCRITURA
+
+    i = 5;
+    f = 2.5;
+    c = 'e';
+    Escribir(i);
+    Escribir(f);
+    Escribir(c);
+
+    # LECTURA Y ESCRITURA
+
+    Escribir("Dame un entero...");
+    Leer(i);
+
+    Escribir("Dame un flotante...");
+    Leer(f);
+
+    Escribir("Dame un caracter...");
+    Leer(c);
+
+    Escribir("Recibi...");
+    Escribir(i);
+    
+    Escribir("Recibi...");
+    Escribir(f);
+    
+    Escribir("Recibi...");
+    Escribir(c);
+
+}

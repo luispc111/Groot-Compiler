@@ -1,3 +1,7 @@
+# Luis Alberto Pérez Chapa
+# A01282564
+
+# GROOT LANGUAGE
 # MAQUINA VIRTUAL
 
 #IMPORTS
@@ -6,7 +10,6 @@ import re
 
 import lexer_parser
 from Cuadruplo import *
-# from CuboSemantico import *
 
 # VARIABLES GLOBALES
 currCuadruplo = 0

@@ -2,7 +2,7 @@
 # A01282564
 
 # GROOT LANGUAGE
-# LEXER / PARSER
+# LEXER / PARSER / PUNTOS NEURÁLGICOS
 
 # IMPORTS
 
@@ -17,13 +17,11 @@ from collections import deque
 from CuboSemantico import *
 from Cuadruplo import *
 
-############### GLOBAL VARIABLES ###############
+############### VARIABLES GLOBALES ###############
 
 progName = ''
-
 currFuncName = ''
 currFuncType = ''
-
 currVarName = ''
 currVarType = ''
 
@@ -32,9 +30,11 @@ currAsignacionFor = 0
 paramContador = 0
 paramRecibirContador = 0
 paramTipos = []
+
 existeReturn = 0
 origenLlamada = 0
 parametrosFuncion = {}
+
 expresionOEstatuto = '...'
 tamVariable = 1
 pilaVarFor = deque()
@@ -63,7 +63,7 @@ pilaTipos = deque()
 
 # Diccionario que contendra las variables (y funciones) y las constantes junto con sus tipos
 tabla_variables = {}
-tabla_constantes = {'Entero': {}, 'Flotante': {}, 'Caracter': {}}
+tabla_constantes = {'Entero': {}, 'Flotante': {}, 'Caracter': {}, 'Letrero':{}}
 
 # Arreglo que se llenará con objetos tipo Cuadruplo
 cuadruplos = []
@@ -1050,10 +1050,10 @@ def p_neu_escritura(p):
 def p_neu_letrero(p):
     'neu_letrero : '
     global memoriaLetreros, progName
-    memoriaLetreros += 1
-    if 'Letrero' not in tabla_constantes:
-        tabla_constantes['Letrero'] = {}
-    tabla_constantes['Letrero'][p[-1]] = {'tipo': 'Letrero', 'memoria': memoriaLetreros}
+    if p[-1] not in tabla_constantes['Letrero'].keys():
+        memoriaLetreros += 1
+        tabla_constantes['Letrero'][p[-1]] = {'tipo': 'Letrero', 'memoria': memoriaLetreros}
+    
     cuadruplos.append(Cuadruplo('WRITE', None, None, memoriaLetreros))
 
 # RETORNO

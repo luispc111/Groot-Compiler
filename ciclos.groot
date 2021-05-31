@@ -1,0 +1,37 @@
+Programa ciclos;
+
+Variables
+  x, i, a : Entero;
+
+  auxF : Flotante;
+  auxE : Entero;
+
+Principal(){
+    
+    # IF CONDITION
+    x = 10;
+    Si (x == 10) Entonces {
+        Escribir("Si es 10...");
+    }
+    Sino {
+        Escribir("No es 10...");
+    }
+
+    # FOR LOOP
+    Escribir("Contar del 1 al 10...");
+    Desde (i = 0) Hasta 10 Hacer {
+        Escribir(i + 1);
+    }
+
+    # WHILE LOOP
+    Escribir("Valores pares entre el 1 y 10...");
+    a = 1;
+    Mientras (a < 11) Hacer {
+        auxF = a / 2.0;
+        auxE = a / 2;
+        Si (auxF - auxE == 0.0) Entonces {
+            Escribir(a);
+        }
+        a = a + 1;
+    }
+}
