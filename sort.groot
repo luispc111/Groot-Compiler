@@ -2,10 +2,12 @@ Programa sort;
 
 Variables
   arr[10] : Entero;
-  aux : Entero;
+  aux, aux2, aux3 : Entero;
   i, j : Entero;
+  letra : Caracter;
 
 Principal() {
+
   arr[0] = 5;
   arr[1] = 0;
   arr[2] = 2;
@@ -30,7 +32,6 @@ Principal() {
         arr[j] = arr[j+1];
         arr[j+1] = aux;
       }
-      #Escribir("xd");
     }
   }
 
@@ -39,4 +40,18 @@ Principal() {
     Escribir(arr[i]);
   }
 
+  aux3 = 0;
+  Escribir("Checar si en el arreglo se encuentra el valor...");
+  Leer(aux2);
+  Desde (i = 0) Hasta 10 Hacer {
+    Si (arr[i] == aux2) Entonces {
+      Escribir("Si se encuentra en la posicion...");
+      Escribir(i+1);
+      aux3 = 1;
+    }
+  }    
+  Si (aux3 == 0) Entonces {
+    Escribir("No se encontro el valor...");
+    Escribir(aux2);
+  }
 }

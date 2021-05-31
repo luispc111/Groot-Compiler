@@ -31,18 +31,47 @@ dic_tabla_locales = {}
 super_tabla_variables = {}
 super_tabla_constantes = {}
 
-max = 0
-min = 100000
+maxEntero = 1000
+minEntero = 2001
 for var in tabla_variables[progName]['variables']:
-    if tabla_variables[progName]['variables'][var]['memoria'] > max:
-        max = tabla_variables[progName]['variables'][var]['memoria']
-    
-    if tabla_variables[progName]['variables'][var]['memoria'] < min:
-        min = tabla_variables[progName]['variables'][var]['memoria']
+    if tabla_variables[progName]['variables'][var]['tipo'] == 'Entero':
+        if tabla_variables[progName]['variables'][var]['memoria'] > maxEntero:
+            maxEntero = tabla_variables[progName]['variables'][var]['memoria']
+        
+        if tabla_variables[progName]['variables'][var]['memoria'] < minEntero:
+            minEntero = tabla_variables[progName]['variables'][var]['memoria']
 
-while min <= max:
-    super_tabla_variables[min] = None
-    min += 1
+while minEntero <= maxEntero:
+    super_tabla_variables[minEntero] = None
+    minEntero += 1
+
+maxFlotante = 2000
+minFlotante = 3001
+for var in tabla_variables[progName]['variables']:
+    if tabla_variables[progName]['variables'][var]['tipo'] == 'Flotante':
+        if tabla_variables[progName]['variables'][var]['memoria'] > maxFlotante:
+            maxFlotante = tabla_variables[progName]['variables'][var]['memoria']
+        
+        if tabla_variables[progName]['variables'][var]['memoria'] < minFlotante:
+            minFlotante = tabla_variables[progName]['variables'][var]['memoria']
+
+while minFlotante <= maxFlotante:
+    super_tabla_variables[minFlotante] = None
+    minFlotante += 1
+
+maxCaracter = 3000
+minCaracter = 4001
+for var in tabla_variables[progName]['variables']:
+    if tabla_variables[progName]['variables'][var]['tipo'] == 'Caracter':
+        if tabla_variables[progName]['variables'][var]['memoria'] > maxCaracter:
+            maxCaracter = tabla_variables[progName]['variables'][var]['memoria']
+        
+        if tabla_variables[progName]['variables'][var]['memoria'] < minCaracter:
+            minCaracter = tabla_variables[progName]['variables'][var]['memoria']
+
+while minCaracter <= maxCaracter:
+    super_tabla_variables[minCaracter] = None
+    minCaracter += 1
 
 super_tabla_constantes = {}
 for tipo in tabla_constantes:
@@ -51,7 +80,8 @@ for tipo in tabla_constantes:
 
 # SUPER TABLA
 st = {**super_tabla_variables , **super_tabla_constantes}
-# print(st)
+print("/////////////////////////////////////////////////////")
+print(st)
 
 # HELPERS
 def notifError(errorText):
@@ -62,6 +92,8 @@ def getType(memoria):
 
     if re.match("\(\d+\)", str(memoria)):
         memoria = getType(int(memoria[1:-1]))
+
+    memoria = int(memoria)
 
     # ENTERO
     if 1001 <= memoria <= 2000 or 4001 <= memoria <= 5000 or 7001 <= memoria <= 8000:
@@ -87,6 +119,8 @@ def getType(memoria):
         tam = len(text)
         return text[1:tam-1]
     else:
+        print(currCuadruplo)
+        print(memoria)
         notifError("ERROR EN OPERACIÓN")
 
 def startMemoriaLocal(funcName):
@@ -342,6 +376,7 @@ while corriendo:
     
     # ARREGLOS
     elif operador == 'VER':
+        print(cuadruplo)
         if int(cuadruplo[2]) <= int(getType(cuadruplo[1])) < int(cuadruplo[3]):
             pass
         else:

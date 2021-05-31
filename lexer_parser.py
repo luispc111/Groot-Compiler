@@ -270,6 +270,7 @@ def p_variales(p):
     variablesD : ID neu_addVariableAStack COMA variablesD
                | ID DOSPUNTOS tipo_var neu_addVariable PUNTOYCOMA variablesU
                | ID L_CORCHETE ENTEROVAL R_CORCHETE DOSPUNTOS tipo_var neu_addArreglo PUNTOYCOMA variablesU
+               | ID L_CORCHETE ENTEROVAL R_CORCHETE L_CORCHETE ENTEROVAL R_CORCHETE DOSPUNTOS tipo_var neu_addMatriz PUNTOYCOMA variablesU
     '''
     p[0] = None
 
@@ -353,6 +354,7 @@ def p_asignacion(p):
     '''
     asignacion : ID neu_addID IGUAL neu_addOperador hiper_exp neu_asignacion empty
                | ID L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE neu_addIDArreglo IGUAL neu_addOperador hiper_exp neu_asignacion empty
+               | ID L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE neu_addIDMatriz IGUAL neu_addOperador hiper_exp neu_asignacion empty
     '''
     p[0] = None
 
@@ -489,6 +491,7 @@ def p_varcte(p):
     '''
     varcte  : ID neu_addID empty
             | ID L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE neu_addIDArreglo empty
+            | ID L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE neu_addIDMatriz empty
             | ENTEROVAL neu_addConstanteEntero empty
             | FLOTANTEVAL neu_addConstanteFlotante empty
             | CARACTERVAL neu_addConstanteCaracter empty
@@ -499,6 +502,7 @@ def p_varcte(p):
 
 def p_error(p):
     print("Error de sintaxis en la linea " + str(lexer.lineno))
+    sys.exit()
 
 def p_empty(p):
     '''
@@ -617,6 +621,24 @@ def p_neu_addArreglo(p):
     else:
         p_notifError(str(lexer.lineno) + " - El arreglo " + currVarName + " ya se declaró anteriormente")  
 
+# Punto Neuralgico - Añade arreglos a la tabla de variables
+def p_neu_addMatriz(p):
+    'neu_addMatriz : '
+    global currFuncName, currVarName, currVarType, progName, tamVariable
+    currVarType = p[-1]
+    currVarName = p[-9]
+    tamD1 = p[-7]
+    tamD2 = p[-4]
+    tamVariable = int(tamD1) * int(tamD2)
+    # ID L_CORCHETE ENTEROVAL L_CORCHETE L_CORCHETE ENTEROVAL L_CORCHETE DOSPUNTOS tipo_var neu_addArreglo PUNTOYCOMA variablesU
+
+    if currVarName not in tabla_variables[currFuncName]['variables'].keys() and currVarName not in tabla_variables[progName]['variables'].keys():
+        memoria = p_getMemoriaForID(currVarType)
+        tabla_variables[currFuncName]['variables'][currVarName] = {'tipo': currVarType, 'memoria': memoria, 'tam1': tamD1, 'tam2': tamD2}
+        tamVariable = 1
+    else:
+        p_notifError(str(lexer.lineno) + " - El arreglo " + currVarName + " ya se declaró anteriormente")  
+
 # Añado un ID a mi pila de terminos y su tipo a la pila de tipos (SE USA PARA EXPRESIONES)
 def p_neu_addID(p):
     'neu_addID : '
@@ -641,10 +663,8 @@ def p_neu_addIDArreglo(p):
     # fondo falso
     pilaOperadores.pop()
     id = p[-5]
-    
     dimension = pilaTerminos.pop()
     # ID L_CORCHETE neu_fondoFalso ENTEROVAL R_CORCHETE neu_addIDArreglo
-
     # Generar cuadruplo de verificación de dimensión
     if tabla_variables[progName]['variables'][id]:
         cuadruplos.append(Cuadruplo('VER', dimension, 0, tabla_variables[progName]['variables'][id]['tam']))
@@ -664,7 +684,6 @@ def p_neu_addIDArreglo(p):
 
         pilaTerminos.append("(" + str(memoriaTemp) + ")")
         pilaTipos.append(tabla_variables[currFuncName]['variables'][id]['tipo'])
-
     elif id in tabla_variables[progName]['variables'].keys():
         # + BASE DIMENSION TEMP
         cuadruplos.append(Cuadruplo('SUMABASE', tabla_variables[progName]['variables'][id]['memoria'], dimension, memoriaTemp))
@@ -674,6 +693,72 @@ def p_neu_addIDArreglo(p):
     else:
         p_notifError(str(lexer.lineno) + " - No se declaró la variable " + id)
     
+# Añado un ID de arreglo a mi pila de terminos y su tipo a la pila de tipos (SE USA PARA EXPRESIONES)
+def p_neu_addIDMatriz(p):
+    'neu_addIDMatriz : '
+    global currFuncName, pilaOperadores, pilaTerminos
+    # fondo falso
+    pilaOperadores.pop()
+    pilaOperadores.pop()
+
+    id = p[-9]
+    d2 = pilaTerminos.pop()
+    d1 = pilaTerminos.pop()
+    
+    # ID L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE neu_addIDMatriz IGUAL...
+
+    # Generar cuadruplo de verificación de dimensión
+    if tabla_variables[progName]['variables'][id]:
+        cuadruplos.append(Cuadruplo('VER', d1, 0, tabla_variables[progName]['variables'][id]['tam1']))
+        cuadruplos.append(Cuadruplo('VER', d2, 0, tabla_variables[progName]['variables'][id]['tam2']))
+    elif tabla_variables[currFuncName]['variables'][id]:
+        cuadruplos.append(Cuadruplo('VER', d1, 0, tabla_variables[currFuncName]['variables'][id]['tam1']))
+        cuadruplos.append(Cuadruplo('VER', d2, 0, tabla_variables[currFuncName]['variables'][id]['tam2']))
+    else:
+        p_notifError(str(lexer.lineno) + " - No se declaró la variable " + id)
+    
+    # Generar memoria temporal donde se asignará la memoria en donde se calculará la memoria base + dimensión
+    tam2 = tabla_variables[currFuncName]['variables'][id]['tam2']
+    if tabla_variables[currFuncName]['variables'][id]['tam2'] not in tabla_constantes['Entero'].keys():
+        memoria1 = p_getCMemoria('Entero') #m1
+        tabla_constantes['Entero'][tam2] = {'tipo': 'Entero', 'memoria': memoria1}
+    constante1 = tabla_constantes['Entero'][tam2]['memoria']
+
+    if currFuncName == progName:
+        memoriaTemp1 = p_getGMemoria('Entero') # T1
+        memoriaTemp2 = p_getGMemoria('Entero') # T2
+        memoriaTemp3 = p_getGMemoria('Entero') # T3
+    else:
+        memoriaTemp1 = p_getLMemoria('Entero') # T1
+        memoriaTemp2 = p_getLMemoria('Entero') # T2
+        memoriaTemp3 = p_getLMemoria('Entero') # T3
+    
+    # [* s1 m1 T1]
+    # [+ T1 s2 T2]
+    # [+ Base T2 T3]
+
+    
+    if id in tabla_variables[currFuncName]['variables'].keys():
+        # + BASE DIMENSION TEMP
+        cuadruplos.append(Cuadruplo('*', d1, constante1, memoriaTemp1))
+        cuadruplos.append(Cuadruplo('+', memoriaTemp1, d2, memoriaTemp2))
+        cuadruplos.append(Cuadruplo('SUMABASE', tabla_variables[currFuncName]['variables'][id]['memoria'], memoriaTemp2, memoriaTemp3))
+
+        pilaTerminos.append("(" + str(memoriaTemp3) + ")")
+        pilaTipos.append(tabla_variables[currFuncName]['variables'][id]['tipo'])
+
+    elif id in tabla_variables[progName]['variables'].keys():
+        # + BASE DIMENSION TEMP
+        cuadruplos.append(Cuadruplo('*', d1, constante1, memoriaTemp1))
+        cuadruplos.append(Cuadruplo('+', memoriaTemp1, d2, memoriaTemp2))
+        cuadruplos.append(Cuadruplo('SUMABASE', tabla_variables[progName]['variables'][id]['memoria'], memoriaTemp2, memoriaTemp3))
+
+        pilaTerminos.append("(" + str(memoriaTemp3) + ")")
+        pilaTipos.append(tabla_variables[progName]['variables'][id]['tipo'])
+    else:
+        p_notifError(str(lexer.lineno) + " - No se declaró la variable " + id)
+    
+
 # Añado una constante ENTERO a la tabla de constantes
 def p_neu_addConstanteEntero(p):
     'neu_addConstanteEntero : '

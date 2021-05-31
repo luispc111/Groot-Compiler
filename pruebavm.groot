@@ -1,31 +1,23 @@
 Programa pruebavm;
 
-##### VARIABLES GLOBALES #######
 Variables
   x : Entero;
   arr[10] : Entero;
   i : Entero;
+  mat[5][4] : Entero;
   a : Entero;
 
-Void Funcion decirHola()
-Variables
-  medidas[20] : Flotante;
-  prom : Flotante;
-{
+Void Funcion decirHola() {
   Escribir("I am Groot");
 }
 
 Principal(){
   decirHola();
-  arr[2] = 4;
-  arr[5] = 123;
-  arr[8] = 7;
-  Escribir(arr[arr[2]+1] + arr[8]);
 
-  Desde (i = 0) Hasta 10 Hacer {
-    arr[i] = i+1;
-  }
-  Desde (i = 0) Hasta 10 Hacer {
-    Escribir(arr[i]);
-  }
+  mat[1][2] = 111;
+  Escribir(mat[1][2]);
+
+  mat[0][0] = 222;
+  mat[1][0] = mat[1][2] + mat[0][0];
+  Escribir(mat[1][0] + mat[1][0]);
 }
