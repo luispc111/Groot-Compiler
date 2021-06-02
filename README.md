@@ -7,5 +7,5 @@
 
 ### **Ejecutar el proyecto**
 ```bash
-python3 lexer_parser.py
+python3 vmachine.py
 ```
