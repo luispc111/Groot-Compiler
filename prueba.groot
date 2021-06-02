@@ -1,0 +1,39 @@
+Programa prueba;
+
+Variables
+  x : Entero;
+  i : Entero;
+  a, b, c : Flotante;
+  letra : Caracter;
+
+Void Funcion func1(parametro1 : Flotante, parametro2 : Entero)
+Variables
+  subVar : Entero;
+{
+  Mientras (a < b) Hacer {
+    a = a + 1;
+
+    Si (5 < 4) Entonces
+    {
+      Escribir(a);
+    }
+    Sino {
+      Escribir(parametro1 + subVar);
+    }
+  }
+  letra = 'a';
+}
+
+Flotante Funcion func2() {
+  func1(a, 1);
+  Regresa(c);
+}
+
+Principal(){
+  Desde (i = 0) Hasta 10 Hacer
+  {
+    Escribir(a);
+  }
+  func1(1.1, 1);
+  a = 10 + func2() / i;
+}

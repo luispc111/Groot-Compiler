@@ -1,0 +1,23 @@
+Programa pruebavm;
+
+Variables
+  x : Entero;
+  arr[10] : Entero;
+  i : Entero;
+  mat[5][4] : Entero;
+  a : Entero;
+
+Void Funcion decirHola() {
+  Escribir("I am Groot");
+}
+
+Principal(){
+  decirHola();
+
+  mat[1][2] = 111;
+  Escribir(mat[1][2]);
+
+  mat[0][0] = 222;
+  mat[1][0] = mat[1][2] + mat[0][0];
+  Escribir(mat[1][0] + mat[1][0]);
+}
