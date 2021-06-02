@@ -1,0 +1,39 @@
+Programa iamgroot;
+
+Variables
+  edad : Entero;
+  estatura : Flotante;
+  letra : Caracter;
+
+Void Funcion decirHola(){
+  Escribir("I am Groot");
+}
+
+Principal() {
+
+  decirHola();
+
+  Escribir("Introduce tu edad");
+  Leer(edad);
+
+  Escribir("Introduce tu estatura");
+  Leer(estatura);
+  
+  Escribir("Introduce tu letra favorita");
+  Leer(letra);
+
+  Escribir(".................");
+  Escribir("La edad ingresada fue de...");
+  Escribir(edad);
+  Escribir("Y en 100 anios tendra...");
+  edad = edad + 100;
+  Escribir(edad);
+
+  Escribir("La estatura ingresada fue de...");
+  Escribir(estatura);
+  Escribir("Pero si me pongo un sombrero, tendria...");
+  Escribir(estatura + 0.1);
+  
+  Escribir("La letra favorita ingresada fue...");
+  Escribir(letra);
+}

@@ -635,7 +635,7 @@ def p_neu_addMatriz(p):
         tabla_variables[currFuncName]['variables'][currVarName] = {'tipo': currVarType, 'memoria': memoria, 'tam1': tamD1, 'tam2': tamD2}
         tamVariable = 1
     else:
-        p_notifError(str(lexer.lineno) + " - El arreglo " + currVarName + " ya se declaró anteriormente")  
+        p_notifError(str(lexer.lineno) + " - La matriz " + currVarName + " ya se declaró anteriormente")  
 
 # Añado un ID a mi pila de terminos y su tipo a la pila de tipos (SE USA PARA EXPRESIONES)
 def p_neu_addID(p):
@@ -734,7 +734,6 @@ def p_neu_addIDMatriz(p):
     # [* s1 m1 T1]
     # [+ T1 s2 T2]
     # [+ Base T2 T3]
-
     
     if id in tabla_variables[currFuncName]['variables'].keys():
         # + BASE DIMENSION TEMP
@@ -827,14 +826,14 @@ def p_neu_esEstatuto(p):
     'neu_esEstatuto : '
     global currFuncName
     if tabla_variables[currFuncName]['tipo'] != 'Void':
-        p_notifError(str(lexer.lineno) + " - No se puede utilizar la función en un estatuto")
+        p_notifError(str(lexer.lineno) + " - No se puede utilizar la función " + currFuncName + " en un estatuto")
     currFuncName = origenLlamada
 
 def p_neu_esExpresion(p):
     'neu_esExpresion : '
     global currFuncName
     if tabla_variables[currFuncName]['tipo'] == 'Void':
-        p_notifError(str(lexer.lineno) + " - No se puede utilizar la función en una expresión")
+        p_notifError(str(lexer.lineno) + " - No se puede utilizar la función " + currFuncName + " en una expresión")
     currFuncName = origenLlamada
 
 # Punto Neuralgico - ...
@@ -860,19 +859,19 @@ def p_getGMemoria(tipo):
             memoriaGEntero = memoriaGEntero + int(tamVariable)
             return memoriaGEntero - int(tamVariable) + 1
         else:
-            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
+            p_notifError(str(lexer.lineno) + " - Stack overflow de variables globales enteras")
     elif tipo == 'Flotante':
         if memoriaGFlotante < 3000:
             memoriaGFlotante = memoriaGFlotante + int(tamVariable)
             return memoriaGFlotante - int(tamVariable) + 1
         else:
-            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
+            p_notifError(str(lexer.lineno) + " - Stack overflow de variables globales flotantes")
     elif tipo == 'Caracter':
         if memoriaGCaracter < 4000:
             memoriaGCaracter = memoriaGCaracter + int(tamVariable)
             return memoriaGCaracter - int(tamVariable) + 1
         else:
-            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
+            p_notifError(str(lexer.lineno) + " - Stack overflow de variables globales caracteres")
 
 # Local
 def p_getLMemoria(tipo):
@@ -883,19 +882,19 @@ def p_getLMemoria(tipo):
             memoriaLEntero = memoriaLEntero + int(tamVariable)
             return memoriaLEntero - int(tamVariable) + 1
         else:
-            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
+            p_notifError(str(lexer.lineno) + " - Stack overflow de variables locales enteras")
     elif tipo == 'Flotante':
         if memoriaLFlotante < 6000:
             memoriaLFlotante = memoriaLFlotante + int(tamVariable)
             return memoriaLFlotante - int(tamVariable) + 1
         else:
-            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
+            p_notifError(str(lexer.lineno) + " - Stack overflow de variables locales flotantes")
     elif tipo == 'Caracter':
         if memoriaLCaracter < 7000:
             memoriaLCaracter = memoriaLCaracter + int(tamVariable)
             return memoriaLCaracter - int(tamVariable) + 1
         else:
-            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
+            p_notifError(str(lexer.lineno) + " - Stack overflow de variables locales caracteres")
 
 # Constante
 def p_getCMemoria(tipo):
@@ -906,19 +905,19 @@ def p_getCMemoria(tipo):
             memoriaCEntero = memoriaCEntero + 1
             return memoriaCEntero
         else:
-            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables enteras")
+            p_notifError(str(lexer.lineno) + " - Stack overflow de constantes enteras")
     elif tipo == 'Flotante':
         if memoriaCFlotante < 9000:
             memoriaCFlotante = memoriaCFlotante + 1
             return memoriaCFlotante
         else:
-            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de variables flotantes")
+            p_notifError(str(lexer.lineno) + " - Stack overflow de constantes flotantes")
     elif tipo == 'Caracter':
         if memoriaCCaracter < 10000:
             memoriaCCaracter = memoriaCCaracter + 1
             return memoriaCCaracter
         else:
-            p_notifError(str(lexer.lineno) + " - Stack Overflow en declaración de caracteres")
+            p_notifError(str(lexer.lineno) + " - Stack overflow de constantes caracteres")
 
 # REALIZAR OPERACIONES
 
@@ -1037,8 +1036,12 @@ def p_neu_asignacion(p):
 def p_neu_lectura(p):
     'neu_lectura : '
     global currFuncName
+
+    # Valida si mi ID está entre las variables declaradas  globales o locales
     if p[-1] in tabla_variables[currFuncName]['variables'].keys():
         cuadruplos.append(Cuadruplo('READ', None, None, tabla_variables[currFuncName]['variables'][p[-1]]['memoria']))
+    elif p[-1] in tabla_variables[progName]['variables'].keys():
+        cuadruplos.append(Cuadruplo('READ', None, None, tabla_variables[progName]['variables'][p[-1]]['memoria']))
     else:
         p_notifError(str(lexer.lineno) + " - Se debe declarar la variable " + p[-1] + " antes de utilizarla")
 
@@ -1060,6 +1063,7 @@ def p_neu_letrero(p):
 def p_neu_retorno(p):
     'neu_retorno : '
     global currFuncType, progName, existeReturn
+
     # Comprueba si la variable a retornar es del mismo tipo que la función
     if pilaTipos.pop() == currFuncType:
         existeReturn = 1
@@ -1070,6 +1074,7 @@ def p_neu_retorno(p):
 # DECISION
 def p_neu_iniciarDecision(p):
     'neu_iniciarDecision : '
+    # Valida si el valor que seutiliza para realizar le decisión es válido
     if pilaTipos[-1] == 'Entero' or pilaTipos[-1] == 'Flotante':
         cuadruplos.append(Cuadruplo('GOTOF', pilaTerminos[-1], None, 0))
         pilaSaltos.append(len(cuadruplos)-1)
@@ -1115,9 +1120,9 @@ def p_neu_addIDFor(p):
             pilaTerminos.append(tabla_variables[progName]['variables'][p[-1]]['memoria'])
             pilaTipos.append('Entero')
         else:
-            p_notifError(str(lexer.lineno) + " - La variable " + p[-1] + " debe ser entero.")
+            p_notifError(str(lexer.lineno) + " - La variable " + p[-1] + " debe ser entero para utilizarse en un ciclo no-condicional")
     else:
-        p_notifError(str(lexer.lineno) + " - No se declaró la variable " + p[-1])
+        p_notifError(str(lexer.lineno) + " - No se declaró la variable " + p[-1] + " en el ciclo no-condicional")
 
 def p_neu_asignacionFor(p):
     'neu_asignacionFor : '

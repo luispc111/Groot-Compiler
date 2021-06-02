@@ -12,12 +12,15 @@ import lexer_parser
 from Cuadruplo import *
 
 # VARIABLES GLOBALES
-currCuadruplo = 0
-corriendo = 1
-operador = 'OP'
-currFunc = '...'
-pilaLlamadas = []
-currParametros = []
+
+currCuadruplo = 0 # cuadruplo actual que se está analizando
+corriendo = 1 # Bandera para indicar si hay más cuadruplos por revisar
+operador = 'OP' # Se almacenaráel primer elemento de todos los cuadruplos
+currFunc = '...' # Se almacenará el nombre de la función en ejecución
+pilaLlamadas = [] # Se almacena una pila de llamadas a funciones para saber a donde dirigirse cuando se termine la ejecución
+currParametros = [] # Pila que ayuda a realizar validaciones al momento de enviar parametros a una función
+variablesLocales = [] # Pila que contendrá diccionarios de memorias locales, el diccionario en el top representa la memoria local actual
+dic_tabla_locales = {}
 
 # Obtener cuadruplos, tabla de variables y tabla de constantes
 data = lexer_parser.correrMV()
@@ -27,9 +30,6 @@ tabla_variables = data['tabla_variables']
 tabla_constantes = data['tabla_constantes']
 progName = data['progName']
 parametrosFuncion = data['parametrosFuncion']
-
-variablesLocales = []
-dic_tabla_locales = {}
 
 super_tabla_variables = {}
 super_tabla_constantes = {}
@@ -82,6 +82,7 @@ for tipo in tabla_constantes:
         super_tabla_constantes[tabla_constantes[tipo][var]['memoria']] = var
 
 # SUPER TABLA
+# Contendrá todos las variables globales y constantes
 st = {**super_tabla_variables , **super_tabla_constantes}
 # print(st)
 
@@ -90,11 +91,13 @@ def notifError(errorText):
     print("\n! ERROR - " + errorText + "\n")
     sys.exit()
 
+# Esta función transforma una memoria a un resultado casteado
+# Recibe    -> dirección de memoria
+# Retorna   -> valor almacenado enn la memoria, casteado a su tipo
 def getType(memoria):
 
     if re.match("\(\d+\)", str(memoria)):
         memoria = getType(int(memoria[1:-1]))
-
     memoria = int(memoria)
 
     # ENTERO
@@ -123,6 +126,9 @@ def getType(memoria):
     else:
         notifError("ERROR EN OPERACIÓN")
 
+# Esta función genera un diccionario que se terminará poniendo en la pila de variables locales
+# Recibe    -> nombre de la función
+# Genera    -> diccionario de variables locales
 def startMemoriaLocal(funcName):
     global dic_tabla_locales
     dic_tabla_locales.clear()
@@ -130,23 +136,14 @@ def startMemoriaLocal(funcName):
     for localvar in tabla_variables[funcName]['variables']:
         dic_tabla_locales[tabla_variables[funcName]['variables'][localvar]['memoria']] = None
 
+# Esta función borra la memoria local.
+# Se llamará a esta función cuando se termine la ejecución de una función
 def deleteMemoriaLocal():
     global variablesLocales
-    # Borrar memoria local
     variablesLocales.pop()
 
-def checarExistenciaST(memoria):
-    if memoria in st.keys():
-        if st[memoria] != None:
-            return st[memoria]
-    return None
-
-def checarExistenciaLocal(memoria):
-    if memoria in (variablesLocales[-1]).keys():
-        if (variablesLocales[-1])[memoria] != None:
-            return (variablesLocales[-1])[memoria]
-    return None
-
+# Recibo    -> dirección de memoria
+# Retorna   -> booleando que indique si la memoria es local o global 
 def esLocal(memoria):
     if re.match("\(\d+\)", str(memoria)):
         memoria = getType(int(memoria[1:-1]))
@@ -156,6 +153,9 @@ def esLocal(memoria):
     else:
         return False
 
+# Esta función me permite utilizar lógica entera al realizar comparaciones
+# Recibo    -> un valor booleano y un espacio de memoria
+# Genera    -> Asigna en memoria un 0 o 1 dependiendo del valor del booleano
 def comparadorHelper(booleano, memoria):
     global currCuadruplo
     if esLocal(memoria):
@@ -170,6 +170,8 @@ def comparadorHelper(booleano, memoria):
             st[memoria] = 1
     currCuadruplo += 1
 
+# Esta funcion verifica que el input de un usuario coincida en regex con un tipo
+# Y que ese tipo coincida con la variable a la que se le quiere asignar el valor
 def lecturaCaster(value, memoria):
     if re.match("[-]?[0-9]+([.][0-9]+)", value):
         if 2001 <= memoria <= 3000 or 5001 <= memoria <= 6000 or 8001 <= memoria <= 9000:
@@ -189,14 +191,15 @@ def lecturaCaster(value, memoria):
     else:
         notifError("El valor que se leyó no se puede asignar a la variable")
 
+######## ANÁLISIS DE CUADRUPLOS ########
+
 while corriendo:
     cuadruplo = Cuadruplo.getCuadruplo(cuadruplos[currCuadruplo])
     operador = cuadruplo[0]
 
-    # GOTOs
+    # GOTO / GOTOF
     if operador == 'GOTO':
         currCuadruplo = cuadruplo[3]
-    
     elif operador == 'GOTOF':
         if getType(cuadruplo[1]) == 0 or getType(cuadruplo[1]) == 0.0:
             currCuadruplo = cuadruplo[3]
@@ -253,6 +256,7 @@ while corriendo:
         currCuadruplo += 1
 
     # COMPARADORES
+    # Para los comparadores, la función comparadorHelper ya cubre errores y añade 1 a currCuadruplo 
     elif operador == '<':
         res = getType(cuadruplo[1]) < getType(cuadruplo[2])
         comparadorHelper(res, cuadruplo[3])
@@ -338,51 +342,62 @@ while corriendo:
     elif operador == 'READ':
         var = input("> ")
         if esLocal(cuadruplo[3]):
-            variablesLocales[-1][cuadruplo[3]] = lecturaCaster(var)
+            variablesLocales[-1][cuadruplo[3]] = lecturaCaster(var, cuadruplo[3])
         else:
             st[cuadruplo[3]] = lecturaCaster(var, cuadruplo[3])
         currCuadruplo += 1
     
     # FUNCIONES
     elif operador == 'ERA':
+        # Genera la memoria local
         startMemoriaLocal(cuadruplo[1])
         currFunc = cuadruplo[1]
         currParametros = list(tabla_variables[currFunc]['variables'])
         currCuadruplo += 1
     
     elif operador == 'PARAM':
+        # Tomo el número del ultimo elemento del cuadruplo
         index = int((cuadruplo[3])[5]) - 1
-        if esLocal(cuadruplo[1]):
-            dic_tabla_locales[tabla_variables[currFunc]['variables'][currParametros[index]]['memoria']] = variablesLocales[-1][cuadruplo[1]]
-        else:
-            dic_tabla_locales[tabla_variables[currFunc]['variables'][currParametros[index]]['memoria']] = st[cuadruplo[1]]
+        
+        # Asigno los parametros como variables locales de la función que estoy llamando
+        dic_tabla_locales[tabla_variables[currFunc]['variables'][currParametros[index]]['memoria']] = getType(cuadruplo[1])
         currCuadruplo += 1
 
     elif operador == 'GOSUB':
+        # añado el cuadruplo actual a la pila de llamadas para poder regresar a continuar la ejecución
         pilaLlamadas.append(currCuadruplo)
+
+        # Se añade a mi pila de variables locales, la memoria local
         variablesLocales.append(dic_tabla_locales)
         dic_tabla_locales = {}
+
         currCuadruplo = tabla_variables[cuadruplo[1]]['numCuadruplo']
 
     elif operador == 'RETURN':
+
+        # Asignar el resultado del return a la variable global asignada para esta función
         memoria = tabla_variables[progName]['variables'][currFunc]['memoria']
         st[memoria] = getType(cuadruplo[3])
+
+        # se borra la memoria local porque la función llegó al fin de su ejecución
         deleteMemoriaLocal()
         currCuadruplo = int(pilaLlamadas.pop()) + 1
     
     elif operador == 'ENDFUNC':
+        # se borra la memoria local porque la función llegó al fin de su ejecución
         deleteMemoriaLocal()
         currCuadruplo = int(pilaLlamadas.pop()) + 1
     
-    # ARREGLOS
+    # ARREGLOS / MATRICES
     elif operador == 'VER':
         if int(cuadruplo[2]) <= int(getType(cuadruplo[1])) < int(cuadruplo[3]):
             pass
         else:
-            notifError("El index para un arreglo/matriz no es válido")
+            notifError("El índice para un arreglo/matriz no es válido")
         currCuadruplo += 1  
     
     elif operador == 'SUMABASE':
+        # Este nuevo operador indíca cuando debo sumarle la dirección base a algpun índice de un arreglo o matriz 
         if esLocal(int(cuadruplo[1]) + getType(cuadruplo[2])):
             variablesLocales[-1][cuadruplo[3]] = int(cuadruplo[1]) + getType(cuadruplo[2])
         else:
@@ -391,9 +406,9 @@ while corriendo:
     
     # END
     elif operador == 'END':
+        # Cancela la lectura de cuadruplos
         corriendo = 0
-    
     else:
-        print("********* ERROR")
-        print(currCuadruplo)
+        # No se debería llegar a este else, pero lo dejo por si se llega a necesitar
+        print("Error en los cuadruplos")
         corriendo = 0
