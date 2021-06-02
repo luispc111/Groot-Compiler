@@ -26,7 +26,7 @@ class CuboSemantico:
         return "Error"
 
     # CARACTER
-    if tipo1 == "CARACTER":
+    if tipo1 == "Caracter":
       if tipo2 == "Entero" or tipo2 == "Flotante":
         return "Error"
       elif tipo2 == "Caracter":

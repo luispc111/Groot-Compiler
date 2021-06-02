@@ -1,0 +1,27 @@
+Programa mayorDeEdad;
+
+Variables
+    edad : Entero;
+    res : Caracter;
+
+Caracter Funcion esMayor(edad : Entero){
+    Si(edad >= 18) Entonces {
+         Regresa('S');
+    }
+    Sino {
+         Regresa('N');
+    }
+}
+
+Principal() {
+    Leer(edad);
+    Escribir(edad);
+    
+    res = esMayor(edad);
+    Mientras (res != 'N') {
+        Leer(edad);
+        res = esMayor(edad);
+    }
+
+    Escribir("Lo lograste");
+}

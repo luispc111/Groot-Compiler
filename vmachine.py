@@ -256,7 +256,7 @@ while corriendo:
         currCuadruplo += 1
 
     # COMPARADORES
-    # Para los comparadores, la función comparadorHelper ya cubre errores y añade 1 a currCuadruplo 
+    # Para los comparadores, la función comparadorHelper añade 1 a currCuadruplo 
     elif operador == '<':
         res = getType(cuadruplo[1]) < getType(cuadruplo[2])
         comparadorHelper(res, cuadruplo[3])
@@ -366,7 +366,6 @@ while corriendo:
     elif operador == 'GOSUB':
         # añado el cuadruplo actual a la pila de llamadas para poder regresar a continuar la ejecución
         pilaLlamadas.append(currCuadruplo)
-
         # Se añade a mi pila de variables locales, la memoria local
         variablesLocales.append(dic_tabla_locales)
         dic_tabla_locales = {}

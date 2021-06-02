@@ -19,9 +19,14 @@ from Cuadruplo import *
 
 ############### VARIABLES GLOBALES ###############
 
+# Almacena el nombre de la función
 progName = ''
+
+# Almacena el nombre y tipo de la función ejecutandose
 currFuncName = ''
 currFuncType = ''
+
+# Almacena el nombre y tipo de la variable en uso
 currVarName = ''
 currVarType = ''
 
@@ -29,17 +34,18 @@ currAsignacionFor = 0
 
 paramContador = 0
 paramRecibirContador = 0
-paramTipos = []
 
 existeReturn = 0
 origenLlamada = 0
 parametrosFuncion = {}
 
-expresionOEstatuto = '...'
+# Variable que contendrá la cantidad de memoria que se pedirá cuando se necesite
 tamVariable = 1
+
+# Pila para realizar ciclos no condicionales anidados
 pilaVarFor = deque()
 
-# Memorias
+# Memorias designadas
 
 memoriaGEntero = 1000
 memoriaGFlotante = 2000
@@ -55,8 +61,10 @@ memoriaCCaracter = 9000
 
 memoriaLetreros = 10000
 
+# Pila utilizada para almacenar más de una declaración cuando son en la misma linea
 varsStack = deque()
 
+# Pilas para realizar expresiones y validaciones
 pilaOperadores = deque()
 pilaTerminos = deque()
 pilaTipos = deque()
@@ -518,6 +526,7 @@ def p_neu_programa(p):
     progName = p[-1]
     currFuncName = p[-1]
 
+    # Se crea el espacio de variables globales en la tabla de variables
     tabla_variables[progName] = {'tipo': progName, 'variables': {}}
     cuadruplos.append(Cuadruplo('GOTO', None, None, progName))
 
@@ -556,6 +565,8 @@ def p_neu_addFuncion(p):
 def p_neu_endFuncion(p):
     'neu_endFuncion : '
     global existeReturn, currFuncName
+
+    # Validar que la función tenga estatuto de regreso cuando es necesario
     if currFuncType != 'Void' and existeReturn == 0:
         p_notifError(str(lexer.lineno) + " - La función " + currFuncName + " no tiene estatuto de regreso")
     elif currFuncType == 'Void' and existeReturn == 1:
@@ -569,6 +580,8 @@ def p_neu_principal(p):
     'neu_principal : '
     global progName, currFuncName
     currFuncName = progName
+
+    # Se altera el primer cuadruplo para saltar a los cuadruplos de la función principal
     cuadruplos[0].res = len(cuadruplos)
 
 # AÑADIR VARIABLES
@@ -677,13 +690,11 @@ def p_neu_addIDArreglo(p):
     else: memoriaTemp = p_getLMemoria('Entero')
 
     if id in tabla_variables[currFuncName]['variables'].keys():
-        # + BASE DIMENSION TEMP
         cuadruplos.append(Cuadruplo('SUMABASE', tabla_variables[currFuncName]['variables'][id]['memoria'], dimension, memoriaTemp))
 
         pilaTerminos.append("(" + str(memoriaTemp) + ")")
         pilaTipos.append(tabla_variables[currFuncName]['variables'][id]['tipo'])
     elif id in tabla_variables[progName]['variables'].keys():
-        # + BASE DIMENSION TEMP
         cuadruplos.append(Cuadruplo('SUMABASE', tabla_variables[progName]['variables'][id]['memoria'], dimension, memoriaTemp))
         
         pilaTerminos.append("(" + str(memoriaTemp) + ")")
@@ -703,8 +714,6 @@ def p_neu_addIDMatriz(p):
     d2 = pilaTerminos.pop()
     d1 = pilaTerminos.pop()
     
-    # ID L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE L_CORCHETE neu_fondoFalso hiper_exp R_CORCHETE neu_addIDMatriz IGUAL...
-
     # Generar cuadruplo de verificación de dimensión
     if tabla_variables[progName]['variables'][id]:
         cuadruplos.append(Cuadruplo('VER', d1, 0, tabla_variables[progName]['variables'][id]['tam1']))
@@ -783,10 +792,6 @@ def p_neu_addConstanteCaracter(p):
     pilaTerminos.append(tabla_constantes['Caracter'][p[-1]]['memoria'])
     pilaTipos.append('Caracter')
 
-def p_neu_addTermino(p):
-    'neu_addTermino : '
-    pilaTerminos.append(tabla_variables[currFuncName]['variables'][p[-1]]['memoria'])
-
 # INSTRUCCIONES
 
 # Punto Neuralgico - Llamada ERA
@@ -822,6 +827,7 @@ def p_neu_llamada_gosub(p):
         pilaTerminos.append(memoriaTemp)
         pilaTipos.append(tabla_variables[currFuncName]['tipo'])
 
+# Esta función previene que se utilice una función en un estatuto y tenga un valor de retorno
 def p_neu_esEstatuto(p):
     'neu_esEstatuto : '
     global currFuncName
@@ -829,6 +835,7 @@ def p_neu_esEstatuto(p):
         p_notifError(str(lexer.lineno) + " - No se puede utilizar la función " + currFuncName + " en un estatuto")
     currFuncName = origenLlamada
 
+# Esta función previene que se utilice una función en una expresión y no tenga un valor de retorno
 def p_neu_esExpresion(p):
     'neu_esExpresion : '
     global currFuncName
@@ -984,6 +991,7 @@ def p_neu_hacerSuperExp(p):
             operador = pilaOperadores.pop()
 
             tipoResultado = CuboSemantico.getTipoCubo(ladoIzqTipo, ladoDerTipo, operador)
+
             if currFuncName == progName:
                 memoriaResultado = p_getGMemoria(tipoResultado) 
             else:
